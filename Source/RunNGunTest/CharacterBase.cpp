@@ -15,7 +15,7 @@ ACharacterBase::ACharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CharacterArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("CharacterArrowComponent"));
-	CharacterArrowComponent->SetupAttachment(GetArrowComponent()); // Esto falla!
+	CharacterArrowComponent->SetupAttachment(GetArrowComponent()); // Not working, to study...
 	//CharacterArrowComponent->SetWorldLocation(GetActorLocation());
 	CharacterAnimationComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("CharacterAnimationComponent"));
 	CharacterAnimationComponent->SetupAttachment(GetCapsuleComponent());
@@ -29,6 +29,8 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->BrakingDecelerationFalling = 5000;
 	GetCharacterMovement()->AirControl = 0.8;
 	GetCharacterMovement()->bConstrainToPlane = true;
+	PlayerLife = 100.f;
+	PlayerStamina = MaxStamina;
 
 	AttackKeyPressedTimeStart = -1;
 	SpecialKeyPressedTimeStart = -1;
@@ -63,6 +65,12 @@ void ACharacterBase::Tick(float DeltaTime)
 	}
 	FRotator* rotation = new FRotator(0.0f, yaw, 1.0f);
 	GetController()->SetControlRotation(*rotation);
+
+	// If special button is pressed, stamina grows up
+	if (SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime())
+	{
+		ControlStamina();
+	}
 }
 
 // Called to bind functionality to input
@@ -83,7 +91,7 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 }
 
 // Animations
-void ACharacterBase::UpdateAnimations()
+void ACharacterBase::UpdateAnimations(float Speed = 0.f)
 {
 	switch (ECharacterAnimationState)
 	{
@@ -116,6 +124,7 @@ void ACharacterBase::UpdateAnimations()
 		CharacterAnimationComponent->SetFlipbook(IdleAnimation);
 		break;
 	}
+	ControlCharacterAnimations(Speed);
 }
 
 void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0.f)
@@ -175,8 +184,6 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 			}
 		}
 	}
-
-	UpdateAnimations();
 }
 
 // Basic moving
@@ -215,7 +222,7 @@ void ACharacterBase::MoveRight(float Value)
 		FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
 		AddMovementInput(*Direction, Value);
 	}
-	ControlCharacterAnimations(Value);
+	UpdateAnimations(Value);
 }
 
 void ACharacterBase::DownDirectionStart()
@@ -294,8 +301,6 @@ void ACharacterBase::SpecialStart()
 	{
 		bCanMove = false;
 	}
-
-	GetWorldTimerManager().SetTimer(GlobalTimerHandle, this, &ACharacterBase::ControlStamina, 0.3f, true, 0.3f);
 }
 
 void ACharacterBase::SpecialStop()
@@ -377,24 +382,20 @@ void ACharacterBase::HandleProjectile()
 	UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("/Game/Game/Blueprints/BP_Hadouken.BP_Hadouken")));
 
 	UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
-	UClass* SpawnClass = SpawnActor->StaticClass();
 
-	UWorld* World = GetWorld();
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, CharacterArrowComponent->GetComponentLocation(), GetActorRotation(), SpawnParams);
+	GetWorld()->SpawnActor<AActor>(GeneratedBP->GeneratedClass, GetActorLocation(), GetActorRotation(), SpawnParams);
+	GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, CharacterArrowComponent->GetComponentLocation().ToString());
 }
 
 void ACharacterBase::HandleStaminaCharge()
 {
-	if (PlayerStamina <= MaxStamina)
+	if (bIsChargingup && GetCurrentTime() > SpecialKeyPressedTimeStart + StaminaChargingSpeedInSeconds)
 	{
-		PlayerStamina += 0.05f;
-	}
-	else
-	{
-		StopHandleStaminaCharge();
+		PlayerStamina += StaminaChargingUnit;
+		SpecialKeyPressedTimeStart = GetCurrentTime();
 	}
 }
 
@@ -404,6 +405,7 @@ void ACharacterBase::StopHandleStaminaCharge()
 	bIsChargingup = false;
 	bCanMove = true;
 	SpecialKeyPressedTimeStart = -1;
+	SpecialKeyPressedTimeStop = -1;
 }
 
 void ACharacterBase::ResetAttack()
@@ -494,9 +496,13 @@ void ACharacterBase::ClearBuffer()
 // Stamina
 void ACharacterBase::ControlStamina()
 {
-	if (SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime() && PlayerStamina <= MaxStamina)
+	if (PlayerStamina <= MaxStamina)
 	{
 		bIsChargingup = true;
+	}
+	else
+	{
+		StopHandleStaminaCharge();
 	}
 }
 

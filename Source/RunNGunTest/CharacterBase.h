@@ -92,13 +92,19 @@ public:
 		UPaperSprite* CharacterPortrait;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		float PlayerLife = 100.f;
+		float PlayerLife;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		float PlayerStamina = 10.f;
+		float PlayerStamina;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float MaxStamina = 10.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		float StaminaChargingSpeedInSeconds = 0.05f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		float StaminaChargingUnit = 0.1f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character State")
 		bool bIsMovingRight;
@@ -231,7 +237,7 @@ public:
 
 	// Other stuff
 	UFUNCTION()
-		void UpdateAnimations();
+		void UpdateAnimations(float Speed);
 
 	UFUNCTION()
 		void ControlCharacterAnimations(float characterMovementSpeed);

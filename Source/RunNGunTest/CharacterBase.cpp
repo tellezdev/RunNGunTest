@@ -29,6 +29,7 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->BrakingDecelerationFalling = 5000;
 	GetCharacterMovement()->AirControl = 0.8;
 	GetCharacterMovement()->bConstrainToPlane = true;
+	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 	PlayerLife = 100.f;
 	PlayerStamina = MaxStamina;
 
@@ -91,7 +92,7 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 }
 
 // Animations
-void ACharacterBase::UpdateAnimations(float Speed = 0.f)
+void ACharacterBase::UpdateAnimations()
 {
 	switch (ECharacterAnimationState)
 	{
@@ -124,7 +125,6 @@ void ACharacterBase::UpdateAnimations(float Speed = 0.f)
 		CharacterAnimationComponent->SetFlipbook(IdleAnimation);
 		break;
 	}
-	ControlCharacterAnimations(Speed);
 }
 
 void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0.f)
@@ -184,6 +184,7 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 			}
 		}
 	}
+	UpdateAnimations();
 }
 
 // Basic moving
@@ -222,7 +223,7 @@ void ACharacterBase::MoveRight(float Value)
 		FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
 		AddMovementInput(*Direction, Value);
 	}
-	UpdateAnimations(Value);
+	ControlCharacterAnimations(Value);
 }
 
 void ACharacterBase::DownDirectionStart()
@@ -260,7 +261,7 @@ void ACharacterBase::JumpStop()
 
 void ACharacterBase::AttackStart()
 {
-	AttackKeyPressedTimeStart = GetCurrentTime(); // Not used for now
+	AttackKeyPressedTimeStart = GetCurrentTime();
 	bIsAttacking = true;
 	InsertInputBuffer(KeyInput::Attack);
 	if (GetCharacterMovement()->IsMovingOnGround())
@@ -281,6 +282,7 @@ void ACharacterBase::AttackStart()
 			else
 			{
 				++nAttackNumber;
+				//AEnemyBase::EnemyCharacter->SetDamage(10.f);
 			}
 
 		}
@@ -426,6 +428,10 @@ float ACharacterBase::GetCurrentTime()
 void ACharacterBase::HitPlayer(float Value)
 {
 	PlayerLife -= Value;
+	if (PlayerLife <= 0.f)
+	{
+		UGameplayStatics::OpenLevel(this, "level_00");
+	}
 }
 
 // Buffer

@@ -102,7 +102,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float StaminaChargingSpeedInSeconds = 0.05f;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float StaminaChargingUnit = 0.1f;
 
@@ -237,7 +237,7 @@ public:
 
 	// Other stuff
 	UFUNCTION()
-		void UpdateAnimations(float Speed);
+		void UpdateAnimations();
 
 	UFUNCTION()
 		void ControlCharacterAnimations(float characterMovementSpeed);

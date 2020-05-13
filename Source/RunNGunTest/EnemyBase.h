@@ -17,36 +17,21 @@ class RUNNGUNTEST_API AEnemyBase : public ACharacterCommon
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	AEnemyBase();
-
-	ACharacterCommon* Player;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
+	// Sets default values for this character's properties
+	AEnemyBase();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Data")
-		FString EnemyName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Data")
-		UPaperSprite* EnemyPortrait;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Data")
-		float EnemyLife;
+	UPROPERTY()
+		ACharacterCommon* Player;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Data")
 		float AttackDamage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy State")
-		bool bIsMovingRight;
-	UPROPERTY()
-		bool bCanMove = true;
-	UPROPERTY()
-		bool bIsAttacking;
+	// Animation Times
 	UPROPERTY()
 		float EnemyStartAttackTime;
 	UPROPERTY()
@@ -55,32 +40,16 @@ public:
 		float AnimationAttackTimeStart;
 	UPROPERTY()
 		float AnimationAttackTimeStop;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Times")
 		float TimeBetweenAttacks;
 
-	TArray<AActor*> ActorsToIgnore;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy State")
-		TEnumAsByte<AnimationState> EEnemyAnimationState = AnimationState::Idle;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Collision Areas")
 		USphereComponent* VisibilityArea;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Collision Areas")
 		USphereComponent* HitArea;
 	UPROPERTY()
-		float HitPlayerPosition;
-
-	// Flip books
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Enemy Animations")
-		UPaperFlipbookComponent* EnemyAnimationComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Animations")
-		UPaperFlipbook* IdleAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Animations")
-		UPaperFlipbook* WalkingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Animations")
-		UPaperFlipbook* AttackingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Animations")
-		UPaperFlipbook* JumpingAttackAnimation;
+		float HitBoxOrientation;
 
 
 	// Movement related
@@ -88,23 +57,20 @@ public:
 		void Attack();
 	UFUNCTION()
 		void SetAttackAnimation();
-	UFUNCTION()
-		void ResetAttack();
 
-	// Other stuff
-	UFUNCTION()
-		void UpdateAnimations();
+	void ResetAttack();
 
-	UFUNCTION()
-		void ControlCharacterAnimations(float characterMovementSpeed);
+	void UpdateAnimations();
 
-	UFUNCTION()
-		float GetCurrentTime();
+	void ControlCharacterAnimations(float characterMovementSpeed);
+
+	float GetCurrentTime();
 
 	UFUNCTION(BlueprintCallable)
 		void HitPlayer();
 
 	void SetDamage(float Value);
+	void HealLife(float Value);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

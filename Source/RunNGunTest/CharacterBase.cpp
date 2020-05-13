@@ -17,12 +17,8 @@ ACharacterBase::ACharacterBase()
 
 	CharacterArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("CharacterArrowComponent"));
 	CharacterArrowComponent->SetupAttachment(GetArrowComponent());
-	CharacterAnimationComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("CharacterAnimationComponent"));
-	CharacterAnimationComponent->SetupAttachment(GetCapsuleComponent());
-	HitBoxArea = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBoxArea"));
-	HitBoxArea->SetWorldLocation(GetActorLocation());
-	HitBoxArea->SetBoxExtent(FVector(0.f, 0.f, 0.f));
-	HitBoxArea->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	CurrentFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("CurrentFlipbook"));
+	CurrentFlipbook->SetupAttachment(GetCapsuleComponent());
 
 	// Setting default character movement's params
 	GetCharacterMovement()->MaxAcceleration = 5000;
@@ -34,10 +30,6 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->AirControl = 0.8;
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
-
-
-	PlayerLife = 100.f;
-	PlayerStamina = MaxStamina;
 
 	AttackKeyPressedTimeStart = -1;
 	SpecialKeyPressedTimeStart = -1;
@@ -100,22 +92,22 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 // Animations
 void ACharacterBase::UpdateAnimations()
 {
-	switch (ECharacterAnimationState)
+	switch (EAnimationState)
 	{
 	case AnimationState::Idle:
-		CharacterAnimationComponent->SetFlipbook(IdleAnimation);
+		CurrentFlipbook->SetFlipbook(IdleAnimation);
 		break;
 	case AnimationState::Walking:
-		CharacterAnimationComponent->SetFlipbook(WalkingAnimation);
+		CurrentFlipbook->SetFlipbook(WalkingAnimation);
 		break;
 	case AnimationState::Jumping:
-		CharacterAnimationComponent->SetFlipbook(JumpingAnimation);
+		CurrentFlipbook->SetFlipbook(JumpingAnimation);
 		break;
 	case AnimationState::JumpingForward:
-		CharacterAnimationComponent->SetFlipbook(JumpingForwardAnimation);
+		CurrentFlipbook->SetFlipbook(JumpingForwardAnimation);
 		break;
 	case AnimationState::Ducking:
-		CharacterAnimationComponent->SetFlipbook(DuckingAnimation);
+		CurrentFlipbook->SetFlipbook(DuckingAnimation);
 		break;
 	case AnimationState::SpecialMove:
 		HandleSpecialMoves();
@@ -124,11 +116,11 @@ void ACharacterBase::UpdateAnimations()
 		HandleAttack();
 		break;
 	case AnimationState::ChargingUp:
-		CharacterAnimationComponent->SetFlipbook(ChargingUpAnimation);
+		CurrentFlipbook->SetFlipbook(ChargingUpAnimation);
 		HandleStaminaCharge();
 		break;
 	default:
-		CharacterAnimationComponent->SetFlipbook(IdleAnimation);
+		CurrentFlipbook->SetFlipbook(IdleAnimation);
 		break;
 	}
 }
@@ -139,21 +131,21 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 	{
 		if (bIsSpecialMove)
 		{
-			ECharacterAnimationState = AnimationState::SpecialMove;
+			EAnimationState = AnimationState::SpecialMove;
 		}
 		else if (bIsAttacking)
 		{
-			ECharacterAnimationState = AnimationState::Attacking;
+			EAnimationState = AnimationState::Attacking;
 		}
 		else
 		{
 			if (fabs(characterMovementSpeed) > 0.0f)
 			{
-				ECharacterAnimationState = AnimationState::JumpingForward;
+				EAnimationState = AnimationState::JumpingForward;
 			}
 			else
 			{
-				ECharacterAnimationState = AnimationState::Jumping;
+				EAnimationState = AnimationState::Jumping;
 			}
 		}
 	}
@@ -161,31 +153,31 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 	{
 		if (bIsChargingup)
 		{
-			ECharacterAnimationState = AnimationState::ChargingUp;
+			EAnimationState = AnimationState::ChargingUp;
 		}
 		else if (bIsSpecialMove)
 		{
-			ECharacterAnimationState = AnimationState::SpecialMove;
+			EAnimationState = AnimationState::SpecialMove;
 		}
 		else if (bIsAttacking)
 		{
-			ECharacterAnimationState = AnimationState::Attacking;
+			EAnimationState = AnimationState::Attacking;
 		}
 		else
 		{
 			if (fabs(characterMovementSpeed) > 0.0f)
 			{
-				ECharacterAnimationState = AnimationState::Walking;
+				EAnimationState = AnimationState::Walking;
 			}
 			else
 			{
 				if (bIsDucking)
 				{
-					ECharacterAnimationState = AnimationState::Ducking;
+					EAnimationState = AnimationState::Ducking;
 				}
 				else
 				{
-					ECharacterAnimationState = AnimationState::Idle;
+					EAnimationState = AnimationState::Idle;
 				}
 			}
 		}
@@ -256,7 +248,7 @@ void ACharacterBase::JumpStart()
 	bCanMove = true;
 	bPressedJump = true;
 	ResetAttack();
-	ECharacterAnimationState = AnimationState::Jumping;
+	EAnimationState = AnimationState::Jumping;
 }
 
 void ACharacterBase::JumpStop()
@@ -275,8 +267,7 @@ void ACharacterBase::AttackStart()
 		bCanMove = false;
 	}
 	FVector CurrentLocation = FVector(GetActorLocation().X + 30.f, GetActorLocation().Y, GetActorLocation().Z);
-	HitBoxArea->SetWorldLocation(CurrentLocation);
-	HitBoxArea->SetBoxExtent(FVector(25.f, 32.f, 32.f));
+
 
 	// Animation has to finish, with a little window to input next command
 	if (GetCurrentTime() > AnimationAttackTimeStop - 0.2f)
@@ -297,11 +288,11 @@ void ACharacterBase::AttackStart()
 		}
 		if (Enemies.Num())
 		{
-			if (HitBoxArea->IsOverlappingActor(Enemies[0]))
-			{
-				ACharacterCommon* Enemy = Cast<ACharacterCommon>(Enemies[0]);
-				Enemy->SetDamage(50.f);
-			}
+			/*if (HitBoxArea->IsOverlappingActor(Enemies[0]))
+			{*/
+			ACharacterCommon* Enemy = Cast<ACharacterCommon>(Enemies[0]);
+			Enemy->SetDamage(50.f);
+			//}
 		}
 		AnimationAttackTimeStart = GetCurrentTime();
 	}
@@ -335,23 +326,18 @@ void ACharacterBase::HandleAttack()
 	if (GetCharacterMovement()->IsMovingOnGround())
 	{
 
-		CharacterAnimationComponent->SetFlipbook(AttackingComboAnimation[nAttackNumber]);
+		CurrentFlipbook->SetFlipbook(AttackingComboAnimation[nAttackNumber]);
 	}
 	else
 	{
-		CharacterAnimationComponent->SetFlipbook(JumpingAttack);
+		CurrentFlipbook->SetFlipbook(JumpingAttackAnimation);
 	}
 
-	AnimationAttackTimeStop = AnimationAttackTimeStart + CharacterAnimationComponent->GetFlipbookLength();
+	AnimationAttackTimeStop = AnimationAttackTimeStart + CurrentFlipbook->GetFlipbookLength();
 	if (GetCurrentTime() > AnimationAttackTimeStop)
 	{
 		bIsAttacking = false;
-		ECharacterAnimationState = AnimationState::Idle;
-		if (HitBoxArea)
-		{
-			HitBoxArea->SetWorldLocation(GetActorLocation());
-			HitBoxArea->SetBoxExtent(FVector(0.f, 0.f, 0.f));
-		}
+		EAnimationState = AnimationState::Idle;
 		bCanMove = true;
 	}
 }
@@ -363,14 +349,14 @@ void ACharacterBase::HandleSpecialMoves()
 	{
 		bIsExecutingSpecialMove = true;
 		// Checking if there are enough stamina
-		int bIsEnoughStamina = SpecialMoves[nCurrentSpecialMove].StaminaCost <= PlayerStamina;
+		int bIsEnoughStamina = SpecialMoves[nCurrentSpecialMove].StaminaCost <= Stamina;
 		if (bIsEnoughStamina)
 		{
 			if ((SpecialMoves[nCurrentSpecialMove].CanBeDoneInGround && GetCharacterMovement()->IsMovingOnGround())
 				|| (SpecialMoves[nCurrentSpecialMove].CanBeDoneInAir && !GetCharacterMovement()->IsMovingOnGround()))
 			{
 				ConsumeStamina(SpecialMoves[nCurrentSpecialMove].StaminaCost);
-				CharacterAnimationComponent->SetFlipbook(SpecialMoves[nCurrentSpecialMove].SpecialMoveAnimation);
+				CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].SpecialMoveAnimation);
 				if (SpecialMoves[nCurrentSpecialMove].IsProjectile)
 				{
 					FTimerDelegate TimerDel;
@@ -389,9 +375,9 @@ void ACharacterBase::HandleSpecialMoves()
 		}
 		else
 		{
-			CharacterAnimationComponent->SetFlipbook(SpecialMoves[nCurrentSpecialMove].NoStaminaAnimation);
+			CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].NoStaminaAnimation);
 		}
-		AnimationSpecialTimeStop = AnimationSpecialTimeStart + CharacterAnimationComponent->GetFlipbookLength();
+		AnimationSpecialTimeStop = AnimationSpecialTimeStart + CurrentFlipbook->GetFlipbookLength();
 	}
 	if (GetCurrentTime() > AnimationSpecialTimeStop)
 	{
@@ -416,9 +402,9 @@ void ACharacterBase::HandleProjectile()
 
 void ACharacterBase::HandleStaminaCharge()
 {
-	if (bIsChargingup && GetCurrentTime() > SpecialKeyPressedTimeStart + StaminaChargingSpeedInSeconds)
+	if (bIsChargingup && GetCurrentTime() > SpecialKeyPressedTimeStart + StaminaVelocityChargingInSeconds)
 	{
-		PlayerStamina += StaminaChargingUnit;
+		Stamina += StaminaChargingUnit;
 		SpecialKeyPressedTimeStart = GetCurrentTime();
 	}
 }
@@ -449,8 +435,8 @@ float ACharacterBase::GetCurrentTime()
 // Play states
 void ACharacterBase::SetDamage(float Value)
 {
-	PlayerLife -= Value;
-	if (PlayerLife <= 0.f)
+	Life -= Value;
+	if (Life <= 0.f)
 	{
 		UGameplayStatics::OpenLevel(this, "level_00");
 	}
@@ -458,7 +444,7 @@ void ACharacterBase::SetDamage(float Value)
 
 void ACharacterBase::HealLife(float Value)
 {
-	PlayerLife += Value;
+	Life += Value;
 }
 
 // Buffer
@@ -529,7 +515,7 @@ void ACharacterBase::ClearBuffer()
 // Stamina
 void ACharacterBase::ControlStamina()
 {
-	if (PlayerStamina <= MaxStamina)
+	if (Stamina <= MaxStamina)
 	{
 		bIsChargingup = true;
 	}
@@ -541,5 +527,5 @@ void ACharacterBase::ControlStamina()
 
 void ACharacterBase::ConsumeStamina(float Value)
 {
-	PlayerStamina = PlayerStamina - Value;
+	Stamina = Stamina - Value;
 }

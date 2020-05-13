@@ -17,6 +17,25 @@ void ACharacterCommon::BeginPlay()
 
 }
 
+void ACharacterCommon::ResetAttack()
+{
+}
+
+void ACharacterCommon::UpdateAnimations()
+{
+
+}
+
+void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
+{
+
+}
+
+float ACharacterCommon::GetCurrentTime()
+{
+	return 0.0f;
+}
+
 void ACharacterCommon::SetDamage(float Value)
 {
 

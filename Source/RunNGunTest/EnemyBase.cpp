@@ -13,9 +13,9 @@ AEnemyBase::AEnemyBase()
 
 	this->Tags.Add("Enemy");
 
-	EnemyAnimationComponent = CreateDefaultSubobject<UPaperFlipbookComponent>("EnemyAnimationComponent");
-	EnemyAnimationComponent->SetupAttachment(GetCapsuleComponent());
-	EnemyAnimationComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	CurrentFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("CurrentFlipbook");
+	CurrentFlipbook->SetupAttachment(GetCapsuleComponent());
+	CurrentFlipbook->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	VisibilityArea = CreateDefaultSubobject<USphereComponent>(TEXT("VisibilityArea"));
 	VisibilityArea->InitSphereRadius(300.f);
@@ -36,15 +36,14 @@ AEnemyBase::AEnemyBase()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 
-	EnemyLife = 100.f;
+	Life = 100.f;
 	EnemyStopAttackTime = -1;
 	TimeBetweenAttacks = 1.f;
 	AttackDamage = 10.f;
-	ActorsToIgnore.Add(this);
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(27.131327);
 	GetCapsuleComponent()->SetCapsuleRadius(18.100616);
-	EnemyAnimationComponent->SetWorldLocation(FVector(0, 0, -41));
+	CurrentFlipbook->SetWorldLocation(FVector(0, 0, -41));
 
 	//AEnemyBase::OnActorBeginOverlap.AddDynamic(this, &AEnemyBase::Overlapped);
 }
@@ -84,7 +83,7 @@ void AEnemyBase::Tick(float DeltaTime)
 			toPlayerRotation.Pitch = 0;
 			RootComponent->SetWorldRotation(toPlayerRotation);
 			// Saving hit player position to set the right side to collide
-			HitPlayerPosition = toPlayerRotation.Yaw == 0.f ? 30.f : -30.f;
+			HitBoxOrientation = toPlayerRotation.Yaw == 0.f ? 30.f : -30.f;
 			ControlCharacterAnimations(1.f);
 		}
 		else
@@ -114,7 +113,7 @@ void AEnemyBase::Attack()
 		bIsAttacking = true;
 
 		// Hit box will grow to detect collision
-		FVector CurrentLocation = FVector(GetActorLocation().X + HitPlayerPosition, GetActorLocation().Y, GetActorLocation().Z);
+		FVector CurrentLocation = FVector(GetActorLocation().X + HitBoxOrientation, GetActorLocation().Y, GetActorLocation().Z);
 
 		// Tracing collision
 		FHitResult* HitResult = new FHitResult();
@@ -146,13 +145,13 @@ void AEnemyBase::SetAttackAnimation()
 {
 	if (GetCharacterMovement()->IsMovingOnGround())
 	{
-		EnemyAnimationComponent->SetFlipbook(AttackingAnimation);
+		CurrentFlipbook->SetFlipbook(AttackingAnimation);
 	}
 	else
 	{
-		EnemyAnimationComponent->SetFlipbook(JumpingAttackAnimation);
+		CurrentFlipbook->SetFlipbook(JumpingAttackAnimation);
 	}
-	AnimationAttackTimeStop = AnimationAttackTimeStart + EnemyAnimationComponent->GetFlipbookLength();
+	AnimationAttackTimeStop = AnimationAttackTimeStart + CurrentFlipbook->GetFlipbookLength();
 	EnemyStopAttackTime = AnimationAttackTimeStop;
 	if (GetCurrentTime() > AnimationAttackTimeStop)
 	{
@@ -163,25 +162,25 @@ void AEnemyBase::SetAttackAnimation()
 void AEnemyBase::ResetAttack()
 {
 	bIsAttacking = false;
-	EEnemyAnimationState = AnimationState::Idle;
+	EAnimationState = AnimationState::Idle;
 	bCanMove = true;
 }
 
 void AEnemyBase::UpdateAnimations()
 {
-	switch (EEnemyAnimationState)
+	switch (EAnimationState)
 	{
 	case AnimationState::Idle:
-		EnemyAnimationComponent->SetFlipbook(IdleAnimation);
+		CurrentFlipbook->SetFlipbook(IdleAnimation);
 		break;
 	case AnimationState::Walking:
-		EnemyAnimationComponent->SetFlipbook(WalkingAnimation);
+		CurrentFlipbook->SetFlipbook(WalkingAnimation);
 		break;
 	case AnimationState::Attacking:
 		SetAttackAnimation();
 		break;
 	default:
-		EnemyAnimationComponent->SetFlipbook(IdleAnimation);
+		CurrentFlipbook->SetFlipbook(IdleAnimation);
 		break;
 	}
 }
@@ -192,17 +191,17 @@ void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
 	{
 		if (bIsAttacking)
 		{
-			EEnemyAnimationState = AnimationState::Attacking;
+			EAnimationState = AnimationState::Attacking;
 		}
 		else
 		{
 			if (fabs(characterMovementSpeed) > 0.0f)
 			{
-				EEnemyAnimationState = AnimationState::JumpingForward;
+				EAnimationState = AnimationState::JumpingForward;
 			}
 			else
 			{
-				EEnemyAnimationState = AnimationState::Jumping;
+				EAnimationState = AnimationState::Jumping;
 			}
 		}
 	}
@@ -210,17 +209,17 @@ void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
 	{
 		if (bIsAttacking)
 		{
-			EEnemyAnimationState = AnimationState::Attacking;
+			EAnimationState = AnimationState::Attacking;
 		}
 		else
 		{
 			if (fabs(characterMovementSpeed) > 0.0f)
 			{
-				EEnemyAnimationState = AnimationState::Walking;
+				EAnimationState = AnimationState::Walking;
 			}
 			else
 			{
-				EEnemyAnimationState = AnimationState::Idle;
+				EAnimationState = AnimationState::Idle;
 
 			}
 		}
@@ -244,11 +243,16 @@ void AEnemyBase::HitPlayer()
 
 void AEnemyBase::SetDamage(float Value)
 {
-	EnemyLife -= Value;
-	if (EnemyLife == 0)
+	Life -= Value;
+	if (Life == 0)
 	{
 		Destroy();
 	}
+}
+
+void AEnemyBase::HealLife(float Value)
+{
+	Life += Value;
 }
 
 // Called to bind functionality to input

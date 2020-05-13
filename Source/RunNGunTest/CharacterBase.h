@@ -70,49 +70,16 @@ protected:
 
 	FTimerHandle AttackDelayTimerHandle;
 
-
 public:
 	// Sets default values for this character's properties
 	ACharacterBase();
 
-	TArray<AActor*> Enemies;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		FString CharacterName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		UPaperSprite* CharacterPortrait;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		float PlayerLife;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		float PlayerStamina;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		float MaxStamina = 10.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		float StaminaChargingSpeedInSeconds = 0.05f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		float StaminaChargingUnit = 0.1f;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		UBoxComponent* HitBoxArea;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character State")
-		bool bIsMovingRight;
 	UPROPERTY()
-		bool bCanMove = true;
-	UPROPERTY()
-		bool bIsDucking;
-	UPROPERTY()
-		bool bIsAttacking;
+		TArray<AActor*> Enemies;
+
+	// Character Movement
 	UPROPERTY()
 		bool bIsSpecialMove;
-	UPROPERTY()
-		bool bIsChargingup;
 	UPROPERTY()
 		bool bIsExecutingSpecialMove;
 	UPROPERTY()
@@ -121,6 +88,8 @@ public:
 		bool bIsDirectionPressed;
 	UPROPERTY()
 		int8 nAttackNumber = 0;
+
+	// Animation Times
 	UPROPERTY()
 		float AnimationAttackTimeStart;
 	UPROPERTY()
@@ -129,6 +98,8 @@ public:
 		float AnimationSpecialTimeStart;
 	UPROPERTY()
 		float AnimationSpecialTimeStop;
+
+	// Key Pressing Times
 	UPROPERTY()
 		float AttackKeyPressedTimeStart;
 	UPROPERTY()
@@ -137,48 +108,23 @@ public:
 		float SpecialKeyPressedTimeStart;
 	UPROPERTY()
 		float SpecialKeyPressedTimeStop;
+
+	// Timers
 	UPROPERTY()
 		FTimerHandle TimerLagProjectile;
-
 	UPROPERTY()
 		FTimerHandle GlobalTimerHandle;
 
 	UPROPERTY()
 		TArray<int32> BufferedInput;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character State")
-		TEnumAsByte<AnimationState> ECharacterAnimationState = AnimationState::Idle;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character State")
-		UArrowComponent* CharacterArrowComponent;
 	// Flip books
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Animations")
-		UPaperFlipbookComponent* CharacterAnimationComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		UPaperFlipbook* IdleAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		UPaperFlipbook* WalkingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		UPaperFlipbook* JumpingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		UPaperFlipbook* JumpingForwardAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		UPaperFlipbook* JumpingAttack;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		UPaperFlipbook* DuckingAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
 		UPaperFlipbook* ChargingUpAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
 		TArray<UPaperFlipbook*> AttackingComboAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
 		TArray<FSpecialMoveStruct> SpecialMoves;
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 
 	// Movement related
 	UFUNCTION()
@@ -200,6 +146,7 @@ public:
 	UFUNCTION()
 		void JumpStop();
 
+	// Attacking related
 	UFUNCTION()
 		void AttackStart();
 
@@ -215,6 +162,8 @@ public:
 	UFUNCTION()
 		void HandleAttack();
 
+	void ResetAttack();
+
 	UFUNCTION()
 		void HandleSpecialMoves();
 
@@ -228,24 +177,10 @@ public:
 		void StopHandleStaminaCharge();
 
 	UFUNCTION()
-		void ResetAttack();
-
-	// Other stuff
-	UFUNCTION()
-		void UpdateAnimations();
-
-	UFUNCTION()
-		void ControlCharacterAnimations(float characterMovementSpeed);
-
-	UFUNCTION()
-		float GetCurrentTime();
-
-	void SetDamage(float Value);
-
-	void HealLife(float Value);
-
-	UFUNCTION()
 		void ConsumeStamina(float Value);
+
+	UFUNCTION()
+		void ControlStamina();
 
 	// Buffer input related
 	UFUNCTION()
@@ -260,6 +195,20 @@ public:
 	UFUNCTION()
 		void ClearBuffer();
 
-	UFUNCTION()
-		void ControlStamina();
+	// Animations
+	void UpdateAnimations();
+	void ControlCharacterAnimations(float characterMovementSpeed);
+
+	// -- Health related
+	void SetDamage(float Value);
+	void HealLife(float Value);
+
+	float GetCurrentTime();
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 };

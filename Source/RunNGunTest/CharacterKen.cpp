@@ -16,7 +16,7 @@ ACharacterKen::ACharacterKen()
 	GetCharacterMovement()->AirControl = 0.8;
 	GetCapsuleComponent()->SetCapsuleHalfHeight(27.131327);
 	GetCapsuleComponent()->SetCapsuleRadius(18.100616);
-	CharacterAnimationComponent->SetWorldLocation(FVector(0, 0, -31));
+	CurrentFlipbook->SetWorldLocation(FVector(0, 0, -31));
 }
 
 // Called when the game starts or when spawned

@@ -2,6 +2,7 @@
 
 
 #include "EnemyBase.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 // Sets default values
@@ -15,31 +16,37 @@ AEnemyBase::AEnemyBase()
 	EnemyAnimationComponent = CreateDefaultSubobject<UPaperFlipbookComponent>("EnemyAnimationComponent");
 	EnemyAnimationComponent->SetupAttachment(GetCapsuleComponent());
 	EnemyAnimationComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	VisibilityArea = CreateDefaultSubobject<USphereComponent>(TEXT("VisibilityArea"));
-	VisibilityArea->InitSphereRadius(200.f);
-	VisibilityArea->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	HitArea = CreateDefaultSubobject<USphereComponent>(TEXT("EnemyHitCollision"));
-	HitArea->InitSphereRadius(50.f);
-	HitArea->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
+	VisibilityArea = CreateDefaultSubobject<USphereComponent>(TEXT("VisibilityArea"));
+	VisibilityArea->InitSphereRadius(300.f);
+	VisibilityArea->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	HitArea = CreateDefaultSubobject<USphereComponent>(TEXT("EnemyHitCollision"));
+	HitArea->InitSphereRadius(75.f);
+	HitArea->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	// Setting default character movement's params
 	GetCharacterMovement()->MaxAcceleration = 5000;
 	GetCharacterMovement()->GroundFriction = 20;
 	GetCharacterMovement()->MaxWalkSpeed = 300;
-	GetCharacterMovement()->MaxWalkSpeedCrouched = 50;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = 110;
 	GetCharacterMovement()->JumpZVelocity = 500;
 	GetCharacterMovement()->BrakingDecelerationFalling = 5000;
 	GetCharacterMovement()->AirControl = 0.8;
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
+
 	EnemyLife = 100.f;
 	EnemyStopAttackTime = -1;
 	TimeBetweenAttacks = 1.f;
+	AttackDamage = 10.f;
+	ActorsToIgnore.Add(this);
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(27.131327);
 	GetCapsuleComponent()->SetCapsuleRadius(18.100616);
 	EnemyAnimationComponent->SetWorldLocation(FVector(0, 0, -41));
+
+	//AEnemyBase::OnActorBeginOverlap.AddDynamic(this, &AEnemyBase::Overlapped);
 }
 
 // Called when the game starts or when spawned
@@ -62,10 +69,8 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!Player)
-	{
-		Player = Cast<ACharacterBase>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	}
+	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
 	if (VisibilityArea->IsOverlappingActor(Player))
 	{
 		// Depending on distance from player, attack, follow him or wait
@@ -78,6 +83,8 @@ void AEnemyBase::Tick(float DeltaTime)
 			FRotator toPlayerRotation = toPlayer.Rotation();
 			toPlayerRotation.Pitch = 0;
 			RootComponent->SetWorldRotation(toPlayerRotation);
+			// Saving hit player position to set the right side to collide
+			HitPlayerPosition = toPlayerRotation.Yaw == 0.f ? 30.f : -30.f;
 			ControlCharacterAnimations(1.f);
 		}
 		else
@@ -87,13 +94,12 @@ void AEnemyBase::Tick(float DeltaTime)
 
 		if (HitArea->IsOverlappingActor(Player))
 		{
-			AttackStart();
+			Attack();
 		}
 		else
 		{
 			ResetAttack();
 		}
-
 	}
 	else
 	{
@@ -101,31 +107,42 @@ void AEnemyBase::Tick(float DeltaTime)
 	}
 }
 
-void AEnemyBase::AttackStart()
+void AEnemyBase::Attack()
 {
 	if (EnemyStopAttackTime + TimeBetweenAttacks < GetCurrentTime())
 	{
 		bIsAttacking = true;
+
+		// Hit box will grow to detect collision
+		FVector CurrentLocation = FVector(GetActorLocation().X + HitPlayerPosition, GetActorLocation().Y, GetActorLocation().Z);
+
+		// Tracing collision
+		FHitResult* HitResult = new FHitResult();
+
+		if (UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentLocation, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true))
+		{
+
+			DrawDebugLine(GetWorld(), GetActorLocation(), CurrentLocation, FColor::Blue, true);
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Hit: %s"), *HitResult->Actor->GetName()));
+			HitPlayer();
+		}
+
 		EnemyStartAttackTime = GetCurrentTime();
 
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
 			bCanMove = false;
-			HitPlayer(10.f);
 		}
 		// Animation has to finish, with a little window to input next command
-		if (GetCurrentTime() > AnimationAttackTimeStop)
+		if (GetCurrentTime() > AnimationAttackTimeStop && GetCharacterMovement()->IsMovingOnGround())
 		{
-			if (GetCharacterMovement()->IsMovingOnGround())
-			{
-				bCanMove = true;
-			}
+			bCanMove = true;
 		}
 		AnimationAttackTimeStart = GetCurrentTime();
 	}
 }
 
-void AEnemyBase::HandleAttack()
+void AEnemyBase::SetAttackAnimation()
 {
 	if (GetCharacterMovement()->IsMovingOnGround())
 	{
@@ -161,7 +178,7 @@ void AEnemyBase::UpdateAnimations()
 		EnemyAnimationComponent->SetFlipbook(WalkingAnimation);
 		break;
 	case AnimationState::Attacking:
-		HandleAttack();
+		SetAttackAnimation();
 		break;
 	default:
 		EnemyAnimationComponent->SetFlipbook(IdleAnimation);
@@ -220,9 +237,9 @@ float AEnemyBase::GetCurrentTime()
 	return 0.f;
 }
 
-void AEnemyBase::HitPlayer(float Value)
+void AEnemyBase::HitPlayer()
 {
-	Player->HitPlayer(Value);
+	Player->SetDamage(AttackDamage);
 }
 
 void AEnemyBase::SetDamage(float Value)

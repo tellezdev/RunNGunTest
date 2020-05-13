@@ -4,24 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Engine.h"
+#include "CharacterCommon.h"
 #include "GameFramework/Character.h"
 #include "PaperCharacter.h"
 #include "PaperSpriteComponent.h"
 #include "PaperFlipbookComponent.h"
+//#include "EnemyBase.h"
 #include "CharacterBase.generated.h"
 
-UENUM(BlueprintType)
-enum AnimationState
-{
-	Idle,
-	Jumping,
-	JumpingForward,
-	Walking,
-	Ducking,
-	Attacking,
-	SpecialMove,
-	ChargingUp
-};
 
 UENUM(BlueprintType)
 enum KeyInput
@@ -70,7 +60,7 @@ public:
 };
 
 UCLASS()
-class RUNNGUNTEST_API ACharacterBase : public ACharacter
+class RUNNGUNTEST_API ACharacterBase : public ACharacterCommon
 {
 	GENERATED_BODY()
 
@@ -84,6 +74,8 @@ protected:
 public:
 	// Sets default values for this character's properties
 	ACharacterBase();
+
+	TArray<AActor*> Enemies;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		FString CharacterName;
@@ -105,6 +97,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float StaminaChargingUnit = 0.1f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UBoxComponent* HitBoxArea;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character State")
 		bool bIsMovingRight;
@@ -245,8 +240,9 @@ public:
 	UFUNCTION()
 		float GetCurrentTime();
 
-	UFUNCTION(BlueprintCallable)
-		void HitPlayer(float Value);
+	void SetDamage(float Value);
+
+	void HealLife(float Value);
 
 	UFUNCTION()
 		void ConsumeStamina(float Value);

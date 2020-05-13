@@ -13,12 +13,16 @@ ACharacterBase::ACharacterBase()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	this->Tags.Add("Player");
 
 	CharacterArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("CharacterArrowComponent"));
-	CharacterArrowComponent->SetupAttachment(GetArrowComponent()); // Not working, to study...
-	//CharacterArrowComponent->SetWorldLocation(GetActorLocation());
+	CharacterArrowComponent->SetupAttachment(GetArrowComponent());
 	CharacterAnimationComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("CharacterAnimationComponent"));
 	CharacterAnimationComponent->SetupAttachment(GetCapsuleComponent());
+	HitBoxArea = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBoxArea"));
+	HitBoxArea->SetWorldLocation(GetActorLocation());
+	HitBoxArea->SetBoxExtent(FVector(0.f, 0.f, 0.f));
+	HitBoxArea->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	// Setting default character movement's params
 	GetCharacterMovement()->MaxAcceleration = 5000;
@@ -30,6 +34,8 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->AirControl = 0.8;
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
+
+
 	PlayerLife = 100.f;
 	PlayerStamina = MaxStamina;
 
@@ -268,9 +274,14 @@ void ACharacterBase::AttackStart()
 	{
 		bCanMove = false;
 	}
+	FVector CurrentLocation = FVector(GetActorLocation().X + 30.f, GetActorLocation().Y, GetActorLocation().Z);
+	HitBoxArea->SetWorldLocation(CurrentLocation);
+	HitBoxArea->SetBoxExtent(FVector(25.f, 32.f, 32.f));
+
 	// Animation has to finish, with a little window to input next command
 	if (GetCurrentTime() > AnimationAttackTimeStop - 0.2f)
 	{
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(), "Enemy", Enemies);
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
 			// If attack is pressed continuously, it will be a combo
@@ -282,9 +293,15 @@ void ACharacterBase::AttackStart()
 			else
 			{
 				++nAttackNumber;
-				//AEnemyBase::EnemyCharacter->SetDamage(10.f);
 			}
-
+		}
+		if (Enemies.Num())
+		{
+			if (HitBoxArea->IsOverlappingActor(Enemies[0]))
+			{
+				ACharacterCommon* Enemy = Cast<ACharacterCommon>(Enemies[0]);
+				Enemy->SetDamage(50.f);
+			}
 		}
 		AnimationAttackTimeStart = GetCurrentTime();
 	}
@@ -330,6 +347,11 @@ void ACharacterBase::HandleAttack()
 	{
 		bIsAttacking = false;
 		ECharacterAnimationState = AnimationState::Idle;
+		if (HitBoxArea)
+		{
+			HitBoxArea->SetWorldLocation(GetActorLocation());
+			HitBoxArea->SetBoxExtent(FVector(0.f, 0.f, 0.f));
+		}
 		bCanMove = true;
 	}
 }
@@ -425,13 +447,18 @@ float ACharacterBase::GetCurrentTime()
 }
 
 // Play states
-void ACharacterBase::HitPlayer(float Value)
+void ACharacterBase::SetDamage(float Value)
 {
 	PlayerLife -= Value;
 	if (PlayerLife <= 0.f)
 	{
 		UGameplayStatics::OpenLevel(this, "level_00");
 	}
+}
+
+void ACharacterBase::HealLife(float Value)
+{
+	PlayerLife += Value;
 }
 
 // Buffer

@@ -4,22 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Engine.h"
+#include "CharacterCommon.h"
 #include "GameFramework/Character.h"
 #include "PaperSprite.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
-#include "CharacterBase.h"
 #include "EnemyBase.generated.h"
 
+
 UCLASS()
-class RUNNGUNTEST_API AEnemyBase : public ACharacter
+class RUNNGUNTEST_API AEnemyBase : public ACharacterCommon
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AEnemyBase();
-	ACharacterBase* Player;
+
+	ACharacterCommon* Player;
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,6 +37,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Data")
 		float EnemyLife;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Data")
+		float AttackDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy State")
 		bool bIsMovingRight;
@@ -53,6 +58,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Data")
 		float TimeBetweenAttacks;
 
+	TArray<AActor*> ActorsToIgnore;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy State")
 		TEnumAsByte<AnimationState> EEnemyAnimationState = AnimationState::Idle;
 
@@ -60,6 +67,8 @@ public:
 		USphereComponent* VisibilityArea;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		USphereComponent* HitArea;
+	UPROPERTY()
+		float HitPlayerPosition;
 
 	// Flip books
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Enemy Animations")
@@ -75,10 +84,10 @@ public:
 
 
 	// Movement related
+	UFUNCTION(BlueprintCallable)
+		void Attack();
 	UFUNCTION()
-		void AttackStart();
-	UFUNCTION()
-		void HandleAttack();
+		void SetAttackAnimation();
 	UFUNCTION()
 		void ResetAttack();
 
@@ -93,9 +102,9 @@ public:
 		float GetCurrentTime();
 
 	UFUNCTION(BlueprintCallable)
-		void HitPlayer(float Value);
-	UFUNCTION(BlueprintCallable)
-		void SetDamage(float Value);
+		void HitPlayer();
+
+	void SetDamage(float Value);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

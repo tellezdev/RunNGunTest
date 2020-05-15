@@ -31,8 +31,9 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 
-	AttackKeyPressedTimeStart = -1;
-	SpecialKeyPressedTimeStart = -1;
+	SpecialKeyPressedTimeStart = -1.f;
+	AnimationFlipbookTimeStop = -1.f;
+	AnimationAttackCompleteTimeStop = -1.f;
 }
 
 // Called when the game starts or when spawned
@@ -40,15 +41,8 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("RNGCharacter loaded"));
-		if (CharacterArrowComponent)
-		{
-			FString debug0 = FString::Printf(TEXT("Arrow loaded"));
-			GEngine->AddOnScreenDebugMessage(10, 3.0f, FColor::Red, debug0);
-		}
-	}
+	SetAnimationFlags();
+	ResetAnimationFlags();
 }
 
 // Called every frame
@@ -58,9 +52,12 @@ void ACharacterBase::Tick(float DeltaTime)
 
 	// Sets where the sprite has to face
 	float yaw = 0.0f;
+	// Saving hit player position to set the right side to collide
+	HitBoxOrientation = 30.f;
 	if (!bIsMovingRight)
 	{
 		yaw = 180.0f;
+		HitBoxOrientation = -30.f;
 	}
 	FRotator* rotation = new FRotator(0.0f, yaw, 1.0f);
 	GetController()->SetControlRotation(*rotation);
@@ -69,6 +66,11 @@ void ACharacterBase::Tick(float DeltaTime)
 	if (SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime())
 	{
 		ControlStamina();
+	}
+
+	if (AnimationFlipbookTimeStop > GetCurrentTime())
+	{
+		HandleAttack();
 	}
 }
 
@@ -259,42 +261,34 @@ void ACharacterBase::JumpStop()
 
 void ACharacterBase::AttackStart()
 {
-	AttackKeyPressedTimeStart = GetCurrentTime();
 	bIsAttacking = true;
 	InsertInputBuffer(KeyInput::Attack);
-	if (GetCharacterMovement()->IsMovingOnGround())
-	{
-		bCanMove = false;
-	}
-	FVector CurrentLocation = FVector(GetActorLocation().X + 30.f, GetActorLocation().Y, GetActorLocation().Z);
-
 
 	// Animation has to finish, with a little window to input next command
-	if (GetCurrentTime() > AnimationAttackTimeStop - 0.2f)
+	if (bIsAnimationAttackComplete && AnimationAttackCompleteTimeStop + 1.f > GetCurrentTime())
 	{
-		UGameplayStatics::GetAllActorsWithTag(GetWorld(), "Enemy", Enemies);
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
-			// If attack is pressed continuously, it will be a combo
-			if (AnimationAttackTimeStop < GetCurrentTime() || nAttackNumber >= AttackingComboAnimation.Num() - 1)
+			bCanMove = false;
+			// If attack is pressed continuously, it will be a combo 
+			if (nAttackNumber >= AttackingComboAnimation.Num() - 1)
 			{
 				ResetAttack();
 				bCanMove = true;
+				ClearBuffer();
 			}
 			else
 			{
 				++nAttackNumber;
+				CurrentAttackHasHitObjective = false;
 			}
-		}
-		if (Enemies.Num())
-		{
-			/*if (HitBoxArea->IsOverlappingActor(Enemies[0]))
-			{*/
-			ACharacterCommon* Enemy = Cast<ACharacterCommon>(Enemies[0]);
-			Enemy->SetDamage(50.f);
-			//}
-		}
-		AnimationAttackTimeStart = GetCurrentTime();
+		}		
+	}
+	else if (AnimationAttackCompleteTimeStop + 0.5f < GetCurrentTime())
+	{
+		ResetAttack();
+		bCanMove = true;
+		ClearBuffer();
 	}
 }
 
@@ -323,22 +317,26 @@ void ACharacterBase::SpecialStop()
 // Handling actions
 void ACharacterBase::HandleAttack()
 {
-	if (GetCharacterMovement()->IsMovingOnGround())
+	// Only enter when animation is done
+	if (AnimationFlipbookTimeStop <= GetCurrentTime())
 	{
-
-		CurrentFlipbook->SetFlipbook(AttackingComboAnimation[nAttackNumber]);
+		if (GetCharacterMovement()->IsMovingOnGround())
+		{
+			DoCombo(AttackingComboAnimation);
+		}
+		else
+		{
+			DoCombo(AttackingJumpingAnimation);
+		}
 	}
-	else
-	{
-		CurrentFlipbook->SetFlipbook(JumpingAttackAnimation);
-	}
 
-	AnimationAttackTimeStop = AnimationAttackTimeStart + CurrentFlipbook->GetFlipbookLength();
-	if (GetCurrentTime() > AnimationAttackTimeStop)
+	if (AnimationAttackCompleteTimeStop < GetCurrentTime())
 	{
 		bIsAttacking = false;
+		CurrentAttackHasHitObjective = false;
 		EAnimationState = AnimationState::Idle;
 		bCanMove = true;
+		ResetAnimationFlags();
 	}
 }
 
@@ -421,6 +419,29 @@ void ACharacterBase::StopHandleStaminaCharge()
 void ACharacterBase::ResetAttack()
 {
 	nAttackNumber = 0;
+	nCurrentComboHit = 0;
+	ResetAnimationFlags();
+}
+
+void ACharacterBase::SetAnimationFlags()
+{
+	for (FComboAttackStruct combo : AttackingComboAnimation)
+	{
+		FComboAnimationFlags element;
+		for (FComboAttackHitsStruct hit : combo.AttackAnimationHits)
+		{
+			element.bIsComboHits.Add(false);
+		}
+		element.bIsComboStart = false;
+		element.bIsComboEnd = false;
+		ComboAnimationFlags.Add(element);
+	}
+}
+
+void ACharacterBase::ResetAnimationFlags()
+{
+	ComboAnimationFlags.Empty();
+	SetAnimationFlags();
 }
 
 float ACharacterBase::GetCurrentTime()
@@ -510,6 +531,7 @@ TArray<int32> ACharacterBase::GetBufferedInput()
 void ACharacterBase::ClearBuffer()
 {
 	BufferedInput.Empty();
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Buffer cleared"));
 }
 
 // Stamina
@@ -528,4 +550,71 @@ void ACharacterBase::ControlStamina()
 void ACharacterBase::ConsumeStamina(float Value)
 {
 	Stamina = Stamina - Value;
+}
+
+void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
+{
+	// Hit box will grow to detect collision
+	FVector CurrentLocation = FVector(GetActorLocation().X + HitBoxOrientation, GetActorLocation().Y, GetActorLocation().Z);
+
+	// Tracing collision
+	FHitResult* HitResult = new FHitResult();
+	if (!CurrentAttackHasHitObjective && UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentLocation, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true, FLinearColor::Red, FLinearColor::Green, 0.5f))
+	{
+		/*GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::White, FString::Printf(TEXT("%s, Damage: %f"), *HitResult->Actor->GetName(), Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].DamageValue));*/
+		if (&HitResult->Actor)
+		{
+			ACharacterCommon* EnemyCasted = Cast<ACharacterCommon>(HitResult->Actor);
+			EnemyCasted->SetDamage(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].DamageValue);
+			if (nCurrentComboHit >= Combo[nAttackNumber].AttackAnimationHits.Num())
+			{
+				CurrentAttackHasHitObjective = true;
+			}
+		}
+	}
+}
+
+void ACharacterBase::DoCombo(TArray<FComboAttackStruct> Combo)
+{
+	bool bIsComboDone = true;
+	for (bool ComboIsDone : ComboAnimationFlags[nAttackNumber].bIsComboHits)
+	{
+		if (!ComboIsDone)
+		{
+			bIsComboDone = false;
+		}
+	}
+
+	if (!ComboAnimationFlags[nAttackNumber].bIsComboStart)
+	{
+		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationStart);
+		ComboAnimationFlags[nAttackNumber].bIsComboStart = true;
+		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		bIsAnimationAttackComplete = false;
+
+	}
+	else if (bIsComboDone && !ComboAnimationFlags[nAttackNumber].bIsComboEnd)
+	{
+		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationEnd);
+		ComboAnimationFlags[nAttackNumber].bIsComboEnd = true;
+		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		bIsAnimationAttackComplete = true;
+	}
+	else
+	{
+		if (!ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit])
+		{
+			CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].AttackAnimationHit);
+			ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit] = true;
+			AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+			AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+			ApplyHitCollide(Combo);
+		}
+		if (nCurrentComboHit < ComboAnimationFlags[nAttackNumber].bIsComboHits.Num() - 1)
+		{
+			++nCurrentComboHit;
+		}
+	}
 }

@@ -48,8 +48,6 @@ public:
 		USphereComponent* VisibilityArea;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Collision Areas")
 		USphereComponent* HitArea;
-	UPROPERTY()
-		float HitBoxOrientation;
 
 
 	// Movement related

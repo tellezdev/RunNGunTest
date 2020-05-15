@@ -31,6 +31,14 @@ void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 
 }
 
+void ACharacterCommon::SetAnimationFlags()
+{
+}
+
+void ACharacterCommon::ResetAnimationFlags()
+{
+}
+
 float ACharacterCommon::GetCurrentTime()
 {
 	return 0.0f;
@@ -42,6 +50,14 @@ void ACharacterCommon::SetDamage(float Value)
 }
 
 void ACharacterCommon::HealLife(float Value)
+{
+}
+
+void ACharacterCommon::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
+{
+}
+
+void ACharacterCommon::DoCombo(TArray<FComboAttackStruct> Combo)
 {
 }
 

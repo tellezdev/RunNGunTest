@@ -29,7 +29,6 @@ enum KeyInput
 	Special = 11
 };
 
-
 USTRUCT(BlueprintType)
 struct FSpecialMoveStruct
 {
@@ -53,6 +52,9 @@ public:
 		bool CanBeDoneInAir;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DamageValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* SpecialMoveAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -74,10 +76,10 @@ public:
 	// Sets default values for this character's properties
 	ACharacterBase();
 
-	UPROPERTY()
-		TArray<AActor*> Enemies;
+	/*UPROPERTY()
+		TArray<AActor*> Enemies;*/
 
-	// Character Movement
+		// Character Movement
 	UPROPERTY()
 		bool bIsSpecialMove;
 	UPROPERTY()
@@ -88,16 +90,20 @@ public:
 		bool bIsDirectionPressed;
 	UPROPERTY()
 		int8 nAttackNumber = 0;
+	UPROPERTY()
+		int8 nCurrentComboHit = 0;
 
 	// Animation Times
 	UPROPERTY()
-		float AnimationAttackTimeStart;
+		float AnimationAttackCompleteTimeStop;
 	UPROPERTY()
-		float AnimationAttackTimeStop;
+		float AnimationFlipbookTimeStop;
 	UPROPERTY()
 		float AnimationSpecialTimeStart;
 	UPROPERTY()
 		float AnimationSpecialTimeStop;
+	UPROPERTY()
+		bool bIsAnimationAttackComplete = true;
 
 	// Key Pressing Times
 	UPROPERTY()
@@ -122,9 +128,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
 		UPaperFlipbook* ChargingUpAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		TArray<UPaperFlipbook*> AttackingComboAnimation;
+		TArray<FComboAttackStruct> AttackingComboAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+		TArray<FComboAttackStruct> AttackingJumpingAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+		TArray<FComboAttackStruct> AttackingCrouchingAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
 		TArray<FSpecialMoveStruct> SpecialMoves;
+
+	UPROPERTY()
+		TArray<FComboAnimationFlags> ComboAnimationFlags;
 
 	// Movement related
 	UFUNCTION()
@@ -163,6 +176,14 @@ public:
 		void HandleAttack();
 
 	void ResetAttack();
+
+	void SetAnimationFlags();
+
+	void ResetAnimationFlags();
+
+	void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
+
+	void DoCombo(TArray<FComboAttackStruct> Combo);
 
 	UFUNCTION()
 		void HandleSpecialMoves();

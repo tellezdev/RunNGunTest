@@ -25,6 +25,67 @@ enum AnimationState
 	ChargingUp
 };
 
+USTRUCT()
+struct FComboAnimationFlags
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+		bool bIsComboStart = false;
+	UPROPERTY()
+		TArray<bool> bIsComboHits;
+	UPROPERTY()
+		bool bIsComboEnd = false;
+};
+
+USTRUCT(BlueprintType)
+struct FComboAttackHitsStruct
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AttackAnimationHit;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DamageValue;
+};
+
+USTRUCT(BlueprintType)
+struct FComboAttackStruct
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<int32> Directions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool IsChargeable; // TODO
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool IsProjectile; // TODO
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool CanBeDoneInGround;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool CanBeDoneInAir;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DamageValue;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AttackAnimationStart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FComboAttackHitsStruct> AttackAnimationHits;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AttackAnimationEnd;
+
+};
+
 UCLASS()
 class RUNNGUNTEST_API ACharacterCommon : public ACharacter
 {
@@ -59,6 +120,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float StaminaChargingUnit = 0.1f;
+
+	UPROPERTY()
+		float HitBoxOrientation = 30.f;
+	UPROPERTY()
+		bool CurrentAttackHasHitObjective = false;
 
 	// Character Movement
 	UPROPERTY()
@@ -111,6 +177,12 @@ public:
 		virtual void ControlCharacterAnimations(float characterMovementSpeed);
 
 	UFUNCTION()
+		virtual void SetAnimationFlags();
+
+	UFUNCTION()
+		virtual void ResetAnimationFlags();
+
+	UFUNCTION()
 		virtual float GetCurrentTime();
 
 	UFUNCTION(BlueprintCallable)
@@ -118,4 +190,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		virtual void HealLife(float Value);
+
+	UFUNCTION()
+		virtual void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
+
+	UFUNCTION()
+		virtual void DoCombo(TArray<FComboAttackStruct> Combo);
 };

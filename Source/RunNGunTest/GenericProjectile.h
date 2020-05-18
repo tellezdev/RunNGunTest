@@ -7,7 +7,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "CharacterBase.h"
+#include "EnemyBase.h"
 #include "GenericProjectile.generated.h"
 
 UCLASS()
@@ -19,6 +19,8 @@ public:
 	// Sets default values for this actor's properties
 	AGenericProjectile();
 
+	AEnemyBase* Enemy;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,6 +29,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY()
+		bool bHasHit = false;
+
+	UPROPERTY()
+		float AnimationTimeEnd;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Damage;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UProjectileMovementComponent* ProjectileMovement;
 
@@ -34,10 +45,13 @@ public:
 		UPaperFlipbookComponent* ProjectilePaperFlipbook;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UCapsuleComponent* ProjectileCapsule;
+		UPaperFlipbook* ProjectileLoopPaperFlipbook;
 
-	UPROPERTY()
-		ACharacterBase* PlayerCharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* ProjectileEndPaperFlipbook;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UCapsuleComponent* ProjectileCapsule;
 
 	UFUNCTION()
 		void BeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -47,6 +61,9 @@ public:
 						  bool bFromSweep,
 						  const FHitResult& SweepResult);
 
+	UFUNCTION(BlueprintCallable)
+		void DestroyProjectile();
 
-
+	UFUNCTION()
+		float GetCurrentTime();
 };

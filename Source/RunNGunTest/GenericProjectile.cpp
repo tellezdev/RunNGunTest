@@ -25,12 +25,19 @@ AGenericProjectile::AGenericProjectile()
 void AGenericProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ProjectilePaperFlipbook->SetFlipbook(ProjectileLoopPaperFlipbook);
 }
 
 // Called every frame
 void AGenericProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bHasHit && AnimationTimeEnd < GetCurrentTime())
+	{
+		this->Destroy();
+	}
 }
 
 void AGenericProjectile::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -40,13 +47,40 @@ void AGenericProjectile::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
 									  bool bFromSweep,
 									  const FHitResult& SweepResult)
 {
-	if (OtherActor->ActorHasTag("Projectileable"))
+	if (OtherActor->ActorHasTag("Scenario") || OtherActor->ActorHasTag("Enemy"))
 	{
-
 		FString debug0 = FString::Printf(TEXT("Actor: %s"), *OtherActor->GetName());
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Orange, debug0);
-		/*FString debug0 = FString::Printf(TEXT("Ball overlapped!"));
-		GEngine->AddOnScreenDebugMessage(0, 3.0f, FColor::Red, debug0);*/
-		this->Destroy();
+		if (OtherActor->ActorHasTag("Enemy"))
+		{
+			Enemy = Cast<AEnemyBase>(OtherActor);
+			if (Enemy->GetCapsuleComponent()->IsOverlappingComponent(OverlappedComponent))
+			{
+				Enemy->SetDamage(Damage);
+				DestroyProjectile();
+			}
+		}
+		else
+		{
+			DestroyProjectile();
+		}
 	}
+}
+
+void AGenericProjectile::DestroyProjectile()
+{
+	bHasHit = true;
+	ProjectileMovement->StopMovementImmediately();
+	ProjectilePaperFlipbook->SetFlipbook(ProjectileEndPaperFlipbook);
+	AnimationTimeEnd = GetCurrentTime() + ProjectilePaperFlipbook->GetFlipbookLength();
+	ProjectilePaperFlipbook->SetLooping(false);
+}
+
+float AGenericProjectile::GetCurrentTime()
+{
+	if (GetWorld())
+	{
+		return GetWorld()->GetRealTimeSeconds();
+	}
+	return 0.f;
 }

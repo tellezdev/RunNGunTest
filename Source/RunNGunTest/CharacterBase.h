@@ -76,10 +76,8 @@ public:
 	// Sets default values for this character's properties
 	ACharacterBase();
 
-	/*UPROPERTY()
-		TArray<AActor*> Enemies;*/
 
-		// Character Movement
+	// Character Movement
 	UPROPERTY()
 		bool bIsSpecialMove;
 	UPROPERTY()
@@ -88,22 +86,12 @@ public:
 		int8 nCurrentSpecialMove = 0;
 	UPROPERTY()
 		bool bIsDirectionPressed;
-	UPROPERTY()
-		int8 nAttackNumber = 0;
-	UPROPERTY()
-		int8 nCurrentComboHit = 0;
 
 	// Animation Times
-	UPROPERTY()
-		float AnimationAttackCompleteTimeStop;
-	UPROPERTY()
-		float AnimationFlipbookTimeStop;
 	UPROPERTY()
 		float AnimationSpecialTimeStart;
 	UPROPERTY()
 		float AnimationSpecialTimeStop;
-	UPROPERTY()
-		bool bIsAnimationAttackComplete = true;
 
 	// Key Pressing Times
 	UPROPERTY()
@@ -118,6 +106,7 @@ public:
 	// Timers
 	UPROPERTY()
 		FTimerHandle TimerLagProjectile;
+
 	UPROPERTY()
 		FTimerHandle GlobalTimerHandle;
 
@@ -125,19 +114,11 @@ public:
 		TArray<int32> BufferedInput;
 
 	// Flip books
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Other")
 		UPaperFlipbook* ChargingUpAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		TArray<FComboAttackStruct> AttackingComboAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		TArray<FComboAttackStruct> AttackingJumpingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		TArray<FComboAttackStruct> AttackingCrouchingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Special Moves")
 		TArray<FSpecialMoveStruct> SpecialMoves;
 
-	UPROPERTY()
-		TArray<FComboAnimationFlags> ComboAnimationFlags;
 
 	// Movement related
 	UFUNCTION()
@@ -172,7 +153,6 @@ public:
 	UFUNCTION()
 		void SpecialStop();
 
-	UFUNCTION()
 		void HandleAttack();
 
 	void ResetAttack();

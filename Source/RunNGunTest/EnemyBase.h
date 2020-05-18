@@ -43,6 +43,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Times")
 		float TimeBetweenAttacks;
 
+	bool bIsAttacking = false;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Collision Areas")
 		USphereComponent* VisibilityArea;
@@ -52,7 +54,14 @@ public:
 
 	// Movement related
 	UFUNCTION(BlueprintCallable)
-		void Attack();
+		void AttackStart();
+
+	void HandleAttack();
+
+	void DoCombo(TArray<FComboAttackStruct> Combo);
+
+	void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
+
 	UFUNCTION()
 		void SetAttackAnimation();
 
@@ -64,11 +73,13 @@ public:
 
 	float GetCurrentTime();
 
-	UFUNCTION(BlueprintCallable)
-		void HitPlayer();
-
 	void SetDamage(float Value);
 	void HealLife(float Value);
+
+	void SetAnimationFlags();
+
+	void ResetAnimationFlags();
+
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -45,6 +45,9 @@ AEnemyBase::AEnemyBase()
 	GetCapsuleComponent()->SetCapsuleRadius(18.100616);
 	CurrentFlipbook->SetWorldLocation(FVector(0, 0, -41));
 
+	AnimationFlipbookTimeStop = -1.f;
+	AnimationAttackCompleteTimeStop = -1.f;
+
 	//AEnemyBase::OnActorBeginOverlap.AddDynamic(this, &AEnemyBase::Overlapped);
 }
 
@@ -61,6 +64,10 @@ void AEnemyBase::BeginPlay()
 	}
 	FRotator* rotation = new FRotator(0.0f, yaw, 1.0f);
 	GetController()->SetControlRotation(*rotation);
+
+
+	SetAnimationFlags();
+	ResetAnimationFlags();
 }
 
 // Called every frame
@@ -95,11 +102,17 @@ void AEnemyBase::Tick(float DeltaTime)
 
 		if (HitArea->IsOverlappingActor(Player))
 		{
-			Attack();
+			AttackStart();
 		}
 		else
 		{
 			ResetAttack();
+		}
+
+
+		if (AnimationFlipbookTimeStop > GetCurrentTime())
+		{
+			HandleAttack();
 		}
 
 	}
@@ -107,49 +120,146 @@ void AEnemyBase::Tick(float DeltaTime)
 	{
 		ControlCharacterAnimations(0.f);
 	}
+
+	if (AnimationOtherTimeStop < GetCurrentTime())
+	{
+		bIsDamaged = false;
+	}
+	else
+	{
+		GetCapsuleComponent()->MoveComponent(FVector(bIsMovingRight ? -200.f * DeltaTime : 200.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
+	}
 }
 
-void AEnemyBase::Attack()
+void AEnemyBase::AttackStart()
 {
-	if (EnemyStopAttackTime + TimeBetweenAttacks < GetCurrentTime())
-	{
-		bIsAttacking = true;
-		EnemyStartAttackTime = GetCurrentTime();
+	bIsAttacking = true;
 
+	// Animation has to finish, with a little window to input next command
+	if (bIsAnimationAttackComplete && AnimationAttackCompleteTimeStop + 1.f > GetCurrentTime())
+	{
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
 			bCanMove = false;
-
+			// If attack is pressed continuously, it will be a combo 
+			if (nAttackNumber >= AttackingComboAnimation.Num() - 1)
+			{
+				ResetAttack();
+				bCanMove = true;
+			}
+			else
+			{
+				++nAttackNumber;
+				CurrentAttackHasHitObjective = false;
+			}
 		}
-		// Hit box will grow to detect collision
-		FVector CurrentLocation = FVector(GetActorLocation().X + HitBoxOrientation, GetActorLocation().Y, GetActorLocation().Z);
+	}
+	else if (AnimationAttackCompleteTimeStop + 0.5f < GetCurrentTime())
+	{
+		ResetAttack();
+		bCanMove = true;
+	}
+	/*if (EnemyStopAttackTime + TimeBetweenAttacks < GetCurrentTime())
+	{*/
+	//}
+}
 
-		// Tracing collision
-		FHitResult* HitResult = new FHitResult();
 
-		if (UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentLocation, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true))
+// Handling actions
+void AEnemyBase::HandleAttack()
+{
+	// Only enter when animation is done
+	if (AnimationFlipbookTimeStop <= GetCurrentTime())
+	{
+		if (GetCharacterMovement()->IsMovingOnGround())
 		{
-			HitPlayer();
+			DoCombo(AttackingComboAnimation);
 		}
-		// Animation has to finish, with a little window to input next command
-		if (GetCurrentTime() > AnimationAttackTimeStop && GetCharacterMovement()->IsMovingOnGround())
+		else
 		{
-			bCanMove = true;
+			DoCombo(AttackingJumpingAnimation);
 		}
-		AnimationAttackTimeStart = GetCurrentTime();
+	}
+
+	if (AnimationAttackCompleteTimeStop < GetCurrentTime())
+	{
+		bIsAttacking = false;
+		CurrentAttackHasHitObjective = false;
+		EAnimationState = AnimationState::Idle;
+		bCanMove = true;
+		ResetAnimationFlags();
+	}
+}
+
+
+void AEnemyBase::DoCombo(TArray<FComboAttackStruct> Combo)
+{
+	bool bIsComboDone = true;
+	for (bool ComboIsDone : ComboAnimationFlags[nAttackNumber].bIsComboHits)
+	{
+		if (!ComboIsDone)
+		{
+			bIsComboDone = false;
+		}
+	}
+
+	if (!ComboAnimationFlags[nAttackNumber].bIsComboStart)
+	{
+		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationStart);
+		ComboAnimationFlags[nAttackNumber].bIsComboStart = true;
+		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		bIsAnimationAttackComplete = false;
+	}
+	else if (bIsComboDone && !ComboAnimationFlags[nAttackNumber].bIsComboEnd)
+	{
+		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationEnd);
+		ComboAnimationFlags[nAttackNumber].bIsComboEnd = true;
+		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		bIsAnimationAttackComplete = true;
+	}
+	else
+	{
+		if (!ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit])
+		{
+			CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].AttackAnimationHit);
+			ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit] = true;
+			AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+			AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+			ApplyHitCollide(Combo);
+		}
+		if (nCurrentComboHit < ComboAnimationFlags[nAttackNumber].bIsComboHits.Num() - 1)
+		{
+			++nCurrentComboHit;
+		}
+	}
+}
+
+void AEnemyBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
+{
+	// Hit box will grow to detect collision
+	FVector CurrentLocation = FVector(GetActorLocation().X + HitBoxOrientation, GetActorLocation().Y, GetActorLocation().Z);
+
+	// Tracing collision
+	FHitResult* HitResult = new FHitResult();
+
+	if (UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentLocation, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true))
+	{
+		if (&HitResult->Actor)
+		{
+			Player->SetDamage(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].DamageValue);
+			if (nCurrentComboHit >= Combo[nAttackNumber].AttackAnimationHits.Num())
+			{
+				CurrentAttackHasHitObjective = true;
+			}
+		}
 	}
 }
 
 void AEnemyBase::SetAttackAnimation()
 {
-	if (GetCharacterMovement()->IsMovingOnGround())
-	{
-		CurrentFlipbook->SetFlipbook(AttackingAnimation);
-	}
-	else
-	{
-		CurrentFlipbook->SetFlipbook(JumpingAttackAnimation);
-	}
+	HandleAttack();
 	AnimationAttackTimeStop = AnimationAttackTimeStart + CurrentFlipbook->GetFlipbookLength();
 	EnemyStopAttackTime = AnimationAttackTimeStop;
 	if (GetCurrentTime() > AnimationAttackTimeStop)
@@ -184,6 +294,9 @@ void AEnemyBase::UpdateAnimations()
 	case AnimationState::Attacking:
 		SetAttackAnimation();
 		break;
+	case AnimationState::HitTop:
+		CurrentFlipbook->SetFlipbook(HitTopAnimation);
+		break;
 	default:
 		CurrentFlipbook->SetFlipbook(IdleAnimation);
 		break;
@@ -212,20 +325,27 @@ void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
 	}
 	else
 	{
-		if (bIsAttacking)
+		if (bIsDamaged)
 		{
-			EAnimationState = AnimationState::Attacking;
+			EAnimationState = AnimationState::HitTop;
 		}
 		else
 		{
-			if (fabs(characterMovementSpeed) > 0.f)
+			if (bIsAttacking)
 			{
-				EAnimationState = AnimationState::Walking;
+				EAnimationState = AnimationState::Attacking;
 			}
 			else
 			{
-				EAnimationState = AnimationState::Idle;
+				if (fabs(characterMovementSpeed) > 0.f)
+				{
+					EAnimationState = AnimationState::Walking;
+				}
+				else
+				{
+					EAnimationState = AnimationState::Idle;
 
+				}
 			}
 		}
 	}
@@ -241,13 +361,11 @@ float AEnemyBase::GetCurrentTime()
 	return 0.f;
 }
 
-void AEnemyBase::HitPlayer()
-{
-	Player->SetDamage(AttackDamage);
-}
-
 void AEnemyBase::SetDamage(float Value)
 {
+	bIsDamaged = true;
+	EAnimationState = AnimationState::HitTop;
+	AnimationOtherTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
 	Life -= Value;
 	if (Life <= 0)
 	{
@@ -258,6 +376,27 @@ void AEnemyBase::SetDamage(float Value)
 void AEnemyBase::HealLife(float Value)
 {
 	Life += Value;
+}
+
+void AEnemyBase::SetAnimationFlags()
+{
+	for (FComboAttackStruct combo : AttackingComboAnimation)
+	{
+		FComboAnimationFlags element;
+		for (FComboAttackHitsStruct hit : combo.AttackAnimationHits)
+		{
+			element.bIsComboHits.Add(false);
+		}
+		element.bIsComboStart = false;
+		element.bIsComboEnd = false;
+		ComboAnimationFlags.Add(element);
+	}
+}
+
+void AEnemyBase::ResetAnimationFlags()
+{
+	ComboAnimationFlags.Empty();
+	SetAnimationFlags();
 }
 
 // Called to bind functionality to input

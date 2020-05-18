@@ -17,6 +17,10 @@ void ACharacterCommon::BeginPlay()
 
 }
 
+void ACharacterCommon::HandleAttack()
+{
+}
+
 void ACharacterCommon::ResetAttack()
 {
 }

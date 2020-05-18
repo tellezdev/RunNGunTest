@@ -22,7 +22,8 @@ enum AnimationState
 	Ducking,
 	Attacking,
 	SpecialMove,
-	ChargingUp
+	ChargingUp,
+	HitTop
 };
 
 USTRUCT()
@@ -77,6 +78,7 @@ public:
 		float DamageValue;
 
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* AttackAnimationStart;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -122,6 +124,9 @@ public:
 		float StaminaChargingUnit = 0.1f;
 
 	UPROPERTY()
+		bool bIsDamaged = false;
+
+	UPROPERTY()
 		float HitBoxOrientation = 30.f;
 	UPROPERTY()
 		bool CurrentAttackHasHitObjective = false;
@@ -137,11 +142,25 @@ public:
 		bool bIsAttacking;
 	UPROPERTY()
 		bool bIsChargingup;
+	UPROPERTY()
+		int8 nAttackNumber = 0;
+	UPROPERTY()
+		int8 nCurrentComboHit = 0;
+
+	// Animation Times
+	UPROPERTY()
+		float AnimationAttackCompleteTimeStop;
+	UPROPERTY()
+		float AnimationFlipbookTimeStop;
+	UPROPERTY()
+		bool bIsAnimationAttackComplete = true;
+	UPROPERTY()
+		float AnimationOtherTimeStop;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CollisionsHitInformation")
 		TArray<AActor*> ActorsToIgnore;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
 		TEnumAsByte<AnimationState> EAnimationState = AnimationState::Idle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character Components")
@@ -151,24 +170,35 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Animations")
 		UPaperFlipbookComponent* CurrentFlipbook;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
 		UPaperFlipbook* IdleAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
 		UPaperFlipbook* WalkingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		UPaperFlipbook* AttackingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
 		UPaperFlipbook* JumpingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
 		UPaperFlipbook* JumpingForwardAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
-		UPaperFlipbook* JumpingAttackAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
 		UPaperFlipbook* DuckingAnimation;
-	// ---------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
+		TArray<FComboAttackStruct> AttackingComboAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
+		TArray<FComboAttackStruct> AttackingJumpingAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
+		TArray<FComboAttackStruct> AttackingCrouchingAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Other")
+		UPaperFlipbook* HitTopAnimation;
+
+	UPROPERTY()
+		TArray<FComboAnimationFlags> ComboAnimationFlags;
+
+
+	UFUNCTION()
+		virtual void HandleAttack();
 
 	UFUNCTION()
 		virtual void ResetAttack();
+
 	// Other stuff
 	UFUNCTION()
 		virtual void UpdateAnimations();

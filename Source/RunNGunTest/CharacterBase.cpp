@@ -72,6 +72,15 @@ void ACharacterBase::Tick(float DeltaTime)
 	{
 		HandleAttack();
 	}
+
+	if (AnimationOtherTimeStop < GetCurrentTime())
+	{
+		bIsDamaged = false;
+	}
+	else
+	{
+		GetCapsuleComponent()->MoveComponent(FVector(bIsMovingRight ? -200.f * DeltaTime : 200.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
+	}
 }
 
 // Called to bind functionality to input
@@ -121,6 +130,9 @@ void ACharacterBase::UpdateAnimations()
 		CurrentFlipbook->SetFlipbook(ChargingUpAnimation);
 		HandleStaminaCharge();
 		break;
+	case AnimationState::HitTop:
+		CurrentFlipbook->SetFlipbook(HitTopAnimation);
+		break;
 	default:
 		CurrentFlipbook->SetFlipbook(IdleAnimation);
 		break;
@@ -131,6 +143,7 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 {
 	if (!GetCharacterMovement()->IsMovingOnGround())
 	{
+
 		if (bIsSpecialMove)
 		{
 			EAnimationState = AnimationState::SpecialMove;
@@ -149,37 +162,45 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 			{
 				EAnimationState = AnimationState::Jumping;
 			}
+
 		}
 	}
 	else
 	{
-		if (bIsChargingup)
+		if (bIsDamaged)
 		{
-			EAnimationState = AnimationState::ChargingUp;
-		}
-		else if (bIsSpecialMove)
-		{
-			EAnimationState = AnimationState::SpecialMove;
-		}
-		else if (bIsAttacking)
-		{
-			EAnimationState = AnimationState::Attacking;
+			EAnimationState = AnimationState::HitTop;
 		}
 		else
 		{
-			if (fabs(characterMovementSpeed) > 0.0f)
+			if (bIsChargingup)
 			{
-				EAnimationState = AnimationState::Walking;
+				EAnimationState = AnimationState::ChargingUp;
+			}
+			else if (bIsSpecialMove)
+			{
+				EAnimationState = AnimationState::SpecialMove;
+			}
+			else if (bIsAttacking)
+			{
+				EAnimationState = AnimationState::Attacking;
 			}
 			else
 			{
-				if (bIsDucking)
+				if (fabs(characterMovementSpeed) > 0.0f)
 				{
-					EAnimationState = AnimationState::Ducking;
+					EAnimationState = AnimationState::Walking;
 				}
 				else
 				{
-					EAnimationState = AnimationState::Idle;
+					if (bIsDucking)
+					{
+						EAnimationState = AnimationState::Ducking;
+					}
+					else
+					{
+						EAnimationState = AnimationState::Idle;
+					}
 				}
 			}
 		}
@@ -249,6 +270,7 @@ void ACharacterBase::JumpStart()
 {
 	bCanMove = true;
 	bPressedJump = true;
+	bIsAttacking = false;
 	ResetAttack();
 	EAnimationState = AnimationState::Jumping;
 }
@@ -282,7 +304,7 @@ void ACharacterBase::AttackStart()
 				++nAttackNumber;
 				CurrentAttackHasHitObjective = false;
 			}
-		}		
+		}
 	}
 	else if (AnimationAttackCompleteTimeStop + 0.5f < GetCurrentTime())
 	{
@@ -407,55 +429,56 @@ void ACharacterBase::HandleStaminaCharge()
 	}
 }
 
-// Resetting states
-void ACharacterBase::StopHandleStaminaCharge()
+void ACharacterBase::DoCombo(TArray<FComboAttackStruct> Combo)
 {
-	bIsChargingup = false;
-	bCanMove = true;
-	SpecialKeyPressedTimeStart = -1;
-	SpecialKeyPressedTimeStop = -1;
-}
-
-void ACharacterBase::ResetAttack()
-{
-	nAttackNumber = 0;
-	nCurrentComboHit = 0;
-	ResetAnimationFlags();
-}
-
-void ACharacterBase::SetAnimationFlags()
-{
-	for (FComboAttackStruct combo : AttackingComboAnimation)
+	bool bIsComboDone = true;
+	for (bool ComboIsDone : ComboAnimationFlags[nAttackNumber].bIsComboHits)
 	{
-		FComboAnimationFlags element;
-		for (FComboAttackHitsStruct hit : combo.AttackAnimationHits)
+		if (!ComboIsDone)
 		{
-			element.bIsComboHits.Add(false);
+			bIsComboDone = false;
 		}
-		element.bIsComboStart = false;
-		element.bIsComboEnd = false;
-		ComboAnimationFlags.Add(element);
 	}
-}
 
-void ACharacterBase::ResetAnimationFlags()
-{
-	ComboAnimationFlags.Empty();
-	SetAnimationFlags();
-}
-
-float ACharacterBase::GetCurrentTime()
-{
-	if (GetWorld())
+	if (!ComboAnimationFlags[nAttackNumber].bIsComboStart)
 	{
-		return GetWorld()->GetRealTimeSeconds();
+		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationStart);
+		ComboAnimationFlags[nAttackNumber].bIsComboStart = true;
+		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		bIsAnimationAttackComplete = false;
 	}
-	return 0.f;
+	else if (bIsComboDone && !ComboAnimationFlags[nAttackNumber].bIsComboEnd)
+	{
+		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationEnd);
+		ComboAnimationFlags[nAttackNumber].bIsComboEnd = true;
+		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		bIsAnimationAttackComplete = true;
+	}
+	else
+	{
+		if (!ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit])
+		{
+			CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].AttackAnimationHit);
+			ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit] = true;
+			AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+			AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+			ApplyHitCollide(Combo);
+		}
+		if (nCurrentComboHit < ComboAnimationFlags[nAttackNumber].bIsComboHits.Num() - 1)
+		{
+			++nCurrentComboHit;
+		}
+	}
 }
 
 // Play states
 void ACharacterBase::SetDamage(float Value)
 {
+	bIsDamaged = true;
+	EAnimationState = AnimationState::HitTop;
+	AnimationOtherTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
 	Life -= Value;
 	if (Life <= 0.f)
 	{
@@ -574,47 +597,48 @@ void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 	}
 }
 
-void ACharacterBase::DoCombo(TArray<FComboAttackStruct> Combo)
+// Resetting states
+void ACharacterBase::StopHandleStaminaCharge()
 {
-	bool bIsComboDone = true;
-	for (bool ComboIsDone : ComboAnimationFlags[nAttackNumber].bIsComboHits)
-	{
-		if (!ComboIsDone)
-		{
-			bIsComboDone = false;
-		}
-	}
+	bIsChargingup = false;
+	bCanMove = true;
+	SpecialKeyPressedTimeStart = -1;
+	SpecialKeyPressedTimeStop = -1;
+}
 
-	if (!ComboAnimationFlags[nAttackNumber].bIsComboStart)
-	{
-		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationStart);
-		ComboAnimationFlags[nAttackNumber].bIsComboStart = true;
-		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		bIsAnimationAttackComplete = false;
+void ACharacterBase::ResetAttack()
+{
+	nAttackNumber = 0;
+	nCurrentComboHit = 0;
+	ResetAnimationFlags();
+}
 
-	}
-	else if (bIsComboDone && !ComboAnimationFlags[nAttackNumber].bIsComboEnd)
+void ACharacterBase::SetAnimationFlags()
+{
+	for (FComboAttackStruct combo : AttackingComboAnimation)
 	{
-		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationEnd);
-		ComboAnimationFlags[nAttackNumber].bIsComboEnd = true;
-		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		bIsAnimationAttackComplete = true;
+		FComboAnimationFlags element;
+		for (FComboAttackHitsStruct hit : combo.AttackAnimationHits)
+		{
+			element.bIsComboHits.Add(false);
+		}
+		element.bIsComboStart = false;
+		element.bIsComboEnd = false;
+		ComboAnimationFlags.Add(element);
 	}
-	else
+}
+
+void ACharacterBase::ResetAnimationFlags()
+{
+	ComboAnimationFlags.Empty();
+	SetAnimationFlags();
+}
+
+float ACharacterBase::GetCurrentTime()
+{
+	if (GetWorld())
 	{
-		if (!ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit])
-		{
-			CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].AttackAnimationHit);
-			ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit] = true;
-			AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			ApplyHitCollide(Combo);
-		}
-		if (nCurrentComboHit < ComboAnimationFlags[nAttackNumber].bIsComboHits.Num() - 1)
-		{
-			++nCurrentComboHit;
-		}
+		return GetWorld()->GetRealTimeSeconds();
 	}
+	return 0.f;
 }

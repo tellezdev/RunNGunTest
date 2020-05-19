@@ -33,15 +33,13 @@ public:
 
 	// Animation Times
 	UPROPERTY()
-		float EnemyStartAttackTime;
-	UPROPERTY()
-		float EnemyStopAttackTime;
-	UPROPERTY()
 		float AnimationAttackTimeStart;
 	UPROPERTY()
 		float AnimationAttackTimeStop;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Times")
-		float TimeBetweenAttacks;
+		float TimeBetweenAttacks = 2.f;
+	UPROPERTY()
+		float LastAttackTime;
 
 	bool bIsAttacking = false;
 
@@ -87,4 +85,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION()
+		FVector GetPlayerPosition();
 };

@@ -123,29 +123,36 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float StaminaChargingUnit = 0.1f;
 
-	UPROPERTY()
+	// Config params
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool bIsDamaged = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+		bool bIsInHitAttackFrames = false;
 
 	UPROPERTY()
 		float HitBoxOrientation = 30.f;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool CurrentAttackHasHitObjective = false;
+	UPROPERTY()
+		bool bCurrentHitCollisionIsDone = false;
 
 	// Character Movement
 	UPROPERTY()
 		bool bIsMovingRight;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool bCanMove = true;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool bIsDucking;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool bIsAttacking;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool bIsChargingup;
 	UPROPERTY()
 		int8 nAttackNumber = 0;
 	UPROPERTY()
 		int8 nCurrentComboHit = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		float nRecoveryTime = 1.f;
 
 	// Animation Times
 	UPROPERTY()

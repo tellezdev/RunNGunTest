@@ -31,6 +31,8 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+
 	SpecialKeyPressedTimeStart = -1.f;
 	AnimationFlipbookTimeStop = -1.f;
 	AnimationAttackCompleteTimeStop = -1.f;
@@ -352,6 +354,19 @@ void ACharacterBase::HandleAttack()
 		}
 	}
 
+
+	if (bIsInHitAttackFrames && !bCurrentHitCollisionIsDone)
+	{
+		if (GetCharacterMovement()->IsMovingOnGround())
+		{
+			ApplyHitCollide(AttackingComboAnimation);
+		}
+		else
+		{
+			ApplyHitCollide(AttackingJumpingAnimation);
+		}
+	}
+
 	if (AnimationAttackCompleteTimeStop < GetCurrentTime())
 	{
 		bIsAttacking = false;
@@ -454,17 +469,19 @@ void ACharacterBase::DoCombo(TArray<FComboAttackStruct> Combo)
 		ComboAnimationFlags[nAttackNumber].bIsComboEnd = true;
 		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
 		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+		bIsInHitAttackFrames = false;
 		bIsAnimationAttackComplete = true;
 	}
 	else
 	{
 		if (!ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit])
 		{
+			bCurrentHitCollisionIsDone = false;
 			CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].AttackAnimationHit);
 			ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit] = true;
 			AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
 			AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			ApplyHitCollide(Combo);
+			bIsInHitAttackFrames = true;
 		}
 		if (nCurrentComboHit < ComboAnimationFlags[nAttackNumber].bIsComboHits.Num() - 1)
 		{
@@ -577,14 +594,13 @@ void ACharacterBase::ConsumeStamina(float Value)
 
 void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 {
-	// Hit box will grow to detect collision
+	// Hit box position
 	FVector CurrentLocation = FVector(GetActorLocation().X + HitBoxOrientation, GetActorLocation().Y, GetActorLocation().Z);
 
 	// Tracing collision
 	FHitResult* HitResult = new FHitResult();
 	if (!CurrentAttackHasHitObjective && UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentLocation, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true, FLinearColor::Red, FLinearColor::Green, 0.5f))
 	{
-		/*GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::White, FString::Printf(TEXT("%s, Damage: %f"), *HitResult->Actor->GetName(), Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].DamageValue));*/
 		if (&HitResult->Actor)
 		{
 			ACharacterCommon* EnemyCasted = Cast<ACharacterCommon>(HitResult->Actor);
@@ -593,6 +609,7 @@ void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 			{
 				CurrentAttackHasHitObjective = true;
 			}
+			bCurrentHitCollisionIsDone = true;
 		}
 	}
 }

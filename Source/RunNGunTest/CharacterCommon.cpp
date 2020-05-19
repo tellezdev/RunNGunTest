@@ -14,7 +14,6 @@ ACharacterCommon::ACharacterCommon()
 void ACharacterCommon::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ACharacterCommon::HandleAttack()

@@ -37,7 +37,6 @@ AEnemyBase::AEnemyBase()
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 
 	Life = 100.f;
-	EnemyStopAttackTime = -1;
 	TimeBetweenAttacks = 1.f;
 	AttackDamage = 10.f;
 
@@ -65,9 +64,12 @@ void AEnemyBase::BeginPlay()
 	FRotator* rotation = new FRotator(0.0f, yaw, 1.0f);
 	GetController()->SetControlRotation(*rotation);
 
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
 	SetAnimationFlags();
 	ResetAnimationFlags();
+
+	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 }
 
 // Called every frame
@@ -75,19 +77,21 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	if (LastAttackTime + TimeBetweenAttacks + +nRecoveryTime < GetCurrentTime())
+	{
+		bCanMove = true;
+	}
 
-	if (VisibilityArea->IsOverlappingActor(Player))
+	if (!bIsDamaged && !bIsAttacking && bCanMove && VisibilityArea->IsOverlappingActor(Player))
 	{
 		// Depending on distance from player, attack, follow him or wait
 		float DistanceBetweenActors = GetActorLocation().Distance(GetActorLocation(), Player->GetActorLocation());
 
-		if (!bIsAttacking && DistanceBetweenActors > 60.f)
-		{
-			FVector toPlayer = Player->GetActorLocation() - GetActorLocation();
-			toPlayer.Normalize();
-			AddMovementInput(toPlayer, 1.f);
-			FRotator toPlayerRotation = toPlayer.Rotation();
+
+		if (DistanceBetweenActors > 60.f)
+		{			
+			AddMovementInput(GetPlayerPosition(), 1.f);
+			FRotator toPlayerRotation = GetPlayerPosition().Rotation();
 			toPlayerRotation.Pitch = 0;
 			RootComponent->SetWorldRotation(toPlayerRotation);
 			// Saving hit player position to set the right side to collide
@@ -98,7 +102,6 @@ void AEnemyBase::Tick(float DeltaTime)
 		{
 			ControlCharacterAnimations(0.f);
 		}
-
 
 		if (HitArea->IsOverlappingActor(Player))
 		{
@@ -127,7 +130,7 @@ void AEnemyBase::Tick(float DeltaTime)
 	}
 	else
 	{
-		GetCapsuleComponent()->MoveComponent(FVector(bIsMovingRight ? -200.f * DeltaTime : 200.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
+		GetCapsuleComponent()->MoveComponent(FVector(GetPlayerPosition().Rotation().Yaw == 0.f ? -200.f * DeltaTime : 200.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
 	}
 }
 
@@ -140,12 +143,12 @@ void AEnemyBase::AttackStart()
 	{
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
-			bCanMove = false;
+			//bCanMove = false;
 			// If attack is pressed continuously, it will be a combo 
 			if (nAttackNumber >= AttackingComboAnimation.Num() - 1)
 			{
 				ResetAttack();
-				bCanMove = true;
+				//bCanMove = true;
 			}
 			else
 			{
@@ -156,18 +159,14 @@ void AEnemyBase::AttackStart()
 	}
 	else if (AnimationAttackCompleteTimeStop + 0.5f < GetCurrentTime())
 	{
-		ResetAttack();
-		bCanMove = true;
+		//bCanMove = true;
 	}
-	/*if (EnemyStopAttackTime + TimeBetweenAttacks < GetCurrentTime())
-	{*/
-	//}
 }
-
 
 // Handling actions
 void AEnemyBase::HandleAttack()
 {
+	bCanMove = false;
 	// Only enter when animation is done
 	if (AnimationFlipbookTimeStop <= GetCurrentTime())
 	{
@@ -186,11 +185,10 @@ void AEnemyBase::HandleAttack()
 		bIsAttacking = false;
 		CurrentAttackHasHitObjective = false;
 		EAnimationState = AnimationState::Idle;
-		bCanMove = true;
+		LastAttackTime = GetCurrentTime();
 		ResetAnimationFlags();
 	}
 }
-
 
 void AEnemyBase::DoCombo(TArray<FComboAttackStruct> Combo)
 {
@@ -260,19 +258,13 @@ void AEnemyBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 void AEnemyBase::SetAttackAnimation()
 {
 	HandleAttack();
-	AnimationAttackTimeStop = AnimationAttackTimeStart + CurrentFlipbook->GetFlipbookLength();
-	EnemyStopAttackTime = AnimationAttackTimeStop;
-	if (GetCurrentTime() > AnimationAttackTimeStop)
-	{
-		ResetAttack();
-	}
 }
 
 void AEnemyBase::ResetAttack()
 {
 	bIsAttacking = false;
 	EAnimationState = AnimationState::Idle;
-	bCanMove = true;
+	//bCanMove = true;
 }
 
 void AEnemyBase::UpdateAnimations()
@@ -292,7 +284,7 @@ void AEnemyBase::UpdateAnimations()
 		CurrentFlipbook->SetFlipbook(JumpingForwardAnimation);
 		break;
 	case AnimationState::Attacking:
-		SetAttackAnimation();
+		HandleAttack();
 		break;
 	case AnimationState::HitTop:
 		CurrentFlipbook->SetFlipbook(HitTopAnimation);
@@ -364,6 +356,7 @@ float AEnemyBase::GetCurrentTime()
 void AEnemyBase::SetDamage(float Value)
 {
 	bIsDamaged = true;
+	bCanMove = false;
 	EAnimationState = AnimationState::HitTop;
 	AnimationOtherTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
 	Life -= Value;
@@ -406,3 +399,9 @@ void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
+FVector AEnemyBase::GetPlayerPosition()
+{
+	FVector PlayerPosition = Player->GetActorLocation() - GetActorLocation();
+	PlayerPosition.Normalize();
+	return PlayerPosition;
+}

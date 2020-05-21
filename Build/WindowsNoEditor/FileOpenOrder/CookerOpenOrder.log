@@ -14,422 +14,518 @@
 "../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/duck/duck_Sprite_0.uasset" 13
 "../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/duck/duck_Sprite_1.uasset" 14
 "../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/duckForward.uasset" 15
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_7.uasset" 16
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/landed.uasset" 17
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_0.uasset" 18
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_1.uasset" 19
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_2.uasset" 20
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_3.uasset" 21
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_4.uasset" 22
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_5.uasset" 23
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/salute.uasset" 24
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_0.uasset" 25
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_1.uasset" 26
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_2.uasset" 27
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_3.uasset" 28
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_4.uasset" 29
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_5.uasset" 30
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/ryu_idle.uasset" 31
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_0.uasset" 32
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_1.uasset" 33
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_2.uasset" 34
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_3.uasset" 35
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_4.uasset" 36
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_5.uasset" 37
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/ryu_walk.uasset" 38
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_0.uasset" 39
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_12.uasset" 40
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_13.uasset" 41
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_23.uasset" 42
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_4.uasset" 43
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_6.uasset" 44
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_8.uasset" 45
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_9.uasset" 46
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/hadoukenBall01.uasset" 47
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/BP_Hadouken.uasset" 48
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/charginup/charginup_Sprite_0.uasset" 49
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/charginup/charginup_Sprite_1.uasset" 50
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/charginup.uasset" 51
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/duck.uasset" 52
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_0.uasset" 53
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_1.uasset" 54
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_10.uasset" 55
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_2.uasset" 56
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_4.uasset" 57
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_6.uasset" 58
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_7.uasset" 59
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_8.uasset" 60
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_9.uasset" 61
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/hadouken.uasset" 62
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_0.uasset" 63
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_1.uasset" 64
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_2.uasset" 65
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_3.uasset" 66
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_4.uasset" 67
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_5.uasset" 68
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/idle.uasset" 69
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_0.uasset" 70
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_1.uasset" 71
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_2.uasset" 72
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_3.uasset" 73
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_4.uasset" 74
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_5.uasset" 75
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_6.uasset" 76
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/jump.uasset" 77
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_0.uasset" 78
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_1.uasset" 79
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_2.uasset" 80
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_3.uasset" 81
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_4.uasset" 82
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_5.uasset" 83
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_6.uasset" 84
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_7.uasset" 85
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_8.uasset" 86
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/jumpForward.uasset" 87
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpKick/jumpKickLoop_Sprite_0.uasset" 88
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpKick/jumpKickLoop_Sprite_1.uasset" 89
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/jumpKickLoop.uasset" 90
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/noStamina.uasset" 91
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStamina/noStamina_Sprite_0.uasset" 92
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStamina/noStamina_Sprite_1.uasset" 93
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStamina/noStamina_Sprite_2.uasset" 94
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/noStamina.uasset" 95
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/noStaminaAir.uasset" 96
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_0.uasset" 97
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_1.uasset" 98
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_2.uasset" 99
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_3.uasset" 100
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_4.uasset" 101
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_5.uasset" 102
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/noStaminaAir.uasset" 103
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_0.uasset" 104
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_1.uasset" 105
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_2.uasset" 106
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_3.uasset" 107
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_4.uasset" 108
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_5.uasset" 109
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_6.uasset" 110
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_7.uasset" 111
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_8.uasset" 112
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/shoryuken.uasset" 113
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_0.uasset" 114
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_1.uasset" 115
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_10.uasset" 116
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_11.uasset" 117
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_12.uasset" 118
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_13.uasset" 119
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_2.uasset" 120
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_3.uasset" 121
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_5.uasset" 122
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_6.uasset" 123
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_7.uasset" 124
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_8.uasset" 125
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_9.uasset" 126
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/standKick01.uasset" 127
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_0.uasset" 128
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_1.uasset" 129
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_10.uasset" 130
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_11.uasset" 131
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_12.uasset" 132
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_13.uasset" 133
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_3.uasset" 134
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_4.uasset" 135
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_5.uasset" 136
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_6.uasset" 137
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_7.uasset" 138
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_9.uasset" 139
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/standKick02.uasset" 140
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_0.uasset" 141
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_2.uasset" 142
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_3.uasset" 143
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_5.uasset" 144
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_6.uasset" 145
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_7.uasset" 146
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/standPunch01.uasset" 147
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch02/standPunch02_Sprite_0.uasset" 148
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch02/standPunch02_Sprite_1.uasset" 149
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch02/standPunch02_Sprite_2.uasset" 150
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/standPunch02.uasset" 151
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_0.uasset" 152
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_1.uasset" 153
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_10.uasset" 154
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_11.uasset" 155
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_12.uasset" 156
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_3.uasset" 157
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_5.uasset" 158
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_6.uasset" 159
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_7.uasset" 160
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_8.uasset" 161
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_9.uasset" 162
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/standPunch03.uasset" 163
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_0.uasset" 164
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_1.uasset" 165
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_10.uasset" 166
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_11.uasset" 167
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_12.uasset" 168
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_13.uasset" 169
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_2.uasset" 170
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_3.uasset" 171
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_4.uasset" 172
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_5.uasset" 173
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_6.uasset" 174
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_7.uasset" 175
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_8.uasset" 176
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_9.uasset" 177
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/tatsumaki.uasset" 178
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/walk.uasset" 179
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_0.uasset" 180
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_1.uasset" 181
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_2.uasset" 182
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_3.uasset" 183
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_4.uasset" 184
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_5.uasset" 185
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_6.uasset" 186
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_7.uasset" 187
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/walk.uasset" 188
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/portrait/portrait01_Sprite.uasset" 189
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/BP_CharacterKen.uasset" 190
-"../../../Engine/Content/EditorBlueprintResources/StandardMacros.uasset" 191
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/10_Sprite.uasset" 192
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/11_Sprite.uasset" 193
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/1_Sprite.uasset" 194
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/2_Sprite.uasset" 195
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/3_Sprite.uasset" 196
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/4_Sprite.uasset" 197
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/6_Sprite.uasset" 198
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/7_Sprite.uasset" 199
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/8_Sprite.uasset" 200
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/9_Sprite.uasset" 201
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/HUD/PlayerHUD.uasset" 202
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/GameHUD_BP.uasset" 203
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/PlayerController01_BP.uasset" 204
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/PlayerState01_BP.uasset" 205
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/BP_RNGTGameModeBase.uasset" 206
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/GameMode01_BP.uasset" 207
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Data/PlayerStates.uasset" 208
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/1.uasset" 209
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/10.uasset" 210
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/11.uasset" 211
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/2.uasset" 212
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/3.uasset" 213
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/4.uasset" 214
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/6.uasset" 215
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/7.uasset" 216
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/8.uasset" 217
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/9.uasset" 218
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/charginup.uasset" 219
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/duck.uasset" 220
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/hadouken.uasset" 221
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/hadoukenBall01.uasset" 222
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/idle.uasset" 223
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/jump.uasset" 224
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/jumpBackward.uasset" 225
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/jumpForward.uasset" 226
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/jumpKickLoop.uasset" 227
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/portrait01.uasset" 228
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/salute.uasset" 229
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/shoryuken.uasset" 230
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standKick01.uasset" 231
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standKick02.uasset" 232
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standPunch01.uasset" 233
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standPunch02.uasset" 234
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standPunch03.uasset" 235
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/tatsumakiEnd.uasset" 236
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/tatsumakiLoop.uasset" 237
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/tatsumakiStart.uasset" 238
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/src/ryu_idle.uasset" 239
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/src/ryu_walk.uasset" 240
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/marioworld.uasset" 241
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/marioworld_TileSet.uasset" 242
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/scenario_01.uasset" 243
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/scenario_01_TileSet.uasset" 244
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Tiles/TileMapScenario.uasset" 245
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/Scenario.uasset" 246
-"../../../Engine/Content/Animation/DefaultAnimCurveCompressionSettings.uasset" 247
-"../../../Engine/Content/Functions/Engine_MaterialFunctions01/Opacity/CameraDepthFade.uasset" 248
-"../../../Engine/Content/EngineMaterials/T_Default_Material_Grid_M.uasset" 249
-"../../../Engine/Content/EngineMaterials/T_Default_Material_Grid_N.uasset" 250
-"../../../Engine/Content/EngineMaterials/WorldGridMaterial.uasset" 251
-"../../../Engine/Content/ArtTools/RenderToTexture/Meshes/S_1_Unit_Plane.uasset" 252
-"../../../Engine/Content/EngineMaterials/DefaultMaterial.uasset" 253
-"../../../Engine/Content/BasicShapes/Cone.uasset" 254
-"../../../Engine/Content/BasicShapes/Cube.uasset" 255
-"../../../Engine/Content/BasicShapes/Cylinder.uasset" 256
-"../../../Engine/Content/BasicShapes/Plane.uasset" 257
-"../../../Engine/Content/BasicShapes/Sphere.uasset" 258
-"../../../Engine/Content/EditorLandscapeResources/DataLayer.uasset" 259
-"../../../Engine/Content/EditorMaterials/MAT_Groups_Toggle.uasset" 260
-"../../../Engine/Content/EditorMaterials/MAT_Groups_Visibility.uasset" 261
-"../../../Engine/Content/EditorMaterials/PreviewShadowIndicator.uasset" 262
-"../../../Engine/Content/EditorMaterials/PreviewShadowIndicatorMaterial.uasset" 263
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_ColorTrack.uasset" 264
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Anim.uasset" 265
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_AudioMaster.uasset" 266
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Director.uasset" 267
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Event.uasset" 268
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Fade.uasset" 269
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Float.uasset" 270
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Move.uasset" 271
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Slomo.uasset" 272
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Sound.uasset" 273
-"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Vector.uasset" 274
-"../../../Engine/Content/EditorMaterials/ParticleSystems/PSysThumbnail_NoImage.uasset" 275
-"../../../Engine/Content/EditorMaterials/ParticleSystems/PSysThumbnail_OOD.uasset" 276
-"../../../Engine/Content/EditorMaterials/Camera/CineMat.uasset" 277
-"../../../Engine/Content/EditorMaterials/Camera/MI_CineMat_Rig.uasset" 278
-"../../../Engine/Content/EditorMeshes/Camera/SM_CraneRig_Arm.uasset" 279
-"../../../Engine/Content/EditorMeshes/Camera/SM_CraneRig_Base.uasset" 280
-"../../../Engine/Content/EditorMeshes/Camera/SM_CraneRig_Body.uasset" 281
-"../../../Engine/Content/EditorMeshes/Camera/SM_CraneRig_Mount.uasset" 282
-"../../../Engine/Content/EditorMeshes/Camera/SM_RailRig_Mount.uasset" 283
-"../../../Engine/Content/EditorMeshes/Camera/SM_RailRig_Track.uasset" 284
-"../../../Engine/Content/EditorResources/BSPVertex.uasset" 285
-"../../../Engine/Content/EditorResources/S_Actor.uasset" 286
-"../../../Engine/Content/EditorResources/S_Note.uasset" 287
-"../../../Engine/Content/EditorResources/S_Solver.uasset" 288
-"../../../Engine/Content/EditorResources/S_Trigger.uasset" 289
-"../../../Engine/Content/EditorResources/SequenceRecorder/Countdown.uasset" 290
-"../../../Engine/Content/EditorResources/SequenceRecorder/RecordingIndicator.uasset" 291
-"../../../Engine/Content/EditorSounds/Notifications/CompileFailed.uasset" 292
-"../../../Engine/Content/EditorSounds/Notifications/CompileFailed_Cue.uasset" 293
-"../../../Engine/Content/EditorSounds/Notifications/CompileSuccess.uasset" 294
-"../../../Engine/Content/EditorSounds/Notifications/CompileStart_Cue.uasset" 295
-"../../../Engine/Content/EditorSounds/Notifications/CompileSuccess_Cue.uasset" 296
-"../../../Engine/Content/EngineDamageTypes/DmgTypeBP_Environmental.uasset" 297
-"../../../Engine/Content/EngineDebugMaterials/DebugEditorMaterial.uasset" 298
-"../../../Engine/Content/EngineDebugMaterials/DebugMeshMaterial.uasset" 299
-"../../../Engine/Content/EngineDebugMaterials/M_SimpleTranslucent.uasset" 300
-"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/CameraDirectionVector.uasset" 301
-"../../../Engine/Content/EngineDebugMaterials/VolumeToRender.uasset" 302
-"../../../Engine/Content/EngineDebugMaterials/M_VolumeRenderSphereTracePP.uasset" 303
-"../../../Engine/Content/EngineDebugMaterials/WireframeMaterial.uasset" 304
-"../../../Engine/Content/EngineFonts/Faces/DroidSansFallback.uasset" 305
-"../../../Engine/Content/EngineFonts/Faces/RobotoBold.uasset" 306
-"../../../Engine/Content/EngineFonts/Faces/RobotoBoldItalic.uasset" 307
-"../../../Engine/Content/EngineFonts/Faces/RobotoItalic.uasset" 308
-"../../../Engine/Content/EngineFonts/Faces/RobotoLight.uasset" 309
-"../../../Engine/Content/EngineFonts/Faces/RobotoRegular.uasset" 310
-"../../../Engine/Content/EngineFonts/Roboto.uasset" 311
-"../../../Engine/Content/EngineMaterials/BaseFlattenDiffuseMap.uasset" 312
-"../../../Engine/Content/EngineMaterials/BaseFlattenEmissiveMap.uasset" 313
-"../../../Engine/Content/EngineMaterials/BaseFlattenGrayscaleMap.uasset" 314
-"../../../Engine/Content/EngineMaterials/BaseFlattenNormalMap.uasset" 315
-"../../../Engine/Content/EngineMaterials/BaseFlattenMaterial.uasset" 316
-"../../../Engine/Content/EngineMaterials/BlueNoise.uasset" 317
-"../../../Engine/Content/EngineMaterials/DefaultBloomKernel.uasset" 318
-"../../../Engine/Content/EngineMaterials/DefaultBokeh.uasset" 319
-"../../../Engine/Content/EngineMaterials/DefaultDiffuse.uasset" 320
-"../../../Engine/Content/EngineMaterials/DefaultDeferredDecalMaterial.uasset" 321
-"../../../Engine/Content/EngineMaterials/DefaultLightFunctionMaterial.uasset" 322
-"../../../Engine/Content/EngineMaterials/DefaultPhysicalMaterial.uasset" 323
-"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/BreakOutFloat2Components.uasset" 324
-"../../../Engine/Content/EngineMaterials/DefaultPostProcessMaterial.uasset" 325
-"../../../Engine/Content/EngineFonts/RobotoDistanceField.uasset" 326
-"../../../Engine/Content/EngineMaterials/DefaultTextMaterialOpaque.uasset" 327
-"../../../Engine/Content/EngineMaterials/DefaultVirtualTextureMaterial.uasset" 328
-"../../../Engine/Content/EngineMaterials/DefaultWhiteGrid.uasset" 329
-"../../../Engine/Content/EngineMaterials/DefaultWhiteGrid_Low.uasset" 330
-"../../../Engine/Content/EngineMaterials/EmissiveMeshMaterial.uasset" 331
-"../../../Engine/Content/EngineMaterials/GizmoMaterial.uasset" 332
-"../../../Engine/Content/EngineMaterials/Good64x64TilingNoiseHighFreq.uasset" 333
-"../../../Engine/Content/EngineMaterials/HairDefaultMaterial.uasset" 334
-"../../../Engine/Content/EngineMaterials/MiniFont.uasset" 335
-"../../../Engine/Content/EngineMaterials/InvalidLightmapSettings.uasset" 336
-"../../../Engine/Content/EngineMaterials/M_InvalidLightmapSettings.uasset" 337
-"../../../Engine/Content/Functions/Engine_MaterialFunctions02/WorldPositionOffset/CameraOffset.uasset" 338
-"../../../Engine/Content/EngineMaterials/PhAT_JointLimitMaterial.uasset" 339
-"../../../Engine/Content/EngineMaterials/PreintegratedSkinBRDF.uasset" 340
-"../../../Engine/Content/EngineMaterials/RemoveSurfaceMaterial.uasset" 341
-"../../../Engine/Content/EngineMaterials/WeightMapPlaceholderTexture.uasset" 342
-"../../../Engine/Content/EngineResources/WhiteSquareTexture.uasset" 343
-"../../../Engine/Content/EngineMaterials/Widget3DPassThrough.uasset" 344
-"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Masked.uasset" 345
-"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Opaque.uasset" 346
-"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Masked_OneSided.uasset" 347
-"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Opaque_OneSided.uasset" 348
-"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Translucent.uasset" 349
-"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Translucent_OneSided.uasset" 350
-"../../../Engine/Content/EngineMeshes/Cylinder.uasset" 351
-"../../../Engine/Content/EngineMeshes/Sphere.uasset" 352
-"../../../Engine/Content/EngineResources/Black.uasset" 353
-"../../../Engine/Content/EngineResources/DefaultTexture.uasset" 354
-"../../../Engine/Content/EngineResources/DefaultTextureCube.uasset" 355
-"../../../Engine/Content/EngineResources/DefaultVolumeTexture2D.uasset" 356
-"../../../Engine/Content/EngineResources/DefaultVolumeTexture.uasset" 357
-"../../../Engine/Content/EngineResources/GradientTexture0.uasset" 358
-"../../../Engine/Content/EngineSounds/Master.uasset" 359
-"../../../Engine/Content/Functions/Engine_MaterialFunctions01/Shading/ConvertFromDiffSpec.uasset" 360
-"../../../Engine/Content/Functions/Engine_MaterialFunctions01/Shading/PowerToRoughness.uasset" 361
-"../../../Engine/Content/Maps/Templates/Thumbnails/Default.uasset" 362
-"../../../Engine/Content/Maps/Templates/Thumbnails/TimeOfDay.uasset" 363
-"../../../Engine/Content/Maps/Templates/Thumbnails/VR-Basic.uasset" 364
-"../../../Engine/Content/MobileResources/T_MobileControls_texture.uasset" 365
-"../../../Engine/Content/MobileResources/T_MobileMenu2.uasset" 366
-"../../../Engine/Content/MobileResources/HUD/AnalogHat.uasset" 367
-"../../../Engine/Content/MobileResources/HUD/VirtualJoystick_Background.uasset" 368
-"../../../Engine/Content/MobileResources/HUD/VirtualJoystick_Thumb.uasset" 369
-"../../../Engine/Content/MobileResources/HUD/DefaultVirtualJoysticks.uasset" 370
-"../../../Engine/Content/MobileResources/HUD/LeftVirtualJoystickOnly.uasset" 371
-"../../../Engine/Content/MobileResources/HUD/MobileHUDButton1_off.uasset" 372
-"../../../Engine/Content/MobileResources/HUD/MobileHUDButton1_on.uasset" 373
-"../../../Engine/Content/MobileResources/HUD/MobileHUDButton2_off.uasset" 374
-"../../../Engine/Content/MobileResources/HUD/MobileHUDButton2_on.uasset" 375
-"../../../Engine/Content/MobileResources/HUD/MobileHUDButton3.uasset" 376
-"../../../Engine/Content/MobileResources/HUD/MobileHUDButtonFire.uasset" 377
-"../../../Engine/Content/MobileResources/HUD/MobileHUDDirectionPad.uasset" 378
-"../../../Engine/Content/MobileResources/HUD/MobileHUDDirectionPad2.uasset" 379
-"../../../Engine/Content/MobileResources/HUD/MobileHUDDirectionPad3.uasset" 380
-"../../../Engine/Content/MobileResources/HUD/MobileHUDDirectionStick.uasset" 381
-"../../../Engine/Content/MobileResources/HUD/T_Castle_ThumbstickInner.uasset" 382
-"../../../Engine/Content/MobileResources/HUD/T_Castle_ThumbstickOutter.uasset" 383
-"../../../Engine/Content/Tutorial/ContentIntroCurve.uasset" 384
-"../../../Engine/Content/Tutorial/Basics/LevelEditorAttract.uasset" 385
-"../../../Engine/Content/Tutorial/Basics/TutorialAssets/icon_tab_Levels_40x.uasset" 386
-"../../../Engine/Content/Tutorial/Basics/LevelEditorOverview.uasset" 387
-"../../../Engine/Content/Tutorial/BlueprintTutorials/TutorialAssets/Blueprint_64x.uasset" 388
-"../../../Engine/Content/Tutorial/BlueprintTutorials/BlueprintEditorTutorial.uasset" 389
-"../../../Engine/Content/Tutorial/BlueprintTutorials/LevelBlueprintEditorOverview.uasset" 390
-"../../../Engine/Content/Tutorial/Code/AddingCode.uasset" 391
-"../../../Engine/Content/Tutorial/Landscape/TutorialAssets/Landscape.uasset" 392
-"../../../Engine/Content/Tutorial/Landscape/LandscapeWalkThrough.uasset" 393
-"../../../Engine/Content/Tutorial/Landscape/Landscape_Manage_Mode.uasset" 394
-"../../../Engine/Content/Tutorial/Landscape/Landscape_Painting_Mode.uasset" 395
-"../../../Engine/Content/Tutorial/Landscape/Landscape_Sculpt_Mode.uasset" 396
-"../../../Engine/Content/Tutorial/Paper2D/TutorialAssets/Paper2DFlipbook_TutorialIcon.uasset" 397
-"../../../Engine/Content/Tutorial/Paper2D/FlipbookEditorTutorial.uasset" 398
-"../../../Engine/Content/Tutorial/Paper2D/TutorialAssets/Paper2DSprite_TutorialIcon.uasset" 399
-"../../../Engine/Content/Tutorial/Paper2D/SpriteEditorTutorial.uasset" 400
-"../../../Engine/Content/Tutorial/SubEditors/MaterialEditorTutorial.uasset" 401
-"../../../Engine/Content/Tutorial/SubEditors/ParticleSystemEditorTutorial.uasset" 402
-"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/TutorialMaterial.uasset" 403
-"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/T_SmokeSubUV_8X8.uasset" 404
-"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/T_soft_smoke.uasset" 405
-"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/M_smoke_subUV_blackbody.uasset" 406
-"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/TutorialParticleSystem.uasset" 407
-"../../../Engine/Content/VREditor/LaserPointer/VR_LaserPower_01.uasset" 408
-"../../../Engine/Content/VREditor/TransformGizmo/TransformGizmoMaterial.uasset" 409
-"../../../Engine/Content/VREditor/TransformGizmo/TranslucentTransformGizmoMaterial.uasset" 410
-"../../../Engine/Content/VREditor/TransformGizmo/BoundingBoxCorner.uasset" 411
-"../../../Engine/Content/VREditor/TransformGizmo/BoundingBoxEdge.uasset" 412
-"../../../Engine/Content/VREditor/TransformGizmo/PlaneTranslationHandle.uasset" 413
-"../../../Engine/Content/VREditor/TransformGizmo/Main.uasset" 414
-"../../../Engine/Content/VREditor/TransformGizmo/Xray.uasset" 415
-"../../../Engine/Content/VREditor/TransformGizmo/SM_Sequencer_Key.uasset" 416
-"../../../Engine/Content/VREditor/TransformGizmo/SM_Sequencer_Node.uasset" 417
-"../../Plugins/2D/Paper2D/Content/DummySprite.uasset" 418
-"../../Plugins/2D/Paper2D/Content/DefaultPaperTerrainMaterial.uasset" 419
-"../../Plugins/2D/Paper2D/Content/MaskedUnlitSpriteMaterial.uasset" 420
-"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/BreakOutFloat4Components.uasset" 421
-"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/MakeFloat2.uasset" 422
-"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/MakeFloat3.uasset" 423
-"../../Plugins/Runtime/Oculus/OculusVR/Content/Materials/OculusMR_ChromaKey.uasset" 424
-"../../Plugins/Runtime/Oculus/OculusVR/Content/Materials/OculusMR_ChromaKey_Lit.uasset" 425
-"../../Plugins/Runtime/Oculus/OculusVR/Content/Materials/OculusMR_OpaqueColoredMaterial.uasset" 426
-"../../Plugins/Runtime/Oculus/OculusVR/Content/Materials/OculusMR_WhiteMaterial.uasset" 427
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/FollowCamera_BP.uasset" 428
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Maps/level_00_BuiltData.uasset" 429
-"../../../Engine/Content/MapTemplates/Bokeh_5Sides.uasset" 430
-"../../../Engine/Content/MapTemplates/T_ScreenDirt02_w.uasset" 431
-"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Maps/level_00.umap" 432
-"../../../Engine/Content/Maps/Entry_BuiltData.uasset" 433
-"../../../Engine/Content/Maps/Entry.umap" 434
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_0.uasset" 16
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_1.uasset" 17
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_2.uasset" 18
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_3.uasset" 19
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_4.uasset" 20
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/salute/salute_Sprite_5.uasset" 21
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/salute.uasset" 22
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_0.uasset" 23
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_1.uasset" 24
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_10.uasset" 25
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_11.uasset" 26
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_12.uasset" 27
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_13.uasset" 28
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_2.uasset" 29
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_3.uasset" 30
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_5.uasset" 31
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_6.uasset" 32
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_7.uasset" 33
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_8.uasset" 34
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick01/standKick01_Sprite_9.uasset" 35
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit03/standKick01.uasset" 36
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standKick02.uasset" 37
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_00.uasset" 38
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_01.uasset" 39
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_03.uasset" 40
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_04.uasset" 41
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_05.uasset" 42
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_06.uasset" 43
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_07.uasset" 44
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_08.uasset" 45
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_09.uasset" 46
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_11.uasset" 47
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_12.uasset" 48
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/kick02/standKick02_Sprite_13.uasset" 49
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit04/standKick02.uasset" 50
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_0.uasset" 51
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_1.uasset" 52
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_3.uasset" 53
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch03/standPunch03_Sprite_5.uasset" 54
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standPunch03.uasset" 55
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch04/standPunch03_Sprite_10.uasset" 56
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch04/standPunch03_Sprite_11.uasset" 57
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch04/standPunch03_Sprite_12.uasset" 58
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch04/standPunch03_Sprite_6.uasset" 59
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch04/standPunch03_Sprite_7.uasset" 60
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch04/standPunch03_Sprite_8.uasset" 61
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch04/standPunch03_Sprite_9.uasset" 62
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit05/standPunch03.uasset" 63
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_7.uasset" 64
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Movement/landed.uasset" 65
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_0.uasset" 66
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_12.uasset" 67
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_13.uasset" 68
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_23.uasset" 69
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_4.uasset" 70
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_6.uasset" 71
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_8.uasset" 72
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBall01_Sprite_9.uasset" 73
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Special/hadoukenBall01.uasset" 74
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBallEnd01_Sprite_0.uasset" 75
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBallEnd01_Sprite_1.uasset" 76
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBallEnd01_Sprite_2.uasset" 77
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadoukenBallEnd01_Sprite_3.uasset" 78
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Special/hadoukenBallEnd01.uasset" 79
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/BP_Hadouken.uasset" 80
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/src/ryu_punch01.uasset" 81
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/attack/ryu_punch01_Sprite_0.uasset" 82
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/attack/ryu_punch01_Sprite_1.uasset" 83
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/attack/ryu_punch01_Sprite_2.uasset" 84
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/attack/ryu_punch01_Sprite_3.uasset" 85
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/attack/ryu_punch01_Sprite_5.uasset" 86
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/attack/ryu_punch01_Sprite_6.uasset" 87
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/ryu_punch01.uasset" 88
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/BP_ryu_punch01.uasset" 89
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Data/PlayerStates.uasset" 90
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/10_Sprite.uasset" 91
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/11_Sprite.uasset" 92
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/1_Sprite.uasset" 93
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/2_Sprite.uasset" 94
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/3_Sprite.uasset" 95
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/4_Sprite.uasset" 96
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/6_Sprite.uasset" 97
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/7_Sprite.uasset" 98
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/8_Sprite.uasset" 99
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/9_Sprite.uasset" 100
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/HUD/BP_BufferInputWidget.uasset" 101
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/1.uasset" 102
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/10.uasset" 103
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/11.uasset" 104
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/2.uasset" 105
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/3.uasset" 106
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/4.uasset" 107
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/6.uasset" 108
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/7.uasset" 109
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/8.uasset" 110
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Arrows/9.uasset" 111
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpKick/jumpKickStart_Sprite_2.uasset" 112
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/charginup.uasset" 113
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/duck.uasset" 114
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/hadouken.uasset" 115
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/hadoukenBall01.uasset" 116
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/hadoukenBallEnd01.uasset" 117
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/idle.uasset" 118
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/jump.uasset" 119
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/jumpBackward.uasset" 120
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/jumpForward.uasset" 121
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/jumpKickLoop.uasset" 122
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/jumpKickStart.uasset" 123
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/portrait01.uasset" 124
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/salute.uasset" 125
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/shoryuken.uasset" 126
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standKick01.uasset" 127
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standPunch01.uasset" 128
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/tatsumakiEnd.uasset" 129
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/tatsumakiLoop.uasset" 130
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/tatsumakiStart.uasset" 131
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/src/ryu_hit.uasset" 132
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_1.uasset" 133
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_10.uasset" 134
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_2.uasset" 135
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_6.uasset" 136
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_7.uasset" 137
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_8.uasset" 138
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_9.uasset" 139
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jumpkick/ryu_jumpattack_Sprite_0.uasset" 140
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/src/ryu_idle.uasset" 141
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/src/ryu_jump.uasset" 142
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/src/ryu_jumpattack.uasset" 143
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/src/ryu_jumpforward.uasset" 144
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/src/ryu_walk.uasset" 145
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Background/CloudsFront.uasset" 146
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Background/CloudsFront_TileSet.uasset" 147
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Foreground/TilesExamples.uasset" 148
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Foreground/TilesExamples_TileSet.uasset" 149
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Foreground/Trees.uasset" 150
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Foreground/Trees_TileSet.uasset" 151
+"../../../Engine/Content/Animation/DefaultAnimCurveCompressionSettings.uasset" 152
+"../../../Engine/Content/Functions/Engine_MaterialFunctions01/Opacity/CameraDepthFade.uasset" 153
+"../../../Engine/Content/EngineMaterials/T_Default_Material_Grid_M.uasset" 154
+"../../../Engine/Content/EngineMaterials/T_Default_Material_Grid_N.uasset" 155
+"../../../Engine/Content/EngineMaterials/WorldGridMaterial.uasset" 156
+"../../../Engine/Content/ArtTools/RenderToTexture/Meshes/S_1_Unit_Plane.uasset" 157
+"../../../Engine/Content/EngineMaterials/DefaultMaterial.uasset" 158
+"../../../Engine/Content/BasicShapes/Cone.uasset" 159
+"../../../Engine/Content/BasicShapes/Cube.uasset" 160
+"../../../Engine/Content/BasicShapes/Cylinder.uasset" 161
+"../../../Engine/Content/BasicShapes/Plane.uasset" 162
+"../../../Engine/Content/BasicShapes/Sphere.uasset" 163
+"../../../Engine/Content/EditorLandscapeResources/DataLayer.uasset" 164
+"../../../Engine/Content/EditorMaterials/MAT_Groups_Toggle.uasset" 165
+"../../../Engine/Content/EditorMaterials/MAT_Groups_Visibility.uasset" 166
+"../../../Engine/Content/EditorMaterials/PreviewShadowIndicator.uasset" 167
+"../../../Engine/Content/EditorMaterials/PreviewShadowIndicatorMaterial.uasset" 168
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_ColorTrack.uasset" 169
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Anim.uasset" 170
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_AudioMaster.uasset" 171
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Director.uasset" 172
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Event.uasset" 173
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Fade.uasset" 174
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Float.uasset" 175
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Move.uasset" 176
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Slomo.uasset" 177
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Sound.uasset" 178
+"../../../Engine/Content/EditorMaterials/MatineeGroups/MAT_Groups_Vector.uasset" 179
+"../../../Engine/Content/EditorMaterials/ParticleSystems/PSysThumbnail_NoImage.uasset" 180
+"../../../Engine/Content/EditorMaterials/ParticleSystems/PSysThumbnail_OOD.uasset" 181
+"../../../Engine/Content/EditorMaterials/Camera/CineMat.uasset" 182
+"../../../Engine/Content/EditorMaterials/Camera/MI_CineMat_Rig.uasset" 183
+"../../../Engine/Content/EditorMeshes/Camera/SM_CraneRig_Arm.uasset" 184
+"../../../Engine/Content/EditorMeshes/Camera/SM_CraneRig_Base.uasset" 185
+"../../../Engine/Content/EditorMeshes/Camera/SM_CraneRig_Body.uasset" 186
+"../../../Engine/Content/EditorMeshes/Camera/SM_CraneRig_Mount.uasset" 187
+"../../../Engine/Content/EditorMeshes/Camera/SM_RailRig_Mount.uasset" 188
+"../../../Engine/Content/EditorMeshes/Camera/SM_RailRig_Track.uasset" 189
+"../../../Engine/Content/EditorResources/BSPVertex.uasset" 190
+"../../../Engine/Content/EditorResources/S_Actor.uasset" 191
+"../../../Engine/Content/EditorResources/S_Note.uasset" 192
+"../../../Engine/Content/EditorResources/S_Solver.uasset" 193
+"../../../Engine/Content/EditorResources/S_Trigger.uasset" 194
+"../../../Engine/Content/EditorResources/SequenceRecorder/Countdown.uasset" 195
+"../../../Engine/Content/EditorResources/SequenceRecorder/RecordingIndicator.uasset" 196
+"../../../Engine/Content/EditorSounds/Notifications/CompileFailed.uasset" 197
+"../../../Engine/Content/EditorSounds/Notifications/CompileFailed_Cue.uasset" 198
+"../../../Engine/Content/EditorSounds/Notifications/CompileSuccess.uasset" 199
+"../../../Engine/Content/EditorSounds/Notifications/CompileStart_Cue.uasset" 200
+"../../../Engine/Content/EditorSounds/Notifications/CompileSuccess_Cue.uasset" 201
+"../../../Engine/Content/EngineDamageTypes/DmgTypeBP_Environmental.uasset" 202
+"../../../Engine/Content/EngineDebugMaterials/DebugEditorMaterial.uasset" 203
+"../../../Engine/Content/EngineDebugMaterials/DebugMeshMaterial.uasset" 204
+"../../../Engine/Content/EngineDebugMaterials/M_SimpleTranslucent.uasset" 205
+"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/CameraDirectionVector.uasset" 206
+"../../../Engine/Content/EngineDebugMaterials/VolumeToRender.uasset" 207
+"../../../Engine/Content/EngineDebugMaterials/M_VolumeRenderSphereTracePP.uasset" 208
+"../../../Engine/Content/EngineDebugMaterials/WireframeMaterial.uasset" 209
+"../../../Engine/Content/EngineFonts/Faces/DroidSansFallback.uasset" 210
+"../../../Engine/Content/EngineFonts/Faces/RobotoBold.uasset" 211
+"../../../Engine/Content/EngineFonts/Faces/RobotoBoldItalic.uasset" 212
+"../../../Engine/Content/EngineFonts/Faces/RobotoItalic.uasset" 213
+"../../../Engine/Content/EngineFonts/Faces/RobotoLight.uasset" 214
+"../../../Engine/Content/EngineFonts/Faces/RobotoRegular.uasset" 215
+"../../../Engine/Content/EngineFonts/Roboto.uasset" 216
+"../../../Engine/Content/EngineMaterials/BaseFlattenDiffuseMap.uasset" 217
+"../../../Engine/Content/EngineMaterials/BaseFlattenEmissiveMap.uasset" 218
+"../../../Engine/Content/EngineMaterials/BaseFlattenGrayscaleMap.uasset" 219
+"../../../Engine/Content/EngineMaterials/BaseFlattenNormalMap.uasset" 220
+"../../../Engine/Content/EngineMaterials/BaseFlattenMaterial.uasset" 221
+"../../../Engine/Content/EngineMaterials/BlueNoise.uasset" 222
+"../../../Engine/Content/EngineMaterials/DefaultBloomKernel.uasset" 223
+"../../../Engine/Content/EngineMaterials/DefaultBokeh.uasset" 224
+"../../../Engine/Content/EngineMaterials/DefaultDiffuse.uasset" 225
+"../../../Engine/Content/EngineMaterials/DefaultDeferredDecalMaterial.uasset" 226
+"../../../Engine/Content/EngineMaterials/DefaultLightFunctionMaterial.uasset" 227
+"../../../Engine/Content/EngineMaterials/DefaultPhysicalMaterial.uasset" 228
+"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/BreakOutFloat2Components.uasset" 229
+"../../../Engine/Content/EngineMaterials/DefaultPostProcessMaterial.uasset" 230
+"../../../Engine/Content/EngineFonts/RobotoDistanceField.uasset" 231
+"../../../Engine/Content/EngineMaterials/DefaultTextMaterialOpaque.uasset" 232
+"../../../Engine/Content/EngineMaterials/DefaultVirtualTextureMaterial.uasset" 233
+"../../../Engine/Content/EngineMaterials/DefaultWhiteGrid.uasset" 234
+"../../../Engine/Content/EngineMaterials/DefaultWhiteGrid_Low.uasset" 235
+"../../../Engine/Content/EngineMaterials/EmissiveMeshMaterial.uasset" 236
+"../../../Engine/Content/EngineMaterials/GizmoMaterial.uasset" 237
+"../../../Engine/Content/EngineMaterials/Good64x64TilingNoiseHighFreq.uasset" 238
+"../../../Engine/Content/EngineMaterials/HairDefaultMaterial.uasset" 239
+"../../../Engine/Content/EngineMaterials/MiniFont.uasset" 240
+"../../../Engine/Content/EngineMaterials/InvalidLightmapSettings.uasset" 241
+"../../../Engine/Content/EngineMaterials/M_InvalidLightmapSettings.uasset" 242
+"../../../Engine/Content/Functions/Engine_MaterialFunctions02/WorldPositionOffset/CameraOffset.uasset" 243
+"../../../Engine/Content/EngineMaterials/PhAT_JointLimitMaterial.uasset" 244
+"../../../Engine/Content/EngineMaterials/PreintegratedSkinBRDF.uasset" 245
+"../../../Engine/Content/EngineMaterials/RemoveSurfaceMaterial.uasset" 246
+"../../../Engine/Content/EngineMaterials/WeightMapPlaceholderTexture.uasset" 247
+"../../../Engine/Content/EngineResources/WhiteSquareTexture.uasset" 248
+"../../../Engine/Content/EngineMaterials/Widget3DPassThrough.uasset" 249
+"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Masked.uasset" 250
+"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Opaque.uasset" 251
+"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Masked_OneSided.uasset" 252
+"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Opaque_OneSided.uasset" 253
+"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Translucent.uasset" 254
+"../../../Engine/Content/EngineMaterials/Widget3DPassThrough_Translucent_OneSided.uasset" 255
+"../../../Engine/Content/EngineMeshes/Cylinder.uasset" 256
+"../../../Engine/Content/EngineMeshes/Sphere.uasset" 257
+"../../../Engine/Content/EngineResources/Black.uasset" 258
+"../../../Engine/Content/EngineResources/DefaultTexture.uasset" 259
+"../../../Engine/Content/EngineResources/DefaultTextureCube.uasset" 260
+"../../../Engine/Content/EngineResources/DefaultVolumeTexture2D.uasset" 261
+"../../../Engine/Content/EngineResources/DefaultVolumeTexture.uasset" 262
+"../../../Engine/Content/EngineResources/GradientTexture0.uasset" 263
+"../../../Engine/Content/EngineSounds/Master.uasset" 264
+"../../../Engine/Content/Functions/Engine_MaterialFunctions01/Shading/ConvertFromDiffSpec.uasset" 265
+"../../../Engine/Content/Functions/Engine_MaterialFunctions01/Shading/PowerToRoughness.uasset" 266
+"../../../Engine/Content/Maps/Templates/Thumbnails/Default.uasset" 267
+"../../../Engine/Content/Maps/Templates/Thumbnails/TimeOfDay.uasset" 268
+"../../../Engine/Content/Maps/Templates/Thumbnails/VR-Basic.uasset" 269
+"../../../Engine/Content/MobileResources/T_MobileControls_texture.uasset" 270
+"../../../Engine/Content/MobileResources/T_MobileMenu2.uasset" 271
+"../../../Engine/Content/MobileResources/HUD/AnalogHat.uasset" 272
+"../../../Engine/Content/MobileResources/HUD/VirtualJoystick_Background.uasset" 273
+"../../../Engine/Content/MobileResources/HUD/VirtualJoystick_Thumb.uasset" 274
+"../../../Engine/Content/MobileResources/HUD/DefaultVirtualJoysticks.uasset" 275
+"../../../Engine/Content/MobileResources/HUD/LeftVirtualJoystickOnly.uasset" 276
+"../../../Engine/Content/MobileResources/HUD/MobileHUDButton1_off.uasset" 277
+"../../../Engine/Content/MobileResources/HUD/MobileHUDButton1_on.uasset" 278
+"../../../Engine/Content/MobileResources/HUD/MobileHUDButton2_off.uasset" 279
+"../../../Engine/Content/MobileResources/HUD/MobileHUDButton2_on.uasset" 280
+"../../../Engine/Content/MobileResources/HUD/MobileHUDButton3.uasset" 281
+"../../../Engine/Content/MobileResources/HUD/MobileHUDButtonFire.uasset" 282
+"../../../Engine/Content/MobileResources/HUD/MobileHUDDirectionPad.uasset" 283
+"../../../Engine/Content/MobileResources/HUD/MobileHUDDirectionPad2.uasset" 284
+"../../../Engine/Content/MobileResources/HUD/MobileHUDDirectionPad3.uasset" 285
+"../../../Engine/Content/MobileResources/HUD/MobileHUDDirectionStick.uasset" 286
+"../../../Engine/Content/MobileResources/HUD/T_Castle_ThumbstickInner.uasset" 287
+"../../../Engine/Content/MobileResources/HUD/T_Castle_ThumbstickOutter.uasset" 288
+"../../../Engine/Content/Tutorial/ContentIntroCurve.uasset" 289
+"../../../Engine/Content/Tutorial/Basics/LevelEditorAttract.uasset" 290
+"../../../Engine/Content/Tutorial/Basics/TutorialAssets/icon_tab_Levels_40x.uasset" 291
+"../../../Engine/Content/Tutorial/Basics/LevelEditorOverview.uasset" 292
+"../../../Engine/Content/Tutorial/BlueprintTutorials/TutorialAssets/Blueprint_64x.uasset" 293
+"../../../Engine/Content/Tutorial/BlueprintTutorials/BlueprintEditorTutorial.uasset" 294
+"../../../Engine/Content/Tutorial/BlueprintTutorials/LevelBlueprintEditorOverview.uasset" 295
+"../../../Engine/Content/Tutorial/Code/AddingCode.uasset" 296
+"../../../Engine/Content/Tutorial/Landscape/TutorialAssets/Landscape.uasset" 297
+"../../../Engine/Content/Tutorial/Landscape/LandscapeWalkThrough.uasset" 298
+"../../../Engine/Content/Tutorial/Landscape/Landscape_Manage_Mode.uasset" 299
+"../../../Engine/Content/EditorBlueprintResources/StandardMacros.uasset" 300
+"../../../Engine/Content/Tutorial/Landscape/Landscape_Painting_Mode.uasset" 301
+"../../../Engine/Content/Tutorial/Landscape/Landscape_Sculpt_Mode.uasset" 302
+"../../../Engine/Content/Tutorial/Paper2D/TutorialAssets/Paper2DFlipbook_TutorialIcon.uasset" 303
+"../../../Engine/Content/Tutorial/Paper2D/FlipbookEditorTutorial.uasset" 304
+"../../../Engine/Content/Tutorial/Paper2D/TutorialAssets/Paper2DSprite_TutorialIcon.uasset" 305
+"../../../Engine/Content/Tutorial/Paper2D/SpriteEditorTutorial.uasset" 306
+"../../../Engine/Content/Tutorial/SubEditors/MaterialEditorTutorial.uasset" 307
+"../../../Engine/Content/Tutorial/SubEditors/ParticleSystemEditorTutorial.uasset" 308
+"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/TutorialMaterial.uasset" 309
+"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/T_SmokeSubUV_8X8.uasset" 310
+"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/T_soft_smoke.uasset" 311
+"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/M_smoke_subUV_blackbody.uasset" 312
+"../../../Engine/Content/Tutorial/SubEditors/TutorialAssets/TutorialParticleSystem.uasset" 313
+"../../../Engine/Content/VREditor/LaserPointer/VR_LaserPower_01.uasset" 314
+"../../../Engine/Content/VREditor/TransformGizmo/TransformGizmoMaterial.uasset" 315
+"../../../Engine/Content/VREditor/TransformGizmo/TranslucentTransformGizmoMaterial.uasset" 316
+"../../../Engine/Content/VREditor/TransformGizmo/BoundingBoxCorner.uasset" 317
+"../../../Engine/Content/VREditor/TransformGizmo/BoundingBoxEdge.uasset" 318
+"../../../Engine/Content/VREditor/TransformGizmo/PlaneTranslationHandle.uasset" 319
+"../../../Engine/Content/VREditor/TransformGizmo/Main.uasset" 320
+"../../../Engine/Content/VREditor/TransformGizmo/Xray.uasset" 321
+"../../../Engine/Content/VREditor/TransformGizmo/SM_Sequencer_Key.uasset" 322
+"../../../Engine/Content/VREditor/TransformGizmo/SM_Sequencer_Node.uasset" 323
+"../../Plugins/2D/Paper2D/Content/DummySprite.uasset" 324
+"../../Plugins/2D/Paper2D/Content/DefaultPaperTerrainMaterial.uasset" 325
+"../../Plugins/2D/Paper2D/Content/MaskedUnlitSpriteMaterial.uasset" 326
+"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/BreakOutFloat4Components.uasset" 327
+"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/MakeFloat2.uasset" 328
+"../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/MakeFloat3.uasset" 329
+"../../Plugins/Runtime/Oculus/OculusVR/Content/Materials/OculusMR_ChromaKey.uasset" 330
+"../../Plugins/Runtime/Oculus/OculusVR/Content/Materials/OculusMR_ChromaKey_Lit.uasset" 331
+"../../Plugins/Runtime/Oculus/OculusVR/Content/Materials/OculusMR_OpaqueColoredMaterial.uasset" 332
+"../../Plugins/Runtime/Oculus/OculusVR/Content/Materials/OculusMR_WhiteMaterial.uasset" 333
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/charginup/charginup_Sprite_0.uasset" 334
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/charginup/charginup_Sprite_1.uasset" 335
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/charginup.uasset" 336
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/standPunch02.uasset" 337
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch02/standPunch02_Sprite_1.uasset" 338
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch02/standPunch02_Sprite_2.uasset" 339
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit01/standPunch1_hit.uasset" 340
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch02/standPunch02_Sprite_0.uasset" 341
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit01/standPunch1_start.uasset" 342
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_7.uasset" 343
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit02/standPunch2_end.uasset" 344
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_3.uasset" 345
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_5.uasset" 346
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_6.uasset" 347
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit02/standPunch2_hit.uasset" 348
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_0.uasset" 349
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/punch01/standPunch01_Sprite_2.uasset" 350
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit02/standPunch2_start.uasset" 351
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit03/standKick01_end.uasset" 352
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit03/standKick01_hit.uasset" 353
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit03/standKick01_start.uasset" 354
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit04/standKick02_end.uasset" 355
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit04/standKick02_hit.uasset" 356
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit04/standKick02_start.uasset" 357
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit05/standPunch03_end.uasset" 358
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit05/standPunch03_hit.uasset" 359
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit05/standPunch03_start.uasset" 360
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit06/standPunch04_end.uasset" 361
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit06/standPunch04_hit.uasset" 362
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit06/standPunch04_hit2.uasset" 363
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Combo/hit06/standPunch04_start.uasset" 364
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/hitTop.uasset" 365
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hittop/hitTop_Sprite_0.uasset" 366
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hittop/hitTop_Sprite_1.uasset" 367
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hittop/hitTop_Sprite_2.uasset" 368
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/hitTop.uasset" 369
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpKick/jumpKickLoop_Sprite_0.uasset" 370
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpKick/jumpKickLoop_Sprite_1.uasset" 371
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/jumpKickLoop.uasset" 372
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpKick/jumpKickStart_Sprite_0.uasset" 373
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpKick/jumpKickStart_Sprite_1.uasset" 374
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/jumpKickStart.uasset" 375
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/jumpKickStop.uasset" 376
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Movement/duck.uasset" 377
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_0.uasset" 378
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_1.uasset" 379
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_2.uasset" 380
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_3.uasset" 381
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_4.uasset" 382
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/idle/idle_Sprite_5.uasset" 383
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Movement/idle.uasset" 384
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_0.uasset" 385
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_1.uasset" 386
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_2.uasset" 387
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_3.uasset" 388
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_4.uasset" 389
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_5.uasset" 390
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jump/jump_Sprite_6.uasset" 391
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Movement/jump.uasset" 392
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_0.uasset" 393
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_1.uasset" 394
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_2.uasset" 395
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_3.uasset" 396
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_4.uasset" 397
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_5.uasset" 398
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_6.uasset" 399
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_7.uasset" 400
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/jumpForward/jumpForward_Sprite_8.uasset" 401
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Movement/jumpForward.uasset" 402
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/walk.uasset" 403
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_0.uasset" 404
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_1.uasset" 405
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_2.uasset" 406
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_3.uasset" 407
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_4.uasset" 408
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_5.uasset" 409
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_6.uasset" 410
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/walk/walk_Sprite_7.uasset" 411
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Movement/walk.uasset" 412
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_0.uasset" 413
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_1.uasset" 414
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_10.uasset" 415
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_2.uasset" 416
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_4.uasset" 417
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_6.uasset" 418
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_7.uasset" 419
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_8.uasset" 420
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/hadouken/hadouken_Sprite_9.uasset" 421
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Special/hadouken.uasset" 422
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/noStamina.uasset" 423
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStamina/noStamina_Sprite_0.uasset" 424
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStamina/noStamina_Sprite_1.uasset" 425
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStamina/noStamina_Sprite_2.uasset" 426
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Special/noStamina.uasset" 427
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/src/noStaminaAir.uasset" 428
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_0.uasset" 429
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_1.uasset" 430
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_2.uasset" 431
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_3.uasset" 432
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_4.uasset" 433
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/noStaminaAir/noStaminaAir_Sprite_5.uasset" 434
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Special/noStaminaAir.uasset" 435
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_0.uasset" 436
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_1.uasset" 437
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_2.uasset" 438
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_3.uasset" 439
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_4.uasset" 440
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_5.uasset" 441
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_6.uasset" 442
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_7.uasset" 443
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/shoryuken/shoryuken_Sprite_8.uasset" 444
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Special/shoryuken.uasset" 445
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_0.uasset" 446
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_1.uasset" 447
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_10.uasset" 448
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_11.uasset" 449
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_12.uasset" 450
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_13.uasset" 451
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_2.uasset" 452
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_3.uasset" 453
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_4.uasset" 454
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_5.uasset" 455
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_6.uasset" 456
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_7.uasset" 457
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_8.uasset" 458
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/tatsumaki/tatsumaki_Sprite_9.uasset" 459
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ken/Special/tatsumaki.uasset" 460
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ken/portrait/portrait01_Sprite.uasset" 461
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/BP_CharacterKen.uasset" 462
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/Attack/ryu_punch01_end.uasset" 463
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/Attack/ryu_punch01_hit.uasset" 464
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/Attack/ryu_punch01_start.uasset" 465
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_3.uasset" 466
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_4.uasset" 467
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/hit/ryu_hit_Sprite_5.uasset" 468
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/ryu_hit.uasset" 469
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_0.uasset" 470
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_1.uasset" 471
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_2.uasset" 472
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_3.uasset" 473
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_4.uasset" 474
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/idle/ryu_idle_Sprite_5.uasset" 475
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/ryu_idle.uasset" 476
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jump/ryu_jump_Sprite_0.uasset" 477
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jump/ryu_jump_Sprite_1.uasset" 478
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jump/ryu_jump_Sprite_2.uasset" 479
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jump/ryu_jump_Sprite_3.uasset" 480
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jump/ryu_jump_Sprite_4.uasset" 481
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jump/ryu_jump_Sprite_5.uasset" 482
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jump/ryu_jump_Sprite_6.uasset" 483
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/ryu_jump1.uasset" 484
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jumpkick/ryu_jumpattack_Sprite_2.uasset" 485
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jumpkick/ryu_jumpattack_Sprite_3.uasset" 486
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/ryu_jumpattack.uasset" 487
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jumpforward/ryu_jumpforward_Sprite_00.uasset" 488
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jumpforward/ryu_jumpforward_Sprite_02.uasset" 489
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jumpforward/ryu_jumpforward_Sprite_03.uasset" 490
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jumpforward/ryu_jumpforward_Sprite_04.uasset" 491
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jumpforward/ryu_jumpforward_Sprite_05.uasset" 492
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/jumpforward/ryu_jumpforward_Sprite_07.uasset" 493
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/ryu_jumpforward.uasset" 494
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_0.uasset" 495
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_1.uasset" 496
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_2.uasset" 497
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_3.uasset" 498
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_4.uasset" 499
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Ryu/walk/ryu_walk_Sprite_5.uasset" 500
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Animations/Ryu/ryu_walk.uasset" 501
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/BP_EnemyRyu.uasset" 502
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/PlayerController01_BP.uasset" 503
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/PlayerState01_BP.uasset" 504
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/HUD/BP_PlayerWidget.uasset" 505
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/HUD/PlayerHUD.uasset" 506
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/HUD/BP_GameHUD.uasset" 507
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/BP_RNGTGameModeBase.uasset" 508
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Blueprints/FollowCamera_BP.uasset" 509
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Maps/level_00_BuiltData.uasset" 510
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/marioworld.uasset" 511
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/marioworld_TileSet.uasset" 512
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/scenario_01.uasset" 513
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/scenario_01_TileSet.uasset" 514
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Tiles/TileMapScenario.uasset" 515
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Background/BGBack.uasset" 516
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Background/BGBack_TileSet.uasset" 517
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Tiles/TM_Background_back.uasset" 518
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Background/BGFront.uasset" 519
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Background/BGFront_TileSet.uasset" 520
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Tiles/TM_Background_front.uasset" 521
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Foreground/Tileset.uasset" 522
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Foreground/Tileset_TileSet.uasset" 523
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Tiles/TM_Foreground_back.uasset" 524
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Background/CloudsBack.uasset" 525
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Sprites/Scenario/FreePlatformer/Background/CloudsBack_TileSet.uasset" 526
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Tiles/TM_Skybox_back.uasset" 527
+"../../../../../Users/akira/Documents/Unreal Projects/testProjects/RunNGunTest/Content/Game/Maps/level_00.umap" 528
+"../../../Engine/Content/Maps/Entry_BuiltData.uasset" 529
+"../../../Engine/Content/Maps/Entry.umap" 530

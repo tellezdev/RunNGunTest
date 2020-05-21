@@ -2,13 +2,12 @@
 
 
 #include "RNGTGameModeBase.h"
+#include "CharacterBase.h"
+#include "Blueprint/UserWidget.h"
+#include "Engine/Engine.h"
+#include "GameHUD.h"
 
 void ARNGTGameModeBase::StartPlay()
 {
 	Super::StartPlay();
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("RNGTGameModeBase Initiated"));
-	}
 }

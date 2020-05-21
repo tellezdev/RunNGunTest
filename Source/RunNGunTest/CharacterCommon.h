@@ -9,6 +9,7 @@
 #include "PaperFlipbook.h"
 #include "PaperCharacter.h"
 #include "PaperSpriteComponent.h"
+#include "GameHUD.h"
 #include "CharacterCommon.generated.h"
 
 
@@ -163,6 +164,10 @@ public:
 		bool bIsAnimationAttackComplete = true;
 	UPROPERTY()
 		float AnimationOtherTimeStop;
+
+	// HUD
+	UPROPERTY()
+		AGameHUD* GameHUD;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CollisionsHitInformation")
 		TArray<AActor*> ActorsToIgnore;

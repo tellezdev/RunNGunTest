@@ -33,6 +33,7 @@ ACharacterBase::ACharacterBase()
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
+
 	SpecialKeyPressedTimeStart = -1.f;
 	AnimationFlipbookTimeStop = -1.f;
 	AnimationAttackCompleteTimeStop = -1.f;
@@ -45,6 +46,8 @@ void ACharacterBase::BeginPlay()
 
 	SetAnimationFlags();
 	ResetAnimationFlags();
+	auto test = GetWorld()->GetFirstPlayerController();
+	GameHUD = Cast<AGameHUD>(test->GetHUD());
 }
 
 // Called every frame
@@ -561,6 +564,9 @@ void ACharacterBase::InsertInputBuffer(KeyInput key)
 		BufferedInput.RemoveSingle(BufferedInput[0]);
 	}
 	BufferedInput.Push(key);
+
+	GameHUD->MessageFromLeftSide(FString::Printf(TEXT("Buffer inserted: %i"), key));
+	GameHUD->DrawBuffer(BufferedInput);
 }
 
 TArray<int32> ACharacterBase::GetBufferedInput()
@@ -571,7 +577,8 @@ TArray<int32> ACharacterBase::GetBufferedInput()
 void ACharacterBase::ClearBuffer()
 {
 	BufferedInput.Empty();
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Buffer cleared"));
+	GameHUD->DrawBuffer(BufferedInput);
+	GameHUD->MessageFromLeftSide(FString::Printf(TEXT("Buffer cleared")));
 }
 
 // Stamina
@@ -601,7 +608,7 @@ void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 	FHitResult* HitResult = new FHitResult();
 	if (!CurrentAttackHasHitObjective && UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentLocation, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true, FLinearColor::Red, FLinearColor::Green, 0.5f))
 	{
-		if (&HitResult->Actor)
+		if (HitResult->Actor->ActorHasTag("Enemy"))
 		{
 			ACharacterCommon* EnemyCasted = Cast<ACharacterCommon>(HitResult->Actor);
 			EnemyCasted->SetDamage(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].DamageValue);

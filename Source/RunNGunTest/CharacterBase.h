@@ -9,14 +9,12 @@
 #include "PaperCharacter.h"
 #include "PaperSpriteComponent.h"
 #include "PaperFlipbookComponent.h"
-//#include "EnemyBase.h"
 #include "CharacterBase.generated.h"
 
 
 UENUM(BlueprintType)
 enum KeyInput
 {
-	NoMoving = 0,
 	DownLeft = 1,
 	Down = 2,
 	DownRight = 3,
@@ -25,8 +23,8 @@ enum KeyInput
 	UpLeft = 7,
 	Up = 8,
 	UpRight = 9,
-	Attack = 10,
-	Special = 11
+	Attack = 0,
+	Special = 5
 };
 
 USTRUCT(BlueprintType)
@@ -86,6 +84,7 @@ public:
 		int8 nCurrentSpecialMove = 0;
 	UPROPERTY()
 		bool bIsDirectionPressed;
+
 
 	// Animation Times
 	UPROPERTY()
@@ -153,7 +152,7 @@ public:
 	UFUNCTION()
 		void SpecialStop();
 
-		void HandleAttack();
+	void HandleAttack();
 
 	void ResetAttack();
 

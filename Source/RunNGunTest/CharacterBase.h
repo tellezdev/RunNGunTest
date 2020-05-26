@@ -84,6 +84,8 @@ public:
 		int8 nCurrentSpecialMove = 0;
 	UPROPERTY()
 		bool bIsDirectionPressed;
+	UPROPERTY()
+		int32 ComboCount = 0;
 
 
 	// Animation Times

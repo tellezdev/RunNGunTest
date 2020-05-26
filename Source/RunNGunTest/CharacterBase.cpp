@@ -292,7 +292,7 @@ void ACharacterBase::AttackStart()
 	InsertInputBuffer(KeyInput::Attack);
 
 	// Animation has to finish, with a little window to input next command
-	if (bIsAnimationAttackComplete && AnimationAttackCompleteTimeStop + 1.f > GetCurrentTime())
+	if (bIsAnimationAttackComplete && AnimationAttackCompleteTimeStop + 0.5f > GetCurrentTime())
 	{
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
@@ -307,6 +307,7 @@ void ACharacterBase::AttackStart()
 			else
 			{
 				++nAttackNumber;
+				++ComboCount;
 				CurrentAttackHasHitObjective = false;
 			}
 		}
@@ -565,7 +566,6 @@ void ACharacterBase::InsertInputBuffer(KeyInput key)
 	}
 	BufferedInput.Push(key);
 
-	GameHUD->MessageFromLeftSide(FString::Printf(TEXT("Buffer inserted: %i"), key));
 	GameHUD->DrawBuffer(BufferedInput);
 }
 
@@ -578,7 +578,6 @@ void ACharacterBase::ClearBuffer()
 {
 	BufferedInput.Empty();
 	GameHUD->DrawBuffer(BufferedInput);
-	GameHUD->MessageFromLeftSide(FString::Printf(TEXT("Buffer cleared")));
 }
 
 // Stamina
@@ -632,6 +631,11 @@ void ACharacterBase::StopHandleStaminaCharge()
 
 void ACharacterBase::ResetAttack()
 {
+	if (ComboCount > 2)
+	{
+		GameHUD->ComboCounter(ComboCount);
+	}
+	ComboCount = 0;
 	nAttackNumber = 0;
 	nCurrentComboHit = 0;
 	ResetAnimationFlags();

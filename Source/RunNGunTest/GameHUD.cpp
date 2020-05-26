@@ -12,25 +12,36 @@ AGameHUD::AGameHUD()
 
 void AGameHUD::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay();	
 
-	if (PlayerWidgetClass)
+
+	if (ComboWidget != nullptr)
 	{
-		PlayerWidget = CreateWidget<UPlayerWidget>(GetWorld(), PlayerWidgetClass);
-		if (PlayerWidget)
+		ComboWidget->RemoveFromViewport();
+		ComboWidget = nullptr;
+	}
+
+	if (ComboWidgetClass)
+	{
+		ComboWidget = CreateWidget<UComboWidget>(GetWorld(), ComboWidgetClass);
+		if (ComboWidget)
 		{
-			PlayerWidget->AddToViewport();
-			PlayerWidget->SetPositionInViewport(FVector2D(500, 500));
+			ComboWidget->AddToViewport();
 		}
 	}
 
+	if (BufferInputWidget != nullptr)
+	{
+		BufferInputWidget->RemoveFromViewport();
+		BufferInputWidget = nullptr;
+	}
 	if (BufferInputWidgetClass)
 	{
 		BufferInputWidget = CreateWidget<UBufferInputWidget>(GetWorld(), BufferInputWidgetClass);
+
 		if (BufferInputWidget)
 		{
 			BufferInputWidget->AddToViewport();
-			BufferInputWidget->SetPositionInViewport(FVector2D(500, 500));
 		}
 	}
 }
@@ -45,16 +56,19 @@ void AGameHUD::DrawHUD()
 	Super::DrawHUD();
 }
 
-void AGameHUD::MessageFromLeftSide(FString Text)
+void AGameHUD::ComboCounter(int32 ComboCount)
 {
-	if (PlayerWidget)
+	if (ComboWidget)
 	{
-		PlayerWidget->MessageFromLeftSide(Text);
+		ComboWidget->ComboCounter(ComboCount);
 	}
 }
 
 void AGameHUD::DrawBuffer(TArray<int32> BufferedInput)
 {
+
+
+
 	if (BufferInputWidget)
 	{
 		BufferInputWidget->DrawBuffer(BufferedInput);

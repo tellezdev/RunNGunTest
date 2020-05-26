@@ -17,20 +17,14 @@ class RUNNGUNTEST_API UBufferInputWidget : public UUserWidget
 public:
 	UBufferInputWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 	UFUNCTION()
 		void DrawBuffer(TArray<int32> BufferedInput);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		class UCanvasPanel* MainCanvas;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
 		TArray<UTexture2D*> ArrowsTextures;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		class UHorizontalBox* ArrowsHorizontalBox;
-
-	UPROPERTY()
-		UHorizontalBoxSlot* ArrowsHorizontalBoxSlot;
+		UHorizontalBox* ArrowsHorizontalBox;
 };

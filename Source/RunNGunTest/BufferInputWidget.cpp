@@ -9,12 +9,9 @@ UBufferInputWidget::UBufferInputWidget(const FObjectInitializer& ObjectInitializ
 
 }
 
-void UBufferInputWidget::NativeConstruct()
+void UBufferInputWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
-				
-	ArrowsHorizontalBox->Slot->Content->SetRenderScale(FVector2D(3, 3));
-	MainCanvas->AddChildToCanvas(ArrowsHorizontalBox);
+	Super::NativeOnInitialized();
 }
 
 void UBufferInputWidget::DrawBuffer(TArray<int32> BufferedInput)

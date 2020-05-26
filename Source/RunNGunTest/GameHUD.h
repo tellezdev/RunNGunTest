@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Blueprint/UserWidget.h"
-#include "PlayerWidget.h"
+#include "HUD/ComboWidget.h"
 #include "BufferInputWidget.h"
 #include "GameHUD.generated.h"
 
@@ -26,19 +26,19 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
-		void MessageFromLeftSide(FString Text);
+		void ComboCounter(int32 ComboCount);
 
 	UFUNCTION()
 		void DrawBuffer(TArray<int32> BufferedInput);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-		TSubclassOf<UUserWidget> PlayerWidgetClass;
+		TSubclassOf<UUserWidget> ComboWidgetClass = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-		TSubclassOf<UUserWidget> BufferInputWidgetClass;
+		TSubclassOf<UUserWidget> BufferInputWidgetClass = nullptr;
 
 private:
-	UPlayerWidget* PlayerWidget;
+	UComboWidget* ComboWidget;
 
 	UBufferInputWidget* BufferInputWidget;
 

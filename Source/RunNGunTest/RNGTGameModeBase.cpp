@@ -10,4 +10,21 @@
 void ARNGTGameModeBase::StartPlay()
 {
 	Super::StartPlay();
+
+
+	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	auto PlayerController = GetWorld()->GetFirstPlayerController();
+	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
+	BindDataHUD();
+}
+
+
+void ARNGTGameModeBase::BindDataHUD()
+{
+	if (Player != nullptr && Player->Portrait != nullptr)
+	{
+		GameHUD->BindDataHUD(Player->Portrait);		
+		GameHUD->SetLife(Player->Life);
+		GameHUD->SetStamina(Player->Stamina);
+	}
 }

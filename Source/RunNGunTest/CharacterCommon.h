@@ -107,7 +107,7 @@ public:
 		FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		UPaperSprite* Portrait;
+		UTexture2D* Portrait;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float Life = 100.f;
@@ -123,6 +123,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float StaminaChargingUnit = 0.1f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		float WalkingSpeed = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		float CrouchingSpeed = 0.5f;
 
 	// Config params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
@@ -144,6 +150,14 @@ public:
 		bool bCanMove = true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool bIsDucking;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+		bool bIsLeft;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+		bool bIsRight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+		bool bIsUp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+		bool bIsDown;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool bIsAttacking;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
@@ -204,6 +218,8 @@ public:
 	UPROPERTY()
 		TArray<FComboAnimationFlags> ComboAnimationFlags;
 
+	UFUNCTION()
+		virtual void BindDataHUD();
 
 	UFUNCTION()
 		virtual void HandleAttack();
@@ -238,4 +254,7 @@ public:
 
 	UFUNCTION()
 		virtual void DoCombo(TArray<FComboAttackStruct> Combo);
+
+	UFUNCTION()
+		virtual void FinishCombo();
 };

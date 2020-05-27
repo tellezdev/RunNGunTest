@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HUD/ComboWidget.h"
 #include "BufferInputWidget.h"
+#include "PlayerWidget.h"
 #include "GameHUD.generated.h"
 
 /**
@@ -31,15 +32,29 @@ public:
 	UFUNCTION()
 		void DrawBuffer(TArray<int32> BufferedInput);
 
+	UFUNCTION()
+		void BindDataHUD(UTexture2D* Avatar);
+
+	UFUNCTION()
+		void SetLife(float Life);
+
+	UFUNCTION()
+		void SetStamina(float Stamina);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 		TSubclassOf<UUserWidget> ComboWidgetClass = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 		TSubclassOf<UUserWidget> BufferInputWidgetClass = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+		TSubclassOf<UUserWidget> PlayerWidgetClass = nullptr;
+
 private:
 	UComboWidget* ComboWidget;
 
 	UBufferInputWidget* BufferInputWidget;
+
+	UPlayerWidget* PlayerWidget;
 
 };

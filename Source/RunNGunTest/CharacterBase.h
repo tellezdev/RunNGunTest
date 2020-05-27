@@ -85,6 +85,8 @@ public:
 	UPROPERTY()
 		bool bIsDirectionPressed;
 	UPROPERTY()
+		int32 LastDirectionPressed;
+	UPROPERTY()
 		int32 ComboCount = 0;
 
 
@@ -122,8 +124,20 @@ public:
 
 
 	// Movement related
+	/*UFUNCTION()
+		void MoveRight(float Value);*/
+
 	UFUNCTION()
-		void MoveRight(float Value);
+		void LeftDirectionStart();
+
+	UFUNCTION()
+		void LeftDirectionStop();
+
+	UFUNCTION()
+		void RightDirectionStart();
+
+	UFUNCTION()
+		void RightDirectionStop();
 
 	UFUNCTION()
 		void DownDirectionStart();
@@ -132,7 +146,16 @@ public:
 		void DownDirectionStop();
 
 	UFUNCTION()
-		void UpDirection();
+		void UpDirectionStart();
+
+	UFUNCTION()
+		void UpDirectionStop();
+
+	UFUNCTION()
+		void HandleDirections();
+
+	UFUNCTION()
+		void MoveCharacter(float MovementSpeed, bool IsFacingRight);
 
 	// Actions related
 	UFUNCTION()
@@ -165,6 +188,8 @@ public:
 	void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
 
 	void DoCombo(TArray<FComboAttackStruct> Combo);
+
+	void FinishCombo();
 
 	UFUNCTION()
 		void HandleSpecialMoves();

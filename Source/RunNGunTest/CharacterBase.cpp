@@ -44,10 +44,11 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	SetAnimationFlags();
 	ResetAnimationFlags();
-	auto test = GetWorld()->GetFirstPlayerController();
-	GameHUD = Cast<AGameHUD>(test->GetHUD());
+	auto PlayerController = GetWorld()->GetFirstPlayerController();
+	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
 }
 
 // Called every frame
@@ -73,19 +74,29 @@ void ACharacterBase::Tick(float DeltaTime)
 		ControlStamina();
 	}
 
+	// Animation attack is on run
 	if (AnimationFlipbookTimeStop > GetCurrentTime())
 	{
 		HandleAttack();
 	}
 
+	// Player is being hit by something
 	if (AnimationOtherTimeStop < GetCurrentTime())
 	{
 		bIsDamaged = false;
 	}
 	else
 	{
-		GetCapsuleComponent()->MoveComponent(FVector(bIsMovingRight ? -200.f * DeltaTime : 200.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
+		GetCapsuleComponent()->MoveComponent(FVector(bIsMovingRight ? -70.f * DeltaTime : 70.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
 	}
+
+	// User stops doing combo
+	if (AnimationAttackCompleteTimeStop + 0.5f < GetCurrentTime())
+	{
+		FinishCombo();
+	}
+
+	HandleDirections();
 }
 
 // Called to bind functionality to input
@@ -93,10 +104,15 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterBase::MoveRight);
+	//PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterBase::MoveRight);
+	PlayerInputComponent->BindAction("LeftDirection", IE_Pressed, this, &ACharacterBase::LeftDirectionStart);
+	PlayerInputComponent->BindAction("LeftDirection", IE_Released, this, &ACharacterBase::LeftDirectionStop);
+	PlayerInputComponent->BindAction("RightDirection", IE_Pressed, this, &ACharacterBase::RightDirectionStart);
+	PlayerInputComponent->BindAction("RightDirection", IE_Released, this, &ACharacterBase::RightDirectionStop);
 	PlayerInputComponent->BindAction("DownDirection", IE_Pressed, this, &ACharacterBase::DownDirectionStart);
 	PlayerInputComponent->BindAction("DownDirection", IE_Released, this, &ACharacterBase::DownDirectionStop);
-	PlayerInputComponent->BindAction("UpDirection", IE_Pressed, this, &ACharacterBase::UpDirection);
+	PlayerInputComponent->BindAction("UpDirection", IE_Pressed, this, &ACharacterBase::UpDirectionStart);
+	PlayerInputComponent->BindAction("UpDirection", IE_Released, this, &ACharacterBase::UpDirectionStop);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacterBase::JumpStart);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacterBase::JumpStop);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACharacterBase::AttackStart);
@@ -214,30 +230,55 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 }
 
 // Basic moving
-void ACharacterBase::MoveRight(float Value)
+void ACharacterBase::HandleDirections()
 {
+	float MovementSpeed = 0.f;
 	if (bCanMove)
 	{
-		if (!bIsDirectionPressed && Value != 0.f)
+		if (bIsLeft && bIsDown)
 		{
-			if (Value > 0.f)
-			{
-				InsertInputBuffer(KeyInput::Right);
-			}
-			else
-			{
-				InsertInputBuffer(KeyInput::Left);
-			}
+			InsertInputBuffer(KeyInput::DownLeft);
+			MovementSpeed = CrouchingSpeed;
+			MoveCharacter(CrouchingSpeed * -1.f, false);
 		}
-
-		if (Value > 0.0f)
+		else if (bIsRight && bIsDown)
 		{
-			bIsMovingRight = true;
+			InsertInputBuffer(KeyInput::DownRight);
+			MovementSpeed = CrouchingSpeed;
+			MoveCharacter(CrouchingSpeed, true);
+		}
+		else if (bIsLeft && bIsUp)
+		{
+			InsertInputBuffer(KeyInput::UpLeft);
+			MovementSpeed = WalkingSpeed;
+			MoveCharacter(WalkingSpeed * -1.f, false);
+		}
+		else if (bIsRight && bIsUp)
+		{
+			InsertInputBuffer(KeyInput::UpRight);
+			MovementSpeed = WalkingSpeed;
+			MoveCharacter(WalkingSpeed, true);
+		}
+		else if (bIsDown)
+		{
+			InsertInputBuffer(KeyInput::Down);
 			bIsDirectionPressed = true;
 		}
-		else if (Value < 0.0f)
+		else if (bIsLeft)
 		{
-			bIsMovingRight = false;
+			InsertInputBuffer(KeyInput::Left);
+			MovementSpeed = WalkingSpeed;
+			MoveCharacter(WalkingSpeed * -1.f, false);
+		}
+		else if (bIsRight)
+		{
+			InsertInputBuffer(KeyInput::Right);
+			MovementSpeed = WalkingSpeed;
+			MoveCharacter(WalkingSpeed, true);
+		}
+		else if (bIsUp)
+		{
+			InsertInputBuffer(KeyInput::Up);
 			bIsDirectionPressed = true;
 		}
 		else
@@ -245,29 +286,100 @@ void ACharacterBase::MoveRight(float Value)
 			bIsDirectionPressed = false;
 		}
 
-		// Direction will be determined by the tick, so here always will be 1 on X
-		FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
-		AddMovementInput(*Direction, Value);
 	}
-	ControlCharacterAnimations(Value);
+	ControlCharacterAnimations(MovementSpeed);
+}
+
+void ACharacterBase::MoveCharacter(float MovementSpeed, bool IsFacingRight)
+{
+	bIsDirectionPressed = true;
+	bIsMovingRight = IsFacingRight;
+	FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
+	AddMovementInput(*Direction, MovementSpeed);
+}
+
+//void ACharacterBase::MoveRight(float Value)
+//{
+//	if (bCanMove)
+//	{
+//		if (!bIsDirectionPressed && Value != 0.f)
+//		{
+//			if (Value > 0.f)
+//			{
+//				InsertInputBuffer(KeyInput::Right);
+//			}
+//			else
+//			{
+//				InsertInputBuffer(KeyInput::Left);
+//			}
+//		}
+//
+//		if (Value > 0.0f)
+//		{
+//			bIsMovingRight = true;
+//			bIsDirectionPressed = true;
+//		}
+//		else if (Value < 0.0f)
+//		{
+//			bIsMovingRight = false;
+//			bIsDirectionPressed = true;
+//		}
+//		else
+//		{
+//			bIsDirectionPressed = false;
+//		}
+//
+//		// Direction will be determined by the tick, so here always will be 1 on X
+//		FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
+//		AddMovementInput(*Direction, Value);
+//	}
+//	ControlCharacterAnimations(Value);
+//}
+
+void ACharacterBase::LeftDirectionStart()
+{
+	bIsLeft = true;
+}
+
+void ACharacterBase::LeftDirectionStop()
+{
+	bIsLeft = false;
+	bIsDirectionPressed = false;
+}
+
+void ACharacterBase::RightDirectionStart()
+{
+	bIsRight = true;
+}
+
+void ACharacterBase::RightDirectionStop()
+{
+	bIsRight = false;
+	bIsDirectionPressed = false;
 }
 
 void ACharacterBase::DownDirectionStart()
 {
-	InsertInputBuffer(KeyInput::Down);
-
 	bIsDucking = true;
+	bIsDown = true;
 }
 
 void ACharacterBase::DownDirectionStop()
 {
 	bIsDucking = false;
+	bIsDown = false;
+	bIsDirectionPressed = false;
 }
 
-void ACharacterBase::UpDirection()
+void ACharacterBase::UpDirectionStart()
 {
-	InsertInputBuffer(KeyInput::Up);
+	bIsUp = true;
+}
 
+void ACharacterBase::UpDirectionStop()
+{
+	bIsUp = false;
+	bIsDirectionPressed = false;
 }
 
 // Triggers
@@ -444,6 +556,7 @@ void ACharacterBase::HandleStaminaCharge()
 	if (bIsChargingup && GetCurrentTime() > SpecialKeyPressedTimeStart + StaminaVelocityChargingInSeconds)
 	{
 		Stamina += StaminaChargingUnit;
+		GameHUD->SetStamina(Stamina);
 		SpecialKeyPressedTimeStart = GetCurrentTime();
 	}
 }
@@ -494,6 +607,15 @@ void ACharacterBase::DoCombo(TArray<FComboAttackStruct> Combo)
 	}
 }
 
+void ACharacterBase::FinishCombo()
+{
+	if (ComboCount > 2)
+	{
+		GameHUD->ComboCounter(ComboCount);
+	}
+	ComboCount = 0;
+}
+
 // Play states
 void ACharacterBase::SetDamage(float Value)
 {
@@ -501,6 +623,7 @@ void ACharacterBase::SetDamage(float Value)
 	EAnimationState = AnimationState::HitTop;
 	AnimationOtherTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
 	Life -= Value;
+	GameHUD->SetLife(Life);
 	if (Life <= 0.f)
 	{
 		UGameplayStatics::OpenLevel(this, "level_00");
@@ -510,6 +633,7 @@ void ACharacterBase::SetDamage(float Value)
 void ACharacterBase::HealLife(float Value)
 {
 	Life += Value;
+	GameHUD->SetLife(Life);
 }
 
 // Buffer
@@ -560,13 +684,17 @@ void ACharacterBase::ReadInputBuffer()
 
 void ACharacterBase::InsertInputBuffer(KeyInput key)
 {
-	if (BufferedInput.Num() > 9)
+	if (!bIsDirectionPressed || LastDirectionPressed != key)
 	{
-		BufferedInput.RemoveSingle(BufferedInput[0]);
-	}
-	BufferedInput.Push(key);
+		if (BufferedInput.Num() > 9)
+		{
+			BufferedInput.RemoveSingle(BufferedInput[0]);
+		}
+		BufferedInput.Push(key);
+		LastDirectionPressed = key;
 
-	GameHUD->DrawBuffer(BufferedInput);
+		GameHUD->DrawBuffer(BufferedInput);
+	}
 }
 
 TArray<int32> ACharacterBase::GetBufferedInput()
@@ -596,6 +724,7 @@ void ACharacterBase::ControlStamina()
 void ACharacterBase::ConsumeStamina(float Value)
 {
 	Stamina = Stamina - Value;
+	GameHUD->SetStamina(Stamina);
 }
 
 void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
@@ -631,11 +760,7 @@ void ACharacterBase::StopHandleStaminaCharge()
 
 void ACharacterBase::ResetAttack()
 {
-	if (ComboCount > 2)
-	{
-		GameHUD->ComboCounter(ComboCount);
-	}
-	ComboCount = 0;
+
 	nAttackNumber = 0;
 	nCurrentComboHit = 0;
 	ResetAnimationFlags();

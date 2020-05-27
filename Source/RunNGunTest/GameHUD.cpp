@@ -12,7 +12,7 @@ AGameHUD::AGameHUD()
 
 void AGameHUD::BeginPlay()
 {
-	Super::BeginPlay();	
+	Super::BeginPlay();
 
 
 	if (ComboWidget != nullptr)
@@ -44,6 +44,21 @@ void AGameHUD::BeginPlay()
 			BufferInputWidget->AddToViewport();
 		}
 	}
+
+	if (PlayerWidget != nullptr)
+	{
+		PlayerWidget->RemoveFromViewport();
+		PlayerWidget = nullptr;
+	}
+	if (PlayerWidgetClass)
+	{
+		PlayerWidget = CreateWidget<UPlayerWidget>(GetWorld(), PlayerWidgetClass);
+
+		if (PlayerWidget)
+		{
+			PlayerWidget->AddToViewport();
+		}
+	}
 }
 
 void AGameHUD::Tick(float DeltaSeconds)
@@ -66,12 +81,26 @@ void AGameHUD::ComboCounter(int32 ComboCount)
 
 void AGameHUD::DrawBuffer(TArray<int32> BufferedInput)
 {
-
-
-
 	if (BufferInputWidget)
 	{
 		BufferInputWidget->DrawBuffer(BufferedInput);
 	}
 }
 
+void AGameHUD::BindDataHUD(UTexture2D* Avatar)
+{
+	if (PlayerWidget)
+	{
+		PlayerWidget->BindAvatar(Avatar);
+	}
+}
+
+void AGameHUD::SetLife(float Life)
+{
+	PlayerWidget->SetLife(Life);
+}
+
+void AGameHUD::SetStamina(float Stamina)
+{
+	PlayerWidget->SetStamina(Stamina);
+}

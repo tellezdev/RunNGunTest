@@ -20,14 +20,17 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
+		class UImage* PlayerAvatar;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
+		class UProgressBar* LifeBar;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
+		class UProgressBar* StaminaBar;
+
 	UFUNCTION()
-		void MessageFromLeftSide(FString Text);
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		class UCanvasPanel* MainCanvas;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		class UTextBlock* TXTBox;
-
+		void BindAvatar(UTexture2D* Avatar);
+	UFUNCTION()
+		void SetLife(float Life);
+	UFUNCTION()
+		void SetStamina(float Stamina);
 };

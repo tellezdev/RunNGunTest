@@ -89,7 +89,7 @@ void AEnemyBase::Tick(float DeltaTime)
 
 
 		if (DistanceBetweenActors > 60.f)
-		{			
+		{
 			AddMovementInput(GetPlayerPosition(), 1.f);
 			FRotator toPlayerRotation = GetPlayerPosition().Rotation();
 			toPlayerRotation.Pitch = 0;
@@ -124,13 +124,16 @@ void AEnemyBase::Tick(float DeltaTime)
 		ControlCharacterAnimations(0.f);
 	}
 
-	if (AnimationOtherTimeStop < GetCurrentTime())
+	if (bIsDamaged)
 	{
-		bIsDamaged = false;
-	}
-	else
-	{
-		GetCapsuleComponent()->MoveComponent(FVector(GetPlayerPosition().Rotation().Yaw == 0.f ? -200.f * DeltaTime : 200.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
+		if (AnimationOtherTimeStop < GetCurrentTime())
+		{
+			bIsDamaged = false;
+		}
+		else
+		{
+			GetCapsuleComponent()->MoveComponent(FVector(GetPlayerPosition().Rotation().Yaw == 0.f ? -70.f * DeltaTime : 70.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
+		}
 	}
 }
 

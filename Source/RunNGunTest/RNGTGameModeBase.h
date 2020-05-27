@@ -6,6 +6,8 @@
 #include "Engine.h"
 #include "GameFramework/GameModeBase.h"
 #include "UObject/ObjectMacros.h"
+#include "CharacterCommon.h"
+#include "GameHUD.h"
 #include "RNGTGameModeBase.generated.h"
 
 /**
@@ -18,4 +20,15 @@ class RUNNGUNTEST_API ARNGTGameModeBase : public AGameModeBase
 
 		virtual void StartPlay() override;
 
+public:
+	void BindDataHUD();
+
+private:
+
+	UPROPERTY()
+		ACharacterCommon* Player;
+
+	// HUD
+	UPROPERTY()
+		AGameHUD* GameHUD;
 };

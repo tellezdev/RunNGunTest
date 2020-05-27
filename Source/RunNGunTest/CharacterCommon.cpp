@@ -16,6 +16,10 @@ void ACharacterCommon::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ACharacterCommon::BindDataHUD()
+{
+}
+
 void ACharacterCommon::HandleAttack()
 {
 }
@@ -61,6 +65,10 @@ void ACharacterCommon::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 }
 
 void ACharacterCommon::DoCombo(TArray<FComboAttackStruct> Combo)
+{
+}
+
+void ACharacterCommon::FinishCombo()
 {
 }
 

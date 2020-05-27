@@ -13,15 +13,21 @@ void UPlayerWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	MainCanvas->AddChildToCanvas(TXTBox);	
+	LifeBar->SetPercent(100);
+	StaminaBar->SetPercent(100);
 }
 
-void UPlayerWidget::MessageFromLeftSide(FString Text)
+void UPlayerWidget::BindAvatar(UTexture2D* Avatar)
 {
-	if (TXTBox->Visibility == ESlateVisibility::Hidden)
-	{
-		TXTBox->SetVisibility(ESlateVisibility::Visible);
-	}
-	TXTBox->SetText(FText::FromString(Text));
+	PlayerAvatar->SetBrushFromTexture(Avatar);
 }
 
+void UPlayerWidget::SetLife(float Life)
+{
+	LifeBar->SetPercent(Life * 0.01f);
+}
+
+void UPlayerWidget::SetStamina(float Stamina)
+{
+	StaminaBar->SetPercent(Stamina * 0.1f);
+}

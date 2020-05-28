@@ -59,6 +59,21 @@ void AGameHUD::BeginPlay()
 			PlayerWidget->AddToViewport();
 		}
 	}
+
+	if (DebugWidget != nullptr)
+	{
+		DebugWidget->RemoveFromViewport();
+		DebugWidget = nullptr;
+	}
+	if (DebugWidgetClass)
+	{
+		DebugWidget = CreateWidget<UDebugWidget>(GetWorld(), DebugWidgetClass);
+
+		if (DebugWidget)
+		{
+			DebugWidget->AddToViewport();
+		}
+	}
 }
 
 void AGameHUD::Tick(float DeltaSeconds)
@@ -103,4 +118,9 @@ void AGameHUD::SetLife(float Life)
 void AGameHUD::SetStamina(float Stamina)
 {
 	PlayerWidget->SetStamina(Stamina);
+}
+
+void AGameHUD::InsertDebugData(TArray<FString> DebugData)
+{
+	DebugWidget->InsertDebugData(DebugData);
 }

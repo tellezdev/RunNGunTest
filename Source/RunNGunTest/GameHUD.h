@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "Blueprint/UserWidget.h"
 #include "HUD/ComboWidget.h"
+#include "HUD/DebugWidget.h"
 #include "BufferInputWidget.h"
 #include "PlayerWidget.h"
 #include "GameHUD.generated.h"
@@ -41,6 +42,9 @@ public:
 	UFUNCTION()
 		void SetStamina(float Stamina);
 
+	UFUNCTION()
+		void InsertDebugData(TArray<FString> DebugData);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 		TSubclassOf<UUserWidget> ComboWidgetClass = nullptr;
 
@@ -50,11 +54,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 		TSubclassOf<UUserWidget> PlayerWidgetClass = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+		TSubclassOf<UUserWidget> DebugWidgetClass = nullptr;
+
 private:
 	UComboWidget* ComboWidget;
 
 	UBufferInputWidget* BufferInputWidget;
 
 	UPlayerWidget* PlayerWidget;
+
+	UDebugWidget* DebugWidget;
 
 };

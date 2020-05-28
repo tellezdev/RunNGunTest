@@ -6,7 +6,9 @@
 
 UComboWidget::UComboWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-
+	ComboTextBlock = NewObject<UTextBlock>();
+	ExtraTextBlock = NewObject<UTextBlock>();
+	HitsTextBlock = NewObject<UTextBlock>();
 }
 
 void UComboWidget::NativeConstruct()

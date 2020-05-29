@@ -31,20 +31,25 @@ void AMainCamera::BeginPlay()
 	Dummy->SetWorldLocation(FVector(0.f, 450.f, 1050.f));
 
 	ActorCollision->SetBoxExtent(FVector(100.f, 250.f, 250.f));
-	ActorCollision->SetWorldRotation(FRotator(0.f, 0.f, 0.f));
-	ActorCollision->SetWorldScale3D(FVector(1.f, 1.f, 1.f));
+	ActorCollision->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
+	ActorCollision->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
 
-	CameraBounds->SetWorldLocation(FVector(449.f, 99.998749f, 128.f));
+	CameraBounds->SetRelativeLocation(FVector(324.f, 100.f, 101.f));
 	CameraBounds->SetWorldRotation(FRotator(0.f, 0.f, 0.f));
 	CameraBounds->SetWorldScale3D(FVector(1.f, 1.f, 1.f));
-	CameraBounds->SetBoxExtent(FVector(1921.265137f, 10.f, 534.050842f));
+	CameraBounds->SetBoxExtent(FVector(1921.265137f, 10.f, 213.259628f));
 
-	CameraComponent->SetWorldLocation(FVector(0.f, 0.f, 0.f));
-	CameraComponent->SetWorldRotation(FRotator(0.f, 270.f, 0.f));
-	CameraComponent->SetWorldScale3D(FVector(1.f, 1.f, 1.f));
+	CameraComponent->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
+	CameraComponent->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
+	CameraComponent->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
 	CameraComponent->SetProjectionMode(ECameraProjectionMode::Orthographic);
 	CameraComponent->SetOrthoWidth(941.530701f);
 	CameraComponent->SetConstraintAspectRatio(true);
+
+	// Debug only
+	/*CameraBounds->SetHiddenInGame(false);
+	CameraComponent->bCameraMeshHiddenInGame = 0;
+	CameraComponent->SetHiddenInGame(false, true);*/
 
 	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 }
@@ -69,7 +74,7 @@ void AMainCamera::Tick(float DeltaTime)
 		FVector NewCameraLocation = FMath::VInterpTo(CameraComponentLocation, TargetToVInterp, DeltaTime, 5.f);
 
 		/* Debug Stuff */
-		FString TxtPlayerLocation = FString::Printf(TEXT("PlayerLocation: %s"), *PlayerLocation.ToString());
+		/*FString TxtPlayerLocation = FString::Printf(TEXT("PlayerLocation: %s"), *PlayerLocation.ToString());
 		FString TxtCameraComponentLocation = FString::Printf(TEXT("CameraComponentLocation: %s"), *CameraComponentLocation.ToString());
 		FString TxtCameraBoundsLocation = FString::Printf(TEXT("CameraBoundsLocation: %s"), *CameraBoundsLocation.ToString());
 		FString TxtBoundsMax = FString::Printf(TEXT("BoundsMax: %s"), *BoundsMax.ToString());
@@ -90,7 +95,7 @@ void AMainCamera::Tick(float DeltaTime)
 		DebugInfo.Add(TxtTargetToVInterp);
 		DebugInfo.Add(TxtNewCameraLocation);
 
-		GameHUD->InsertDebugData(DebugInfo);
+		GameHUD->InsertDebugData(DebugInfo);*/
 		/* Debug Stuff */
 
 		CameraComponent->SetWorldLocation(NewCameraLocation);

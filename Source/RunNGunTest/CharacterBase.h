@@ -35,6 +35,9 @@ struct FSpecialMoveStruct
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<int32> Directions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -51,6 +54,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DamageValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector ImpulseToCharacter = FVector(0.f, 0.f, 0.f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float InterpolationSpeed = 5.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* SpecialMoveAnimation;
@@ -88,6 +97,8 @@ public:
 		int32 LastDirectionPressed;
 	UPROPERTY()
 		int32 ComboCount = 0;
+	UPROPERTY()
+		FVector SpecialMoveFinalLocation;
 
 
 	// Animation Times
@@ -192,7 +203,7 @@ public:
 	void FinishCombo();
 
 	UFUNCTION()
-		void HandleSpecialMoves();
+		virtual void HandleSpecialMoves();
 
 	UFUNCTION()
 		void HandleProjectile();
@@ -229,6 +240,7 @@ public:
 	// -- Health related
 	void SetDamage(float Value);
 	void HealLife(float Value);
+	void HealStamina(float Value);
 
 	float GetCurrentTime();
 

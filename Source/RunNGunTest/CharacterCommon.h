@@ -113,6 +113,9 @@ public:
 		float Life = 100.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		float MaxLife = 100.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float Stamina = 10.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
@@ -248,6 +251,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		virtual void HealLife(float Value);
+
+	UFUNCTION(BlueprintCallable)
+		virtual void HealStamina(float Value);
 
 	UFUNCTION()
 		virtual void ApplyHitCollide(TArray<FComboAttackStruct> Combo);

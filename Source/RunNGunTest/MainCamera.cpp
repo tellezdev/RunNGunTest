@@ -17,8 +17,6 @@ AMainCamera::AMainCamera()
 	CameraComponent->SetupAttachment(Dummy);
 	CameraBounds = CreateDefaultSubobject<UBoxComponent>(TEXT("CameraBounds"));
 	CameraBounds->SetupAttachment(Dummy);
-	ActorCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ActorCollision"));
-	ActorCollision->SetupAttachment(Dummy);
 }
 
 void AMainCamera::BeginPlay()
@@ -30,10 +28,6 @@ void AMainCamera::BeginPlay()
 	Dummy->SetWorldRotation(FRotator(0.f, 270.f, 0.f));
 	Dummy->SetWorldLocation(FVector(0.f, 450.f, 1050.f));
 
-	ActorCollision->SetBoxExtent(FVector(100.f, 250.f, 250.f));
-	ActorCollision->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
-	ActorCollision->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
-
 	CameraBounds->SetRelativeLocation(FVector(324.f, 100.f, 101.f));
 	CameraBounds->SetWorldRotation(FRotator(0.f, 0.f, 0.f));
 	CameraBounds->SetWorldScale3D(FVector(1.f, 1.f, 1.f));
@@ -42,9 +36,10 @@ void AMainCamera::BeginPlay()
 	CameraComponent->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
 	CameraComponent->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
 	CameraComponent->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	CameraComponent->SetConstraintAspectRatio(true);
+	CameraComponent->SetFieldOfView(90.f);
 	CameraComponent->SetProjectionMode(ECameraProjectionMode::Orthographic);
 	CameraComponent->SetOrthoWidth(941.530701f);
-	CameraComponent->SetConstraintAspectRatio(true);
 
 	// Debug only
 	/*CameraBounds->SetHiddenInGame(false);
@@ -63,6 +58,8 @@ void AMainCamera::Tick(float DeltaTime)
 		FVector CameraComponentLocation = CameraComponent->GetComponentLocation();
 		FVector CameraBoundsLocation = CameraBounds->GetComponentLocation();
 
+		FVector BoundsOrigin = CameraBounds->Bounds.Origin;
+		FVector BoundsExtent = CameraBounds->Bounds.BoxExtent;
 		FVector BoundsMax = FVector(CameraBounds->Bounds.Origin) + FVector(CameraBounds->Bounds.BoxExtent);
 		FVector BoundsMin = FVector(CameraBounds->Bounds.Origin) - FVector(CameraBounds->Bounds.BoxExtent);
 
@@ -77,6 +74,8 @@ void AMainCamera::Tick(float DeltaTime)
 		/*FString TxtPlayerLocation = FString::Printf(TEXT("PlayerLocation: %s"), *PlayerLocation.ToString());
 		FString TxtCameraComponentLocation = FString::Printf(TEXT("CameraComponentLocation: %s"), *CameraComponentLocation.ToString());
 		FString TxtCameraBoundsLocation = FString::Printf(TEXT("CameraBoundsLocation: %s"), *CameraBoundsLocation.ToString());
+		FString TxtBoundsOrigin = FString::Printf(TEXT("BoundsOrigin: %s"), *BoundsOrigin.ToString());
+		FString TxtBoundsExtent = FString::Printf(TEXT("BoundsExtent: %s"), *BoundsExtent.ToString());
 		FString TxtBoundsMax = FString::Printf(TEXT("BoundsMax: %s"), *BoundsMax.ToString());
 		FString TxtBoundsMin = FString::Printf(TEXT("BoundsMin: %s"), *BoundsMin.ToString());
 		FString TxtClampX = FString::Printf(TEXT("ClampX: %f"), ClampX);
@@ -88,6 +87,8 @@ void AMainCamera::Tick(float DeltaTime)
 		DebugInfo.Add(TxtPlayerLocation);
 		DebugInfo.Add(TxtCameraComponentLocation);
 		DebugInfo.Add(TxtCameraBoundsLocation);
+		DebugInfo.Add(TxtBoundsOrigin);
+		DebugInfo.Add(TxtBoundsExtent);
 		DebugInfo.Add(TxtBoundsMax);
 		DebugInfo.Add(TxtBoundsMin);
 		DebugInfo.Add(TxtClampX);

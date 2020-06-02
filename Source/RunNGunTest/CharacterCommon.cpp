@@ -60,6 +60,10 @@ void ACharacterCommon::HealLife(float Value)
 {
 }
 
+void ACharacterCommon::HealStamina(float Value)
+{
+}
+
 void ACharacterCommon::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 {
 }

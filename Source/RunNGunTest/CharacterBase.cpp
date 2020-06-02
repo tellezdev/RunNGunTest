@@ -495,47 +495,49 @@ void ACharacterBase::HandleAttack()
 
 void ACharacterBase::HandleSpecialMoves()
 {
-	AnimationSpecialTimeStart = GetCurrentTime();
-	if (!bIsExecutingSpecialMove)
-	{
-		bIsExecutingSpecialMove = true;
-		// Checking if there are enough stamina
-		int bIsEnoughStamina = SpecialMoves[nCurrentSpecialMove].StaminaCost <= Stamina;
-		if (bIsEnoughStamina)
-		{
-			if ((SpecialMoves[nCurrentSpecialMove].CanBeDoneInGround && GetCharacterMovement()->IsMovingOnGround())
-				|| (SpecialMoves[nCurrentSpecialMove].CanBeDoneInAir && !GetCharacterMovement()->IsMovingOnGround()))
-			{
-				ConsumeStamina(SpecialMoves[nCurrentSpecialMove].StaminaCost);
-				CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].SpecialMoveAnimation);
-				if (SpecialMoves[nCurrentSpecialMove].IsProjectile)
-				{
-					FTimerDelegate TimerDel;
-					FTimerHandle TimerHandle;
+	//AnimationSpecialTimeStart = GetCurrentTime();
+	//if (!bIsExecutingSpecialMove)
+	//{
+	//	bIsExecutingSpecialMove = true;
+	//	// Checking if there are enough stamina
+	//	int bIsEnoughStamina = SpecialMoves[nCurrentSpecialMove].StaminaCost <= Stamina;
+	//	if (bIsEnoughStamina)
+	//	{
+	//		if ((SpecialMoves[nCurrentSpecialMove].CanBeDoneInGround && GetCharacterMovement()->IsMovingOnGround())
+	//			|| (SpecialMoves[nCurrentSpecialMove].CanBeDoneInAir && !GetCharacterMovement()->IsMovingOnGround()))
+	//		{
+	//			ConsumeStamina(SpecialMoves[nCurrentSpecialMove].StaminaCost);
+	//			CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].SpecialMoveAnimation);
+	//			// Do motion
 
-					//Binding the function with specific variables
-					TimerDel.BindUFunction(this, FName("HandleProjectile"));
-					//Calling MyUsefulFunction after 5 seconds without looping
-					GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.3f, false);
-				}
-			}
-			else
-			{
-				ClearBuffer();
-			}
-		}
-		else
-		{
-			CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].NoStaminaAnimation);
-		}
-		AnimationSpecialTimeStop = AnimationSpecialTimeStart + CurrentFlipbook->GetFlipbookLength();
-	}
-	if (GetCurrentTime() > AnimationSpecialTimeStop)
-	{
-		bIsSpecialMove = false;
-		bIsExecutingSpecialMove = false;
-		bCanMove = true;
-	}
+	//			if (SpecialMoves[nCurrentSpecialMove].IsProjectile)
+	//			{
+	//				FTimerDelegate TimerDel;
+	//				FTimerHandle TimerHandle;
+
+	//				//Binding the function with specific variables
+	//				TimerDel.BindUFunction(this, FName("HandleProjectile"));
+	//				//Calling MyUsefulFunction after 5 seconds without looping
+	//				GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.3f, false);
+	//			}
+	//		}
+	//		else
+	//		{
+	//			ClearBuffer();
+	//		}
+	//	}
+	//	else
+	//	{
+	//		CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].NoStaminaAnimation);
+	//	}
+	//	AnimationSpecialTimeStop = AnimationSpecialTimeStart + CurrentFlipbook->GetFlipbookLength();
+	//}
+	//if (GetCurrentTime() > AnimationSpecialTimeStop)
+	//{
+	//	bIsSpecialMove = false;
+	//	bIsExecutingSpecialMove = false;
+	//	bCanMove = true;
+	//}
 }
 
 void ACharacterBase::HandleProjectile()
@@ -632,8 +634,20 @@ void ACharacterBase::SetDamage(float Value)
 
 void ACharacterBase::HealLife(float Value)
 {
-	Life += Value;
-	GameHUD->SetLife(Life);
+	if (Life < MaxLife)
+	{
+		Life += Value;
+		GameHUD->SetLife(Life);
+	}
+}
+
+void ACharacterBase::HealStamina(float Value)
+{
+	if (Stamina < MaxStamina)
+	{
+		Stamina += Value;
+		GameHUD->SetStamina(Stamina);
+	}
 }
 
 // Buffer
@@ -711,7 +725,7 @@ void ACharacterBase::ClearBuffer()
 // Stamina
 void ACharacterBase::ControlStamina()
 {
-	if (Stamina <= MaxStamina)
+	if (Stamina < MaxStamina)
 	{
 		bIsChargingup = true;
 	}

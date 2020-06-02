@@ -11,10 +11,9 @@ void ARNGTGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
-
 	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	auto PlayerController = GetWorld()->GetFirstPlayerController();
-	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
+	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());	
 	BindDataHUD();
 }
 

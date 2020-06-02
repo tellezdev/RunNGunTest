@@ -40,9 +40,6 @@ public:
 		UBoxComponent* CameraBounds;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Components")
-		UBoxComponent* ActorCollision;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Components")
 		ACharacterCommon* Player = nullptr;
 
 	UFUNCTION()

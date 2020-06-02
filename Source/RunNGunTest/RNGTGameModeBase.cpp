@@ -2,10 +2,10 @@
 
 
 #include "RNGTGameModeBase.h"
-#include "CharacterBase.h"
+#include "Characters/CharacterBase.h"
 #include "Blueprint/UserWidget.h"
 #include "Engine/Engine.h"
-#include "GameHUD.h"
+#include "HUD/GameHUD.h"
 
 void ARNGTGameModeBase::StartPlay()
 {

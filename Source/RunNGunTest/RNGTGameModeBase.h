@@ -6,8 +6,8 @@
 #include "Engine.h"
 #include "GameFramework/GameModeBase.h"
 #include "UObject/ObjectMacros.h"
-#include "CharacterCommon.h"
-#include "GameHUD.h"
+#include "Characters/CharacterCommon.h"
+#include "HUD/GameHUD.h"
 #include "RNGTGameModeBase.generated.h"
 
 /**

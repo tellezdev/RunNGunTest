@@ -54,9 +54,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void AttackStart();
 
-	void HandleAttack();
+	UFUNCTION()
+		void FacePlayer();
 
-	void DoCombo(TArray<FComboAttackStruct> Combo);
+	void HandleAttack();
 
 	void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
 

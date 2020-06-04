@@ -46,23 +46,12 @@ AEnemyBase::AEnemyBase()
 
 	AnimationFlipbookTimeStop = -1.f;
 	AnimationAttackCompleteTimeStop = -1.f;
-
-	//AEnemyBase::OnActorBeginOverlap.AddDynamic(this, &AEnemyBase::Overlapped);
 }
 
 // Called when the game starts or when spawned
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Sets where the sprite has to face
-	float yaw = 0.0f;
-	if (!bIsMovingRight)
-	{
-		yaw = 180.0f;
-	}
-	FRotator* rotation = new FRotator(0.0f, yaw, 1.0f);
-	GetController()->SetControlRotation(*rotation);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
@@ -90,12 +79,8 @@ void AEnemyBase::Tick(float DeltaTime)
 
 		if (DistanceBetweenActors > 60.f)
 		{
+			FacePlayer();
 			AddMovementInput(GetPlayerPosition(), 1.f);
-			FRotator toPlayerRotation = GetPlayerPosition().Rotation();
-			toPlayerRotation.Pitch = 0;
-			RootComponent->SetWorldRotation(toPlayerRotation);
-			// Saving hit player position to set the right side to collide
-			HitBoxOrientation = toPlayerRotation.Yaw == 0.f ? 30.f : -30.f;
 			ControlCharacterAnimations(1.f);
 		}
 		else
@@ -123,18 +108,21 @@ void AEnemyBase::Tick(float DeltaTime)
 	{
 		ControlCharacterAnimations(0.f);
 	}
+}
 
-	if (bIsDamaged)
+void AEnemyBase::FacePlayer()
+{
+	FRotator toPlayerRotation = GetPlayerPosition().Rotation();
+	toPlayerRotation.Pitch = 0;
+	if (toPlayerRotation.Yaw == 0.f)
 	{
-		if (AnimationOtherTimeStop < GetCurrentTime())
-		{
-			bIsDamaged = false;
-		}
-		else
-		{
-			GetCapsuleComponent()->MoveComponent(FVector(GetPlayerPosition().Rotation().Yaw == 0.f ? -70.f * DeltaTime : 70.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
-		}
+		bIsMovingRight = true;
 	}
+	else
+	{
+		bIsMovingRight = false;
+	}
+	RootComponent->SetWorldRotation(toPlayerRotation);
 }
 
 void AEnemyBase::AttackStart()
@@ -146,12 +134,10 @@ void AEnemyBase::AttackStart()
 	{
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
-			//bCanMove = false;
 			// If attack is pressed continuously, it will be a combo 
 			if (nAttackNumber >= AttackingComboAnimation.Num() - 1)
 			{
 				ResetAttack();
-				//bCanMove = true;
 			}
 			else
 			{
@@ -159,10 +145,6 @@ void AEnemyBase::AttackStart()
 				CurrentAttackHasHitObjective = false;
 			}
 		}
-	}
-	else if (AnimationAttackCompleteTimeStop + 0.5f < GetCurrentTime())
-	{
-		//bCanMove = true;
 	}
 }
 
@@ -193,58 +175,18 @@ void AEnemyBase::HandleAttack()
 	}
 }
 
-void AEnemyBase::DoCombo(TArray<FComboAttackStruct> Combo)
-{
-	bool bIsComboDone = true;
-	for (bool ComboIsDone : ComboAnimationFlags[nAttackNumber].bIsComboHits)
-	{
-		if (!ComboIsDone)
-		{
-			bIsComboDone = false;
-		}
-	}
-
-	if (!ComboAnimationFlags[nAttackNumber].bIsComboStart)
-	{
-		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationStart);
-		ComboAnimationFlags[nAttackNumber].bIsComboStart = true;
-		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		bIsAnimationAttackComplete = false;
-	}
-	else if (bIsComboDone && !ComboAnimationFlags[nAttackNumber].bIsComboEnd)
-	{
-		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationEnd);
-		ComboAnimationFlags[nAttackNumber].bIsComboEnd = true;
-		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		bIsAnimationAttackComplete = true;
-	}
-	else
-	{
-		if (!ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit])
-		{
-			CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].AttackAnimationHit);
-			ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit] = true;
-			AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			ApplyHitCollide(Combo);
-		}
-		if (nCurrentComboHit < ComboAnimationFlags[nAttackNumber].bIsComboHits.Num() - 1)
-		{
-			++nCurrentComboHit;
-		}
-	}
-}
-
 void AEnemyBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 {
+	FVector HitBox = Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].HitBoxPosition;
+	if (!bIsMovingRight)
+	{
+		HitBox = FVector(HitBox.X * -1, HitBox.Y, HitBox.Z);
+	}
 	// Hit box will grow to detect collision
-	FVector CurrentLocation = FVector(GetActorLocation().X + HitBoxOrientation, GetActorLocation().Y, GetActorLocation().Z);
+	FVector CurrentLocation = FVector(GetActorLocation().X + HitBox.X, GetActorLocation().Y + HitBox.Y, GetActorLocation().Z + HitBox.Z);
 
 	// Tracing collision
 	FHitResult* HitResult = new FHitResult();
-
 	if (UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentLocation, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true))
 	{
 		if (&HitResult->Actor)
@@ -358,10 +300,8 @@ float AEnemyBase::GetCurrentTime()
 
 void AEnemyBase::SetDamage(float Value)
 {
-	bIsDamaged = true;
-	bCanMove = false;
-	EAnimationState = AnimationState::HitTop;
-	AnimationOtherTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+	Super::SetDamage(Value);
+
 	Life -= Value;
 	if (Life <= 0)
 	{

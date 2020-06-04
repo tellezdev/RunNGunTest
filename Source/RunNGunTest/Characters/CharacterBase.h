@@ -9,6 +9,7 @@
 #include "PaperCharacter.h"
 #include "PaperSpriteComponent.h"
 #include "PaperFlipbookComponent.h"
+#include "System/InputBuffer.h"
 #include "CharacterBase.generated.h"
 
 
@@ -83,6 +84,10 @@ public:
 	// Sets default values for this character's properties
 	ACharacterBase();
 
+	AInputBuffer InputBuffer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		bool bShowBuffer = true;
 
 	// Character Movement
 	UPROPERTY()
@@ -90,11 +95,11 @@ public:
 	UPROPERTY()
 		bool bIsExecutingSpecialMove;
 	UPROPERTY()
-		int8 nCurrentSpecialMove = 0;
+		int8 nCurrentSpecialMove = -1;
 	UPROPERTY()
 		bool bIsDirectionPressed;
-	UPROPERTY()
-		int32 LastDirectionPressed;
+	/*UPROPERTY()
+		int32 LastDirectionPressed;*/
 	UPROPERTY()
 		int32 ComboCount = 0;
 	UPROPERTY()
@@ -124,8 +129,8 @@ public:
 	UPROPERTY()
 		FTimerHandle GlobalTimerHandle;
 
-	UPROPERTY()
-		TArray<int32> BufferedInput;
+	//UPROPERTY()
+	//	TArray<int32> BufferedInput;
 
 	// Flip books
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Other")
@@ -198,15 +203,16 @@ public:
 
 	void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
 
-	void DoCombo(TArray<FComboAttackStruct> Combo);
-
 	void FinishCombo();
+
+	UFUNCTION()
+		void ShowBufferOnScreen();
 
 	UFUNCTION()
 		virtual void HandleSpecialMoves();
 
 	UFUNCTION()
-		void HandleProjectile();
+		virtual void HandleProjectile();
 
 	UFUNCTION()
 		void HandleStaminaCharge();
@@ -222,6 +228,9 @@ public:
 
 	// Buffer input related
 	UFUNCTION()
+		void HandleBuffer(KeyInput Direction);
+
+	/*UFUNCTION()
 		void InsertInputBuffer(KeyInput key);
 
 	UFUNCTION()
@@ -231,9 +240,9 @@ public:
 		TArray<int32> GetBufferedInput();
 
 	UFUNCTION()
-		void ClearBuffer();
+		void ClearBuffer();*/
 
-	// Animations
+		// Animations
 	void UpdateAnimations();
 	void ControlCharacterAnimations(float characterMovementSpeed);
 

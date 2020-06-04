@@ -44,10 +44,9 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	SetAnimationFlags();
 	ResetAnimationFlags();
-	auto PlayerController = GetWorld()->GetFirstPlayerController();
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
 }
 
@@ -55,18 +54,6 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// Sets where the sprite has to face
-	float yaw = 0.0f;
-	// Saving hit player position to set the right side to collide
-	HitBoxOrientation = 30.f;
-	if (!bIsMovingRight)
-	{
-		yaw = 180.0f;
-		HitBoxOrientation = -30.f;
-	}
-	FRotator* rotation = new FRotator(0.0f, yaw, 1.0f);
-	GetController()->SetControlRotation(*rotation);
 
 	// If special button is pressed, stamina grows up
 	if (SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime())
@@ -80,22 +67,11 @@ void ACharacterBase::Tick(float DeltaTime)
 		HandleAttack();
 	}
 
-	// Player is being hit by something
-	if (AnimationOtherTimeStop < GetCurrentTime())
-	{
-		bIsDamaged = false;
-	}
-	else
-	{
-		GetCapsuleComponent()->MoveComponent(FVector(bIsMovingRight ? -70.f * DeltaTime : 70.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
-	}
-
 	// User stops doing combo
 	if (AnimationAttackCompleteTimeStop + 0.5f < GetCurrentTime())
 	{
 		FinishCombo();
 	}
-
 	HandleDirections();
 }
 
@@ -164,7 +140,6 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 {
 	if (!GetCharacterMovement()->IsMovingOnGround())
 	{
-
 		if (bIsSpecialMove)
 		{
 			EAnimationState = AnimationState::SpecialMove;
@@ -183,7 +158,6 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 			{
 				EAnimationState = AnimationState::Jumping;
 			}
-
 		}
 	}
 	else
@@ -237,104 +211,70 @@ void ACharacterBase::HandleDirections()
 	{
 		if (bIsLeft && bIsDown)
 		{
-			InsertInputBuffer(KeyInput::DownLeft);
+			HandleBuffer(KeyInput::DownLeft);
+			bIsDirectionPressed = true;
 			MovementSpeed = CrouchingSpeed;
 			MoveCharacter(CrouchingSpeed * -1.f, false);
 		}
 		else if (bIsRight && bIsDown)
 		{
-			InsertInputBuffer(KeyInput::DownRight);
+			HandleBuffer(KeyInput::DownRight);
+			bIsDirectionPressed = true;
 			MovementSpeed = CrouchingSpeed;
 			MoveCharacter(CrouchingSpeed, true);
 		}
 		else if (bIsLeft && bIsUp)
 		{
-			InsertInputBuffer(KeyInput::UpLeft);
+			HandleBuffer(KeyInput::UpLeft);
+			bIsDirectionPressed = true;
 			MovementSpeed = WalkingSpeed;
 			MoveCharacter(WalkingSpeed * -1.f, false);
 		}
 		else if (bIsRight && bIsUp)
 		{
-			InsertInputBuffer(KeyInput::UpRight);
+			HandleBuffer(KeyInput::UpRight);
+			bIsDirectionPressed = true;
 			MovementSpeed = WalkingSpeed;
 			MoveCharacter(WalkingSpeed, true);
 		}
-		else if (bIsDown)
+		else if (bIsDown && !bIsUp)
 		{
-			InsertInputBuffer(KeyInput::Down);
+			HandleBuffer(KeyInput::Down);
 			bIsDirectionPressed = true;
 		}
-		else if (bIsLeft)
+		else if (bIsLeft && !bIsRight)
 		{
-			InsertInputBuffer(KeyInput::Left);
+			HandleBuffer(KeyInput::Left);
+			bIsDirectionPressed = true;
 			MovementSpeed = WalkingSpeed;
 			MoveCharacter(WalkingSpeed * -1.f, false);
 		}
-		else if (bIsRight)
+		else if (bIsRight && !bIsLeft)
 		{
-			InsertInputBuffer(KeyInput::Right);
+			HandleBuffer(KeyInput::Right);
+			bIsDirectionPressed = true;
 			MovementSpeed = WalkingSpeed;
 			MoveCharacter(WalkingSpeed, true);
 		}
-		else if (bIsUp)
+		else if (bIsUp && !bIsDown)
 		{
-			InsertInputBuffer(KeyInput::Up);
+			HandleBuffer(KeyInput::Up);
 			bIsDirectionPressed = true;
 		}
 		else
 		{
 			bIsDirectionPressed = false;
 		}
-
 	}
 	ControlCharacterAnimations(MovementSpeed);
 }
 
 void ACharacterBase::MoveCharacter(float MovementSpeed, bool IsFacingRight)
 {
-	bIsDirectionPressed = true;
 	bIsMovingRight = IsFacingRight;
 	FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
 	AddMovementInput(*Direction, MovementSpeed);
 }
-
-//void ACharacterBase::MoveRight(float Value)
-//{
-//	if (bCanMove)
-//	{
-//		if (!bIsDirectionPressed && Value != 0.f)
-//		{
-//			if (Value > 0.f)
-//			{
-//				InsertInputBuffer(KeyInput::Right);
-//			}
-//			else
-//			{
-//				InsertInputBuffer(KeyInput::Left);
-//			}
-//		}
-//
-//		if (Value > 0.0f)
-//		{
-//			bIsMovingRight = true;
-//			bIsDirectionPressed = true;
-//		}
-//		else if (Value < 0.0f)
-//		{
-//			bIsMovingRight = false;
-//			bIsDirectionPressed = true;
-//		}
-//		else
-//		{
-//			bIsDirectionPressed = false;
-//		}
-//
-//		// Direction will be determined by the tick, so here always will be 1 on X
-//		FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
-//		AddMovementInput(*Direction, Value);
-//	}
-//	ControlCharacterAnimations(Value);
-//}
 
 void ACharacterBase::LeftDirectionStart()
 {
@@ -395,13 +335,12 @@ void ACharacterBase::JumpStart()
 void ACharacterBase::JumpStop()
 {
 	bPressedJump = false;
-
 }
 
 void ACharacterBase::AttackStart()
 {
 	bIsAttacking = true;
-	InsertInputBuffer(KeyInput::Attack);
+	HandleBuffer(KeyInput::Attack);
 
 	// Animation has to finish, with a little window to input next command
 	if (bIsAnimationAttackComplete && AnimationAttackCompleteTimeStop + 0.5f > GetCurrentTime())
@@ -414,7 +353,8 @@ void ACharacterBase::AttackStart()
 			{
 				ResetAttack();
 				bCanMove = true;
-				ClearBuffer();
+				InputBuffer.ClearBuffer();
+				ShowBufferOnScreen();
 			}
 			else
 			{
@@ -428,7 +368,8 @@ void ACharacterBase::AttackStart()
 	{
 		ResetAttack();
 		bCanMove = true;
-		ClearBuffer();
+		InputBuffer.ClearBuffer();
+		ShowBufferOnScreen();
 	}
 }
 
@@ -440,10 +381,32 @@ void ACharacterBase::AttackStop()
 void ACharacterBase::SpecialStart()
 {
 	SpecialKeyPressedTimeStart = GetCurrentTime() + 1.f;
-	InsertInputBuffer(KeyInput::Special);
+	HandleBuffer(KeyInput::Special);
 	if (GetCharacterMovement()->IsMovingOnGround())
 	{
 		bCanMove = false;
+	}
+
+	TArray<int32> MatchingSpecialMoves;
+	for (int i = 0; i < SpecialMoves.Num(); ++i)
+	{
+		if (InputBuffer.IsMatchingDirections(SpecialMoves[i].Directions))
+		{
+			MatchingSpecialMoves.Add(i);
+		}
+	}
+	if (MatchingSpecialMoves.Num() > 0)
+	{
+		nCurrentSpecialMove = MatchingSpecialMoves[MatchingSpecialMoves.Num() - 1];
+	}
+
+	if (nCurrentSpecialMove >= 0)
+	{
+		bIsSpecialMove = true;
+	}
+	else
+	{
+		bCanMove = true;
 	}
 }
 
@@ -451,7 +414,6 @@ void ACharacterBase::SpecialStop()
 {
 	StopHandleStaminaCharge();
 	SpecialKeyPressedTimeStop = GetCurrentTime(); // Not used for now
-	ReadInputBuffer();
 }
 
 // Handling actions
@@ -495,62 +457,12 @@ void ACharacterBase::HandleAttack()
 
 void ACharacterBase::HandleSpecialMoves()
 {
-	//AnimationSpecialTimeStart = GetCurrentTime();
-	//if (!bIsExecutingSpecialMove)
-	//{
-	//	bIsExecutingSpecialMove = true;
-	//	// Checking if there are enough stamina
-	//	int bIsEnoughStamina = SpecialMoves[nCurrentSpecialMove].StaminaCost <= Stamina;
-	//	if (bIsEnoughStamina)
-	//	{
-	//		if ((SpecialMoves[nCurrentSpecialMove].CanBeDoneInGround && GetCharacterMovement()->IsMovingOnGround())
-	//			|| (SpecialMoves[nCurrentSpecialMove].CanBeDoneInAir && !GetCharacterMovement()->IsMovingOnGround()))
-	//		{
-	//			ConsumeStamina(SpecialMoves[nCurrentSpecialMove].StaminaCost);
-	//			CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].SpecialMoveAnimation);
-	//			// Do motion
 
-	//			if (SpecialMoves[nCurrentSpecialMove].IsProjectile)
-	//			{
-	//				FTimerDelegate TimerDel;
-	//				FTimerHandle TimerHandle;
-
-	//				//Binding the function with specific variables
-	//				TimerDel.BindUFunction(this, FName("HandleProjectile"));
-	//				//Calling MyUsefulFunction after 5 seconds without looping
-	//				GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.3f, false);
-	//			}
-	//		}
-	//		else
-	//		{
-	//			ClearBuffer();
-	//		}
-	//	}
-	//	else
-	//	{
-	//		CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].NoStaminaAnimation);
-	//	}
-	//	AnimationSpecialTimeStop = AnimationSpecialTimeStart + CurrentFlipbook->GetFlipbookLength();
-	//}
-	//if (GetCurrentTime() > AnimationSpecialTimeStop)
-	//{
-	//	bIsSpecialMove = false;
-	//	bIsExecutingSpecialMove = false;
-	//	bCanMove = true;
-	//}
 }
 
 void ACharacterBase::HandleProjectile()
 {
-	UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("/Game/Blueprints/BP_Hadouken.BP_Hadouken")));
 
-	UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	GetWorld()->SpawnActor<AActor>(GeneratedBP->GeneratedClass, GetActorLocation(), GetActorRotation(), SpawnParams);
-	GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, CharacterArrowComponent->GetComponentLocation().ToString());
 }
 
 void ACharacterBase::HandleStaminaCharge()
@@ -563,52 +475,6 @@ void ACharacterBase::HandleStaminaCharge()
 	}
 }
 
-void ACharacterBase::DoCombo(TArray<FComboAttackStruct> Combo)
-{
-	bool bIsComboDone = true;
-	for (bool ComboIsDone : ComboAnimationFlags[nAttackNumber].bIsComboHits)
-	{
-		if (!ComboIsDone)
-		{
-			bIsComboDone = false;
-		}
-	}
-
-	if (!ComboAnimationFlags[nAttackNumber].bIsComboStart)
-	{
-		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationStart);
-		ComboAnimationFlags[nAttackNumber].bIsComboStart = true;
-		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		bIsAnimationAttackComplete = false;
-	}
-	else if (bIsComboDone && !ComboAnimationFlags[nAttackNumber].bIsComboEnd)
-	{
-		CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationEnd);
-		ComboAnimationFlags[nAttackNumber].bIsComboEnd = true;
-		AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		bIsInHitAttackFrames = false;
-		bIsAnimationAttackComplete = true;
-	}
-	else
-	{
-		if (!ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit])
-		{
-			bCurrentHitCollisionIsDone = false;
-			CurrentFlipbook->SetFlipbook(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].AttackAnimationHit);
-			ComboAnimationFlags[nAttackNumber].bIsComboHits[nCurrentComboHit] = true;
-			AnimationFlipbookTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			AnimationAttackCompleteTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			bIsInHitAttackFrames = true;
-		}
-		if (nCurrentComboHit < ComboAnimationFlags[nAttackNumber].bIsComboHits.Num() - 1)
-		{
-			++nCurrentComboHit;
-		}
-	}
-}
-
 void ACharacterBase::FinishCombo()
 {
 	if (ComboCount > 2)
@@ -618,13 +484,19 @@ void ACharacterBase::FinishCombo()
 	ComboCount = 0;
 }
 
+void ACharacterBase::ShowBufferOnScreen()
+{
+	if (bShowBuffer)
+	{
+		GameHUD->DrawBuffer(InputBuffer.GetBufferedInput());
+	}
+}
+
 // Play states
 void ACharacterBase::SetDamage(float Value)
 {
-	bIsDamaged = true;
-	EAnimationState = AnimationState::HitTop;
-	AnimationOtherTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-	Life -= Value;
+	Super::SetDamage(Value);
+
 	GameHUD->SetLife(Life);
 	if (Life <= 0.f)
 	{
@@ -650,78 +522,6 @@ void ACharacterBase::HealStamina(float Value)
 	}
 }
 
-// Buffer
-void ACharacterBase::ReadInputBuffer()
-{
-	bool isOK = false;
-
-	TArray<int> MatchingSpecialMoves;
-	int8 BufferPosition;
-	// Every special move
-	for (int i = 0; i < SpecialMoves.Num(); ++i)
-	{
-		if (SpecialMoves[i].Directions.Num() <= BufferedInput.Num())
-		{
-			BufferPosition = BufferedInput.Num() - 1;
-			for (int j = SpecialMoves[i].Directions.Num() - 1; j >= 0; --j)
-			{
-				isOK = false;
-				if (BufferedInput[BufferPosition] == SpecialMoves[i].Directions[j])
-				{
-					isOK = true;
-				}
-				else
-				{
-					break;
-				}
-				--BufferPosition;
-			}
-			if (isOK)
-			{
-				MatchingSpecialMoves.Push(i);
-			}
-		}
-	}
-	if (MatchingSpecialMoves.Num() > 0)
-	{
-		FString debugMatchingSpecialMoves = FString::Printf(TEXT("Matched: %d"), MatchingSpecialMoves.Num());
-		GEngine->AddOnScreenDebugMessage(2, 1.0f, FColor::Blue, debugMatchingSpecialMoves);
-
-		nCurrentSpecialMove = MatchingSpecialMoves[MatchingSpecialMoves.Num() - 1];
-		bIsSpecialMove = true;
-	}
-	else
-	{
-		bCanMove = true;
-	}
-}
-
-void ACharacterBase::InsertInputBuffer(KeyInput key)
-{
-	if (!bIsDirectionPressed || LastDirectionPressed != key)
-	{
-		if (BufferedInput.Num() > 9)
-		{
-			BufferedInput.RemoveSingle(BufferedInput[0]);
-		}
-		BufferedInput.Push(key);
-		LastDirectionPressed = key;
-
-		GameHUD->DrawBuffer(BufferedInput);
-	}
-}
-
-TArray<int32> ACharacterBase::GetBufferedInput()
-{
-	return BufferedInput;
-}
-
-void ACharacterBase::ClearBuffer()
-{
-	BufferedInput.Empty();
-	GameHUD->DrawBuffer(BufferedInput);
-}
-
 // Stamina
 void ACharacterBase::ControlStamina()
 {
@@ -735,6 +535,13 @@ void ACharacterBase::ControlStamina()
 	}
 }
 
+// Buffer
+void ACharacterBase::HandleBuffer(KeyInput Direction)
+{
+	InputBuffer.InsertInputBuffer(Direction, bIsDirectionPressed);
+	ShowBufferOnScreen();
+}
+
 void ACharacterBase::ConsumeStamina(float Value)
 {
 	Stamina = Stamina - Value;
@@ -743,8 +550,13 @@ void ACharacterBase::ConsumeStamina(float Value)
 
 void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 {
-	// Hit box position
-	FVector CurrentLocation = FVector(GetActorLocation().X + HitBoxOrientation, GetActorLocation().Y, GetActorLocation().Z);
+	FVector HitBox = Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].HitBoxPosition;
+	if (!bIsMovingRight)
+	{
+		HitBox = FVector(HitBox.X * -1, HitBox.Y, HitBox.Z);
+	}
+	// Hit box will grow to detect collision
+	FVector CurrentLocation = FVector(GetActorLocation().X + HitBox.X, GetActorLocation().Y + HitBox.Y, GetActorLocation().Z + HitBox.Z);
 
 	// Tracing collision
 	FHitResult* HitResult = new FHitResult();

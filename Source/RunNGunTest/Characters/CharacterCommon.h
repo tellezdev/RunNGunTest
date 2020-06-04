@@ -51,6 +51,8 @@ public:
 		UPaperFlipbook* AttackAnimationHit;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DamageValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector HitBoxPosition = FVector(0.f, 0.f, 0.f);
 };
 
 USTRUCT(BlueprintType)
@@ -99,6 +101,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 public:
 	// Sets default values for this character's properties
 	ACharacterCommon();
@@ -139,8 +144,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool bIsInHitAttackFrames = false;
 
-	UPROPERTY()
-		float HitBoxOrientation = 30.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
 		bool CurrentAttackHasHitObjective = false;
 	UPROPERTY()
@@ -149,21 +152,21 @@ public:
 	// Character Movement
 	UPROPERTY()
 		bool bIsMovingRight;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY()
 		bool bCanMove = true;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY()
 		bool bIsDucking;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY()
 		bool bIsLeft;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY()
 		bool bIsRight;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY()
 		bool bIsUp;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY()
 		bool bIsDown;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY()
 		bool bIsAttacking;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY()
 		bool bIsChargingup;
 	UPROPERTY()
 		int8 nAttackNumber = 0;
@@ -222,6 +225,12 @@ public:
 		TArray<FComboAnimationFlags> ComboAnimationFlags;
 
 	UFUNCTION()
+		void ControlCharacterRotation();
+
+	UFUNCTION()
+		void SetDamagedState(float DeltaTime);
+
+	UFUNCTION()
 		virtual void BindDataHUD();
 
 	UFUNCTION()
@@ -259,7 +268,7 @@ public:
 		virtual void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
 
 	UFUNCTION()
-		virtual void DoCombo(TArray<FComboAttackStruct> Combo);
+		void DoCombo(TArray<FComboAttackStruct> Combo);
 
 	UFUNCTION()
 		virtual void FinishCombo();

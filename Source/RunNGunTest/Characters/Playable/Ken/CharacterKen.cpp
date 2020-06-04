@@ -37,7 +37,8 @@ void ACharacterKen::Tick(float DeltaTime)
 
 	if (bIsExecutingSpecialMove && SpecialMoveFinalLocation != FVector(0.f, 0.f, 0.f))
 	{
-		FVector ToVinterp = FMath::VInterpTo(GetActorLocation(), SpecialMoveFinalLocation, DeltaTime, SpecialMoves[nCurrentSpecialMove].InterpolationSpeed);
+		//FVector ToVinterp = FMath::VInterpTo(GetActorLocation(), SpecialMoveFinalLocation, DeltaTime, SpecialMoves[nCurrentSpecialMove].InterpolationSpeed);
+		FVector ToVinterp = FMath::VInterpConstantTo(GetActorLocation(), SpecialMoveFinalLocation, DeltaTime, SpecialMoves[nCurrentSpecialMove].InterpolationSpeed * 100.f);
 		SetActorLocation(ToVinterp);
 	}
 }
@@ -55,6 +56,7 @@ void ACharacterKen::HandleSpecialMoves()
 	if (!bIsExecutingSpecialMove)
 	{
 		bIsExecutingSpecialMove = true;
+		bCanMove = false;
 		// Checking if there are enough stamina
 		int bIsEnoughStamina = SpecialMoves[nCurrentSpecialMove].StaminaCost <= Stamina;
 		if (bIsEnoughStamina)
@@ -94,7 +96,7 @@ void ACharacterKen::HandleSpecialMoves()
 			}
 			else
 			{
-				ClearBuffer();
+				InputBuffer.ClearBuffer();
 			}
 		}
 		else
@@ -108,13 +110,28 @@ void ACharacterKen::HandleSpecialMoves()
 		bIsSpecialMove = false;
 		bIsExecutingSpecialMove = false;
 		bCanMove = true;
+		nCurrentSpecialMove = -1;
 		SpecialMoveFinalLocation = FVector(0.f, 0.f, 0.f);
 		GetCapsuleComponent()->SetSimulatePhysics(false);
 	}
 }
 
+void ACharacterKen::HandleProjectile()
+{
+	UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("/Game/Blueprints/BP_Hadouken.BP_Hadouken")));
+
+	UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	GetWorld()->SpawnActor<AActor>(GeneratedBP->GeneratedClass, GetActorLocation(), GetActorRotation(), SpawnParams);
+	GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, CharacterArrowComponent->GetComponentLocation().ToString());
+}
+
 void ACharacterKen::SpecialHadouken()
 {
+	
 }
 
 void ACharacterKen::SpecialShoryuken()

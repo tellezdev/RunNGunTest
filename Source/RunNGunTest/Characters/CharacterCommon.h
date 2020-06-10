@@ -27,8 +27,9 @@ enum AnimationState
 	HitTop
 };
 
+// Combo Attacking Structs
 USTRUCT()
-struct FComboAnimationFlags
+struct FComboAnimationFlagsStruct
 {
 	GENERATED_BODY()
 
@@ -41,6 +42,7 @@ public:
 		bool bIsComboEnd = false;
 };
 
+
 USTRUCT(BlueprintType)
 struct FComboAttackHitsStruct
 {
@@ -48,7 +50,7 @@ struct FComboAttackHitsStruct
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* AttackAnimationHit;
+		UPaperFlipbook* AnimationHit;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DamageValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -61,9 +63,8 @@ struct FComboAttackStruct
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<int32> Directions;
+		TArray<int32> Directions; //TODO
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool IsChargeable; // TODO
@@ -72,23 +73,104 @@ public:
 		bool IsProjectile; // TODO
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AnimationStart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FComboAttackHitsStruct> AnimationHits;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AnimationEnd;
+
+};
+
+// Special Moves Structs
+USTRUCT()
+struct FSpecialMoveAnimationFlagsStruct
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+		bool bIsSpecialMoveStart = false;
+	UPROPERTY()
+		TArray<bool> bIsSpecialMoveHits;
+	UPROPERTY()
+		bool bIsSpecialMoveEnd = false;
+	UPROPERTY()
+		bool bIsCompleted = false;
+};
+
+USTRUCT()
+struct FSpecialMoveAnimationsFlagsStruct
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+		TArray<FSpecialMoveAnimationFlagsStruct> Animations;
+};
+
+USTRUCT(BlueprintType)
+struct FSpecialMoveAnimationStruct
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* Animation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DamageValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector HitBoxPosition = FVector(0.f, 0.f, 0.f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector ImpulseToCharacter = FVector(0.f, 0.f, 0.f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float InterpolationSpeed = 5.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool IsProjectile;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UObject* GenericProjectile;
+};
+
+USTRUCT(BlueprintType)
+struct FSpecialMoveCompleteAnimationStruct
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FSpecialMoveAnimationStruct AnimationStart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FSpecialMoveAnimationStruct> AnimationHits;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FSpecialMoveAnimationStruct AnimationEnd;
+};
+
+USTRUCT(BlueprintType)
+struct FSpecialMoveStruct
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<int32> Directions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 StaminaCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool CanBeDoneInGround;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool CanBeDoneInAir;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float DamageValue;
-
-
+		TArray<FSpecialMoveCompleteAnimationStruct> SpecialMoveAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* AttackAnimationStart;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<FComboAttackHitsStruct> AttackAnimationHits;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* AttackAnimationEnd;
-
+		UPaperFlipbook* NoStaminaAnimation;
 };
 
 UCLASS()
@@ -108,46 +190,41 @@ public:
 	// Sets default values for this character's properties
 	ACharacterCommon();
 
+	// Basic Character Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		FString Name;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		UTexture2D* Portrait;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float Life = 100.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float MaxLife = 100.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float Stamina = 10.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float MaxStamina = 10.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float StaminaVelocityChargingInSeconds = 0.05f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float StaminaChargingUnit = 0.1f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float WalkingSpeed = 1.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float CrouchingSpeed = 0.5f;
 
-	// Config params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	// Attacking Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsDamaged = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsInHitAttackFrames = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Params")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool CurrentAttackHasHitObjective = false;
 	UPROPERTY()
 		bool bCurrentHitCollisionIsDone = false;
+	UPROPERTY()
+		int8 nAttackNumber = 0;
+	UPROPERTY()
+		int8 nCurrentComboHit = 0;
 
 	// Character Movement
 	UPROPERTY()
@@ -168,12 +245,6 @@ public:
 		bool bIsAttacking;
 	UPROPERTY()
 		bool bIsChargingup;
-	UPROPERTY()
-		int8 nAttackNumber = 0;
-	UPROPERTY()
-		int8 nCurrentComboHit = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
-		float nRecoveryTime = 1.f;
 
 	// Animation Times
 	UPROPERTY()
@@ -181,48 +252,72 @@ public:
 	UPROPERTY()
 		float AnimationFlipbookTimeStop;
 	UPROPERTY()
-		bool bIsAnimationAttackComplete = true;
-	UPROPERTY()
 		float AnimationOtherTimeStop;
+	UPROPERTY()
+		FVector CurrentTraceHit;
+
+	// Special Moves
+	UPROPERTY()
+		float AnimationSpecialTimeStart;
+	UPROPERTY()
+		float AnimationSpecialTimeStop;
+	UPROPERTY()
+		float AnimationSpecialMoveCompleteTimeStop;
+	UPROPERTY()
+		bool bIsExecutingSpecialMove;
+	UPROPERTY()
+		int8 nCurrentSpecialMove = -1;
+	UPROPERTY()
+		int8 nCurrentSpecialMoveHitAnimation = 0;
 
 	// HUD
 	UPROPERTY()
 		AGameHUD* GameHUD;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CollisionsHitInformation")
-		TArray<AActor*> ActorsToIgnore;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
+	UPROPERTY()
 		TEnumAsByte<AnimationState> EAnimationState = AnimationState::Idle;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character Components")
+	// Inherited Components
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UArrowComponent* CharacterArrowComponent;
-
-	// Flip books
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Animations")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UPaperFlipbookComponent* CurrentFlipbook;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
+	// Flip books
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* IdleAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* WalkingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* JumpingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* JumpingForwardAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* DuckingAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+		UPaperFlipbook* HitTopAnimation;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
 		TArray<FComboAttackStruct> AttackingComboAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
 		TArray<FComboAttackStruct> AttackingJumpingAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
 		TArray<FComboAttackStruct> AttackingCrouchingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Other")
-		UPaperFlipbook* HitTopAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
+		TArray<AActor*> ActorsToIgnore;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Special Moves")
+		TArray<FSpecialMoveStruct> SpecialMoves;
+
+
+	// Animation Flags
 	UPROPERTY()
-		TArray<FComboAnimationFlags> ComboAnimationFlags;
+		TArray<FComboAnimationFlagsStruct> ComboAnimationFlags;
+	UPROPERTY()
+		TArray<FSpecialMoveAnimationsFlagsStruct> SpecialMovesAnimationsFlags;
+	UPROPERTY()
+		int32 nCurrentSpecialMoveAnimation = 0;
+
 
 	UFUNCTION()
 		void ControlCharacterRotation();
@@ -237,6 +332,9 @@ public:
 		virtual void HandleAttack();
 
 	UFUNCTION()
+		virtual void HandleSpecialMoves();
+
+	UFUNCTION()
 		virtual void ResetAttack();
 
 	// Other stuff
@@ -247,10 +345,17 @@ public:
 		virtual void ControlCharacterAnimations(float characterMovementSpeed);
 
 	UFUNCTION()
-		virtual void SetAnimationFlags();
+		virtual void SetAttackAnimationFlags();
 
 	UFUNCTION()
-		virtual void ResetAnimationFlags();
+		virtual void ResetAttackAnimationFlags();
+
+	UFUNCTION()
+		virtual void SetSpecialMoveAnimationFlags();
+
+	UFUNCTION()
+		virtual void ResetSpecialMoveAnimationFlags();
+
 
 	UFUNCTION()
 		virtual float GetCurrentTime();
@@ -264,6 +369,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		virtual void HealStamina(float Value);
 
+	UFUNCTION(BlueprintCallable)
+		virtual void DrainLife();
+
+	UFUNCTION(BlueprintCallable)
+		virtual void DrainStamina();
+
 	UFUNCTION()
 		virtual void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
 
@@ -271,5 +382,9 @@ public:
 		void DoCombo(TArray<FComboAttackStruct> Combo);
 
 	UFUNCTION()
-		virtual void FinishCombo();
+		virtual void DoSpecialMove(FSpecialMoveStruct SpecialMove);
+
+
+	UFUNCTION()
+		virtual void NotifyComboToHUD();
 };

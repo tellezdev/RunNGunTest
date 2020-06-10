@@ -37,7 +37,6 @@ AEnemyBase::AEnemyBase()
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 
 	Life = 100.f;
-	TimeBetweenAttacks = 1.f;
 	AttackDamage = 10.f;
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(27.131327);
@@ -55,8 +54,8 @@ void AEnemyBase::BeginPlay()
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
-	SetAnimationFlags();
-	ResetAnimationFlags();
+	SetAttackAnimationFlags();
+	ResetAttackAnimationFlags();
 
 	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 }
@@ -66,7 +65,7 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (LastAttackTime + TimeBetweenAttacks + +nRecoveryTime < GetCurrentTime())
+	if (LastAttackTime + TimeBetweenAttacks < GetCurrentTime())
 	{
 		bCanMove = true;
 	}
@@ -130,7 +129,7 @@ void AEnemyBase::AttackStart()
 	bIsAttacking = true;
 
 	// Animation has to finish, with a little window to input next command
-	if (bIsAnimationAttackComplete && AnimationAttackCompleteTimeStop + 1.f > GetCurrentTime())
+	if (AnimationAttackCompleteTimeStop + 1.f > GetCurrentTime())
 	{
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
@@ -151,19 +150,9 @@ void AEnemyBase::AttackStart()
 // Handling actions
 void AEnemyBase::HandleAttack()
 {
+	Super::HandleAttack();
+
 	bCanMove = false;
-	// Only enter when animation is done
-	if (AnimationFlipbookTimeStop <= GetCurrentTime())
-	{
-		if (GetCharacterMovement()->IsMovingOnGround())
-		{
-			DoCombo(AttackingComboAnimation);
-		}
-		else
-		{
-			DoCombo(AttackingJumpingAnimation);
-		}
-	}
 
 	if (AnimationAttackCompleteTimeStop < GetCurrentTime())
 	{
@@ -171,28 +160,22 @@ void AEnemyBase::HandleAttack()
 		CurrentAttackHasHitObjective = false;
 		EAnimationState = AnimationState::Idle;
 		LastAttackTime = GetCurrentTime();
-		ResetAnimationFlags();
+		ResetAttackAnimationFlags();
 	}
 }
 
 void AEnemyBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
 {
-	FVector HitBox = Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].HitBoxPosition;
-	if (!bIsMovingRight)
-	{
-		HitBox = FVector(HitBox.X * -1, HitBox.Y, HitBox.Z);
-	}
-	// Hit box will grow to detect collision
-	FVector CurrentLocation = FVector(GetActorLocation().X + HitBox.X, GetActorLocation().Y + HitBox.Y, GetActorLocation().Z + HitBox.Z);
+	Super::ApplyHitCollide(Combo);
 
 	// Tracing collision
 	FHitResult* HitResult = new FHitResult();
-	if (UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentLocation, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true))
+	if (UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentTraceHit, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true))
 	{
 		if (&HitResult->Actor)
 		{
-			Player->SetDamage(Combo[nAttackNumber].AttackAnimationHits[nCurrentComboHit].DamageValue);
-			if (nCurrentComboHit >= Combo[nAttackNumber].AttackAnimationHits.Num())
+			Player->SetDamage(Combo[nAttackNumber].AnimationHits[nCurrentComboHit].DamageValue);
+			if (nCurrentComboHit >= Combo[nAttackNumber].AnimationHits.Num())
 			{
 				CurrentAttackHasHitObjective = true;
 			}
@@ -289,15 +272,6 @@ void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
 	UpdateAnimations();
 }
 
-float AEnemyBase::GetCurrentTime()
-{
-	if (GetWorld())
-	{
-		return GetWorld()->GetRealTimeSeconds();
-	}
-	return 0.f;
-}
-
 void AEnemyBase::SetDamage(float Value)
 {
 	Super::SetDamage(Value);
@@ -314,12 +288,12 @@ void AEnemyBase::HealLife(float Value)
 	Life += Value;
 }
 
-void AEnemyBase::SetAnimationFlags()
+void AEnemyBase::SetAttackAnimationFlags()
 {
 	for (FComboAttackStruct combo : AttackingComboAnimation)
 	{
-		FComboAnimationFlags element;
-		for (FComboAttackHitsStruct hit : combo.AttackAnimationHits)
+		FComboAnimationFlagsStruct element;
+		for (FComboAttackHitsStruct hit : combo.AnimationHits)
 		{
 			element.bIsComboHits.Add(false);
 		}
@@ -329,10 +303,10 @@ void AEnemyBase::SetAnimationFlags()
 	}
 }
 
-void AEnemyBase::ResetAnimationFlags()
+void AEnemyBase::ResetAttackAnimationFlags()
 {
 	ComboAnimationFlags.Empty();
-	SetAnimationFlags();
+	SetAttackAnimationFlags();
 }
 
 // Called to bind functionality to input

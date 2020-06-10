@@ -28,46 +28,46 @@ enum KeyInput
 	Special = 5
 };
 
-USTRUCT(BlueprintType)
-struct FSpecialMoveStruct
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FString Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<int32> Directions;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 StaminaCost;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool IsProjectile;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool CanBeDoneInGround;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool CanBeDoneInAir;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float DamageValue;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector ImpulseToCharacter = FVector(0.f, 0.f, 0.f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float InterpolationSpeed = 5.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* SpecialMoveAnimation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* NoStaminaAnimation;
-};
+//USTRUCT(BlueprintType)
+//struct FSpecialMoveStruct
+//{
+//	GENERATED_BODY()
+//
+//public:
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		FString Name;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		TArray<int32> Directions;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		int32 StaminaCost;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		bool IsProjectile;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		bool CanBeDoneInGround;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		bool CanBeDoneInAir;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		float DamageValue;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		FVector ImpulseToCharacter = FVector(0.f, 0.f, 0.f);
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		float InterpolationSpeed = 5.f;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		UPaperFlipbook* SpecialMoveAnimation;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//		UPaperFlipbook* NoStaminaAnimation;
+//};
 
 UCLASS()
 class RUNNGUNTEST_API ACharacterBase : public ACharacterCommon
@@ -93,24 +93,12 @@ public:
 	UPROPERTY()
 		bool bIsSpecialMove;
 	UPROPERTY()
-		bool bIsExecutingSpecialMove;
-	UPROPERTY()
-		int8 nCurrentSpecialMove = -1;
-	UPROPERTY()
 		bool bIsDirectionPressed;
-	/*UPROPERTY()
-		int32 LastDirectionPressed;*/
 	UPROPERTY()
 		int32 ComboCount = 0;
 	UPROPERTY()
 		FVector SpecialMoveFinalLocation;
 
-
-	// Animation Times
-	UPROPERTY()
-		float AnimationSpecialTimeStart;
-	UPROPERTY()
-		float AnimationSpecialTimeStop;
 
 	// Key Pressing Times
 	UPROPERTY()
@@ -129,20 +117,12 @@ public:
 	UPROPERTY()
 		FTimerHandle GlobalTimerHandle;
 
-	//UPROPERTY()
-	//	TArray<int32> BufferedInput;
 
 	// Flip books
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Other")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* ChargingUpAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Special Moves")
-		TArray<FSpecialMoveStruct> SpecialMoves;
-
 
 	// Movement related
-	/*UFUNCTION()
-		void MoveRight(float Value);*/
-
 	UFUNCTION()
 		void LeftDirectionStart();
 
@@ -197,22 +177,27 @@ public:
 
 	void ResetAttack();
 
-	void SetAnimationFlags();
+	void SetAttackAnimationFlags();
 
-	void ResetAnimationFlags();
+	void ResetAttackAnimationFlags();
 
 	void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
 
-	void FinishCombo();
+	void NotifyComboToHUD();
 
 	UFUNCTION()
 		void ShowBufferOnScreen();
 
-	UFUNCTION()
-		virtual void HandleSpecialMoves();
+	void HandleSpecialMoves();
+
+	void DoSpecialMove(FSpecialMoveStruct SpecialMove);
+
+	void SetSpecialMoveAnimationFlags();
+
+	void ResetSpecialMoveAnimationFlags();
 
 	UFUNCTION()
-		virtual void HandleProjectile();
+		virtual void HandleProjectile(UObject* Projectile);
 
 	UFUNCTION()
 		void HandleStaminaCharge();
@@ -230,19 +215,7 @@ public:
 	UFUNCTION()
 		void HandleBuffer(KeyInput Direction);
 
-	/*UFUNCTION()
-		void InsertInputBuffer(KeyInput key);
-
-	UFUNCTION()
-		void ReadInputBuffer();
-
-	UFUNCTION(BlueprintCallable)
-		TArray<int32> GetBufferedInput();
-
-	UFUNCTION()
-		void ClearBuffer();*/
-
-		// Animations
+	// Animations
 	void UpdateAnimations();
 	void ControlCharacterAnimations(float characterMovementSpeed);
 
@@ -250,8 +223,8 @@ public:
 	void SetDamage(float Value);
 	void HealLife(float Value);
 	void HealStamina(float Value);
-
-	float GetCurrentTime();
+	void DrainLife();
+	void DrainStamina();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

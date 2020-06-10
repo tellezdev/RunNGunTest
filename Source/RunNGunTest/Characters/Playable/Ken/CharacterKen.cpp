@@ -16,10 +16,6 @@ ACharacterKen::ACharacterKen()
 	GetCharacterMovement()->AirControl = 0.8;
 	GetCapsuleComponent()->SetCapsuleHalfHeight(27.131327);
 	GetCapsuleComponent()->SetCapsuleRadius(18.100616);
-	GetCapsuleComponent()->BodyInstance.bLockXRotation = true;
-	GetCapsuleComponent()->BodyInstance.bLockYRotation = true;
-	GetCapsuleComponent()->BodyInstance.bLockZRotation = true;
-	GetCapsuleComponent()->BodyInstance.bLockRotation = true;
 	CurrentFlipbook->SetWorldLocation(FVector(0, 0, -31));
 }
 
@@ -27,7 +23,6 @@ ACharacterKen::ACharacterKen()
 void ACharacterKen::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
@@ -37,11 +32,12 @@ void ACharacterKen::Tick(float DeltaTime)
 
 	if (bIsExecutingSpecialMove && SpecialMoveFinalLocation != FVector(0.f, 0.f, 0.f))
 	{
-		//FVector ToVinterp = FMath::VInterpTo(GetActorLocation(), SpecialMoveFinalLocation, DeltaTime, SpecialMoves[nCurrentSpecialMove].InterpolationSpeed);
-		FVector ToVinterp = FMath::VInterpConstantTo(GetActorLocation(), SpecialMoveFinalLocation, DeltaTime, SpecialMoves[nCurrentSpecialMove].InterpolationSpeed * 100.f);
-		SetActorLocation(ToVinterp);
+		//FVector ToVinterp = FMath::VInterpConstantTo(GetActorLocation(), SpecialMoveFinalLocation, DeltaTime, SpecialMoves[nCurrentSpecialMove].InterpolationSpeed * 100.f);
+		//SetActorLocation(ToVinterp);
 	}
+
 }
+
 // Called to bind functionality to input
 void ACharacterKen::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -51,97 +47,21 @@ void ACharacterKen::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void ACharacterKen::HandleSpecialMoves()
 {
 	Super::HandleSpecialMoves();
-
-	AnimationSpecialTimeStart = GetCurrentTime();
-	if (!bIsExecutingSpecialMove)
-	{
-		bIsExecutingSpecialMove = true;
-		bCanMove = false;
-		// Checking if there are enough stamina
-		int bIsEnoughStamina = SpecialMoves[nCurrentSpecialMove].StaminaCost <= Stamina;
-		if (bIsEnoughStamina)
-		{
-			if ((SpecialMoves[nCurrentSpecialMove].CanBeDoneInGround && GetCharacterMovement()->IsMovingOnGround())
-				|| (SpecialMoves[nCurrentSpecialMove].CanBeDoneInAir && !GetCharacterMovement()->IsMovingOnGround()))
-			{
-				ConsumeStamina(SpecialMoves[nCurrentSpecialMove].StaminaCost);
-				CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].SpecialMoveAnimation);
-				// Do motion
-				if (SpecialMoves[nCurrentSpecialMove].Name == "Hadouken")
-				{
-					SpecialHadouken();
-				}
-				else if (SpecialMoves[nCurrentSpecialMove].Name == "Shoryuken")
-				{
-					SpecialShoryuken();
-				}
-				else if (SpecialMoves[nCurrentSpecialMove].Name == "Tatsumaki")
-				{
-					SpecialTatsumaki();
-				}
-				else
-				{
-
-				}
-				if (SpecialMoves[nCurrentSpecialMove].IsProjectile)
-				{
-					FTimerDelegate TimerDel;
-					FTimerHandle TimerHandle;
-
-					//Binding the function with specific variables
-					TimerDel.BindUFunction(this, FName("HandleProjectile"));
-					//Calling MyUsefulFunction after 5 seconds without looping
-					GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.3f, false);
-				}
-			}
-			else
-			{
-				InputBuffer.ClearBuffer();
-			}
-		}
-		else
-		{
-			CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].NoStaminaAnimation);
-		}
-		AnimationSpecialTimeStop = AnimationSpecialTimeStart + CurrentFlipbook->GetFlipbookLength();
-	}
-	if (GetCurrentTime() > AnimationSpecialTimeStop)
-	{
-		bIsSpecialMove = false;
-		bIsExecutingSpecialMove = false;
-		bCanMove = true;
-		nCurrentSpecialMove = -1;
-		SpecialMoveFinalLocation = FVector(0.f, 0.f, 0.f);
-		GetCapsuleComponent()->SetSimulatePhysics(false);
-	}
-}
-
-void ACharacterKen::HandleProjectile()
-{
-	UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("/Game/Blueprints/BP_Hadouken.BP_Hadouken")));
-
-	UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	GetWorld()->SpawnActor<AActor>(GeneratedBP->GeneratedClass, GetActorLocation(), GetActorRotation(), SpawnParams);
-	GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, CharacterArrowComponent->GetComponentLocation().ToString());
 }
 
 void ACharacterKen::SpecialHadouken()
 {
-	
+	DoSpecialMove(SpecialMoves[nCurrentSpecialMove]);
 }
 
 void ACharacterKen::SpecialShoryuken()
 {
-	SpecialMoveFinalLocation = GetActorLocation() + SpecialMoves[nCurrentSpecialMove].ImpulseToCharacter;
+	//SpecialMoveFinalLocation = GetActorLocation() + SpecialMoves[nCurrentSpecialMove].ImpulseToCharacter;
 	GetCapsuleComponent()->SetSimulatePhysics(true);
 }
 
 void ACharacterKen::SpecialTatsumaki()
 {
-	SpecialMoveFinalLocation = GetActorLocation() + SpecialMoves[nCurrentSpecialMove].ImpulseToCharacter;
+	//SpecialMoveFinalLocation = GetActorLocation() + SpecialMoves[nCurrentSpecialMove].ImpulseToCharacter;
 	GetCapsuleComponent()->SetSimulatePhysics(true);
 }

@@ -32,10 +32,6 @@ public:
 		float AttackDamage;
 
 	// Animation Times
-	UPROPERTY()
-		float AnimationAttackTimeStart;
-	UPROPERTY()
-		float AnimationAttackTimeStop;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Times")
 		float TimeBetweenAttacks = 2.f;
 	UPROPERTY()
@@ -70,14 +66,12 @@ public:
 
 	void ControlCharacterAnimations(float characterMovementSpeed);
 
-	float GetCurrentTime();
-
 	void SetDamage(float Value);
 	void HealLife(float Value);
 
-	void SetAnimationFlags();
+	void SetAttackAnimationFlags();
 
-	void ResetAnimationFlags();
+	void ResetAttackAnimationFlags();
 
 
 	// Called every frame

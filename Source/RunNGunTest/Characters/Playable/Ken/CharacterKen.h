@@ -29,9 +29,6 @@ public:
 
 	virtual void HandleSpecialMoves() override;
 
-	virtual void HandleProjectile() override;
-
-
 	// Specials
 	UFUNCTION()
 		void SpecialHadouken();

@@ -19,6 +19,8 @@ AGenericProjectile::AGenericProjectile()
 	ProjectilePaperFlipbook->SetupAttachment(ProjectileCapsule);
 
 	ProjectileCapsule->OnComponentBeginOverlap.AddDynamic(this, &AGenericProjectile::BeginOverlap);
+
+	RootComponent = ProjectileCapsule;
 }
 
 // Called when the game starts or when spawned

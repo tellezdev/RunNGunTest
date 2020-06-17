@@ -97,7 +97,7 @@ void AEnemyBase::Tick(float DeltaTime)
 		}
 
 
-		if (AnimationFlipbookTimeStop > GetCurrentTime())
+		if (AnimationActionTimeStop > GetCurrentTime())
 		{
 			HandleAttack();
 		}
@@ -129,28 +129,28 @@ void AEnemyBase::AttackStart()
 	bIsAttacking = true;
 
 	// Animation has to finish, with a little window to input next command
-	if (AnimationAttackCompleteTimeStop + 1.f > GetCurrentTime())
-	{
-		if (GetCharacterMovement()->IsMovingOnGround())
-		{
-			// If attack is pressed continuously, it will be a combo 
-			if (nAttackNumber >= AttackingComboAnimation.Num() - 1)
-			{
-				ResetAttack();
-			}
-			else
-			{
-				++nAttackNumber;
-				CurrentAttackHasHitObjective = false;
-			}
-		}
-	}
+	//if (AnimationAttackCompleteTimeStop + 1.f > GetCurrentTime())
+	//{
+	//	if (GetCharacterMovement()->IsMovingOnGround())
+	//	{
+	//		// If attack is pressed continuously, it will be a combo 
+	//		if (nAttackNumber >= AttackingComboAnimation.Num() - 1)
+	//		{
+	//			ResetAttack();
+	//		}
+	//		else
+	//		{
+	//			++nAttackNumber;
+	//			CurrentAttackHasHitObjective = false;
+	//		}
+	//	}
+	//}
 }
 
 // Handling actions
 void AEnemyBase::HandleAttack()
 {
-	Super::HandleAttack();
+	/*Super::HandleAttack();
 
 	bCanMove = false;
 
@@ -161,27 +161,27 @@ void AEnemyBase::HandleAttack()
 		EAnimationState = AnimationState::Idle;
 		LastAttackTime = GetCurrentTime();
 		ResetAttackAnimationFlags();
-	}
+	}*/
 }
 
-void AEnemyBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
-{
-	Super::ApplyHitCollide(Combo);
-
-	// Tracing collision
-	FHitResult* HitResult = new FHitResult();
-	if (UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentTraceHit, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true))
-	{
-		if (&HitResult->Actor)
-		{
-			Player->SetDamage(Combo[nAttackNumber].AnimationHits[nCurrentComboHit].DamageValue);
-			if (nCurrentComboHit >= Combo[nAttackNumber].AnimationHits.Num())
-			{
-				CurrentAttackHasHitObjective = true;
-			}
-		}
-	}
-}
+//void AEnemyBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
+//{
+//	//Super::ApplyHitCollide(Combo);
+//
+//	//// Tracing collision
+//	//FHitResult* HitResult = new FHitResult();
+//	//if (UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentTraceHit, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true))
+//	//{
+//	//	if (&HitResult->Actor)
+//	//	{
+//	//		Player->SetDamage(Combo[nAttackNumber].AnimationHits[nCurrentComboHit].DamageValue);
+//	//		if (nCurrentComboHit >= Combo[nAttackNumber].AnimationHits.Num())
+//	//		{
+//	//			CurrentAttackHasHitObjective = true;
+//	//		}
+//	//	}
+//	//}
+//}
 
 void AEnemyBase::SetAttackAnimation()
 {
@@ -290,7 +290,7 @@ void AEnemyBase::HealLife(float Value)
 
 void AEnemyBase::SetAttackAnimationFlags()
 {
-	for (FComboAttackStruct combo : AttackingComboAnimation)
+	/*for (FComboAttackStruct combo : AttackingComboAnimation)
 	{
 		FComboAnimationFlagsStruct element;
 		for (FComboAttackHitsStruct hit : combo.AnimationHits)
@@ -300,12 +300,12 @@ void AEnemyBase::SetAttackAnimationFlags()
 		element.bIsComboStart = false;
 		element.bIsComboEnd = false;
 		ComboAnimationFlags.Add(element);
-	}
+	}*/
 }
 
 void AEnemyBase::ResetAttackAnimationFlags()
 {
-	ComboAnimationFlags.Empty();
+	//ComboAnimationFlags.Empty();
 	SetAttackAnimationFlags();
 }
 

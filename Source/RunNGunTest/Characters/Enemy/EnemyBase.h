@@ -55,7 +55,7 @@ public:
 
 	void HandleAttack();
 
-	void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
+	//void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
 
 	UFUNCTION()
 		void SetAttackAnimation();

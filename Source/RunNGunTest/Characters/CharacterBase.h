@@ -28,47 +28,6 @@ enum KeyInput
 	Special = 5
 };
 
-//USTRUCT(BlueprintType)
-//struct FSpecialMoveStruct
-//{
-//	GENERATED_BODY()
-//
-//public:
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		FString Name;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		TArray<int32> Directions;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		int32 StaminaCost;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		bool IsProjectile;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		bool CanBeDoneInGround;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		bool CanBeDoneInAir;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		float DamageValue;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		FVector ImpulseToCharacter = FVector(0.f, 0.f, 0.f);
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		float InterpolationSpeed = 5.f;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		UPaperFlipbook* SpecialMoveAnimation;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//		UPaperFlipbook* NoStaminaAnimation;
-//};
-
 UCLASS()
 class RUNNGUNTEST_API ACharacterBase : public ACharacterCommon
 {
@@ -88,16 +47,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		bool bShowBuffer = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		float MaxComboTime = 1.0f;
 
 	// Character Movement
-	UPROPERTY()
-		bool bIsSpecialMove;
 	UPROPERTY()
 		bool bIsDirectionPressed;
 	UPROPERTY()
 		int32 ComboCount = 0;
-	UPROPERTY()
-		FVector SpecialMoveFinalLocation;
 
 
 	// Key Pressing Times
@@ -175,13 +132,7 @@ public:
 
 	void HandleAttack();
 
-	void ResetAttack();
-
-	void SetAttackAnimationFlags();
-
-	void ResetAttackAnimationFlags();
-
-	void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
+	//void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
 
 	void NotifyComboToHUD();
 
@@ -190,11 +141,11 @@ public:
 
 	void HandleSpecialMoves();
 
-	void DoSpecialMove(FSpecialMoveStruct SpecialMove);
+	void DoActionAnimation();
 
-	void SetSpecialMoveAnimationFlags();
+	void SetActionAnimationFlags();
 
-	void ResetSpecialMoveAnimationFlags();
+	void ResetActionAnimationFlags();
 
 	UFUNCTION()
 		virtual void HandleProjectile(UObject* Projectile);
@@ -205,8 +156,6 @@ public:
 	UFUNCTION()
 		void StopHandleStaminaCharge();
 
-	UFUNCTION()
-		void ConsumeStamina(float Value);
 
 	UFUNCTION()
 		void ControlStamina();
@@ -224,6 +173,7 @@ public:
 	void HealLife(float Value);
 	void HealStamina(float Value);
 	void DrainLife();
+	void ConsumeStamina(float Value);
 	void DrainStamina();
 
 	// Called every frame

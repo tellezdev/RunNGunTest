@@ -30,9 +30,9 @@ void ACharacterKen::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bIsExecutingSpecialMove && SpecialMoveFinalLocation != FVector(0.f, 0.f, 0.f))
+	if (bIsExecutingAction && ActionFinalLocation != FVector(0.f, 0.f, 0.f))
 	{
-		//FVector ToVinterp = FMath::VInterpConstantTo(GetActorLocation(), SpecialMoveFinalLocation, DeltaTime, SpecialMoves[nCurrentSpecialMove].InterpolationSpeed * 100.f);
+		//FVector ToVinterp = FMath::VInterpConstantTo(GetActorLocation(), ActionFinalLocation, DeltaTime, Actions[nCurrentAction].InterpolationSpeed * 100.f);
 		//SetActorLocation(ToVinterp);
 	}
 
@@ -51,17 +51,17 @@ void ACharacterKen::HandleSpecialMoves()
 
 void ACharacterKen::SpecialHadouken()
 {
-	DoSpecialMove(SpecialMoves[nCurrentSpecialMove]);
+	//DoActionAnimation(Actions[nCurrentAction]);
 }
 
 void ACharacterKen::SpecialShoryuken()
 {
-	//SpecialMoveFinalLocation = GetActorLocation() + SpecialMoves[nCurrentSpecialMove].ImpulseToCharacter;
-	GetCapsuleComponent()->SetSimulatePhysics(true);
+	//ActionFinalLocation = GetActorLocation() + Actions[nCurrentAction].ImpulseToCharacter;
+	//GetCapsuleComponent()->SetSimulatePhysics(true);
 }
 
 void ACharacterKen::SpecialTatsumaki()
 {
-	//SpecialMoveFinalLocation = GetActorLocation() + SpecialMoves[nCurrentSpecialMove].ImpulseToCharacter;
-	GetCapsuleComponent()->SetSimulatePhysics(true);
+	//ActionFinalLocation = GetActorLocation() + Actions[nCurrentAction].ImpulseToCharacter;
+	//GetCapsuleComponent()->SetSimulatePhysics(true);
 }

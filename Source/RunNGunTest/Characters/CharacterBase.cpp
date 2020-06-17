@@ -57,27 +57,12 @@ void ACharacterBase::Tick(float DeltaTime)
 		ControlStamina();
 	}
 
-	// Animation attack is on run
-	if (AnimationFlipbookTimeStop > GetCurrentTime())
-	{
-		HandleAttack();
-	}
-
 	// User stops doing combo
-	if (AnimationAttackCompleteTimeStop + 0.5f < GetCurrentTime())
+	if (nLastActionTime + MaxComboTime < GetCurrentTime())
 	{
 		NotifyComboToHUD();
 	}
 
-	if (AnimationSpecialMoveCompleteTimeStop > GetCurrentTime())
-	{
-		DoSpecialMove(SpecialMoves[nCurrentSpecialMove]);
-	}
-
-	if (AnimationSpecialTimeStop < GetCurrentTime())
-	{
-		ResetSpecialMoveAnimationFlags();
-	}
 
 	HandleDirections();
 }
@@ -125,10 +110,10 @@ void ACharacterBase::UpdateAnimations()
 		CurrentFlipbook->SetFlipbook(DuckingAnimation);
 		break;
 	case AnimationState::SpecialMove:
-		HandleSpecialMoves();
+		//HandleSpecialMoves();
 		break;
 	case AnimationState::Attacking:
-		HandleAttack();
+		//HandleAttack();
 		break;
 	case AnimationState::ChargingUp:
 		CurrentFlipbook->SetFlipbook(ChargingUpAnimation);
@@ -341,7 +326,7 @@ void ACharacterBase::JumpStart()
 	bCanMove = true;
 	bPressedJump = true;
 	bIsAttacking = false;
-	ResetAttack();
+	ResetAttackCombo();
 	EAnimationState = AnimationState::Jumping;
 }
 
@@ -353,37 +338,26 @@ void ACharacterBase::JumpStop()
 void ACharacterBase::AttackStart()
 {
 	bIsAttacking = true;
-	HandleBuffer(KeyInput::Attack);
-
-	// Animation has to finish, with a little window to input next command
-	if (AnimationAttackCompleteTimeStop + 0.5f > GetCurrentTime())
+	if (bIsAttackFinished && AnimationActionCompleteTimeStop < GetCurrentTime())
 	{
-		if (GetCharacterMovement()->IsMovingOnGround())
+		bIsAttackFinished = false;
+		if (nCurrentAction < AttackMoves.Num() - 1)
 		{
-			bCanMove = false;
-			// If attack is pressed continuously, it will be a combo 
-			if (nAttackNumber >= AttackingComboAnimation.Num() - 1)
+			if (!bIsFirstAttack)
 			{
-				ResetAttack();
-				bCanMove = true;
-				InputBuffer.ClearBuffer();
-				ShowBufferOnScreen();
+				++nCurrentAction;
 			}
-			else
-			{
-				++nAttackNumber;
-				++ComboCount;
-				CurrentAttackHasHitObjective = false;
-			}
+			nCurrentActionAnimation = 0;
 		}
+		else
+		{
+			ResetAttackCombo();
+			//InputBuffer.ClearBuffer();				
+		}
+		HandleAttack();
+		++ComboCount;
 	}
-	else if (AnimationAttackCompleteTimeStop + 0.5f < GetCurrentTime())
-	{
-		ResetAttack();
-		bCanMove = true;
-		InputBuffer.ClearBuffer();
-		ShowBufferOnScreen();
-	}
+	HandleBuffer(KeyInput::Attack);
 }
 
 void ACharacterBase::AttackStop()
@@ -393,33 +367,29 @@ void ACharacterBase::AttackStop()
 
 void ACharacterBase::SpecialStart()
 {
-	SpecialKeyPressedTimeStart = GetCurrentTime() + 1.f;
-	HandleBuffer(KeyInput::Special);
-	if (GetCharacterMovement()->IsMovingOnGround())
+	if (AnimationActionCompleteTimeStop < GetCurrentTime())
 	{
-		bCanMove = false;
-	}
+		SpecialKeyPressedTimeStart = GetCurrentTime() + 1.f;
+		HandleBuffer(KeyInput::Special);
 
-	TArray<int32> MatchingSpecialMoves;
-	for (int i = 0; i < SpecialMoves.Num(); ++i)
-	{
-		if (InputBuffer.IsMatchingDirections(SpecialMoves[i].Directions))
+		TArray<int32> MatchingActions;
+		for (int i = 0; i < SpecialMoves.Num(); ++i)
 		{
-			MatchingSpecialMoves.Add(i);
+			if (InputBuffer.IsMatchingDirections(SpecialMoves[i].Directions))
+			{
+				MatchingActions.Add(i);
+			}
 		}
-	}
-	if (MatchingSpecialMoves.Num() > 0)
-	{
-		nCurrentSpecialMove = MatchingSpecialMoves[MatchingSpecialMoves.Num() - 1];
-	}
-
-	if (nCurrentSpecialMove >= 0)
-	{
-		bIsSpecialMove = true;
-	}
-	else
-	{
-		bCanMove = true;
+		if (MatchingActions.Num() > 0)
+		{
+			nCurrentAction = MatchingActions[MatchingActions.Num() - 1];
+			bIsSpecialMove = true;
+			HandleSpecialMoves();
+		}
+		else
+		{
+			bCanMove = true;
+		}
 	}
 }
 
@@ -433,67 +403,12 @@ void ACharacterBase::SpecialStop()
 void ACharacterBase::HandleAttack()
 {
 	Super::HandleAttack();
-
-	if (bIsInHitAttackFrames && !bCurrentHitCollisionIsDone)
-	{
-		if (GetCharacterMovement()->IsMovingOnGround())
-		{
-			ApplyHitCollide(AttackingComboAnimation);
-		}
-		else
-		{
-			ApplyHitCollide(AttackingJumpingAnimation);
-		}
-	}
-
-	if (AnimationAttackCompleteTimeStop < GetCurrentTime())
-	{
-		bIsAttacking = false;
-		CurrentAttackHasHitObjective = false;
-		EAnimationState = AnimationState::Idle;
-		bCanMove = true;
-		ResetAttackAnimationFlags();
-	}
+	ShowBufferOnScreen();
 }
 
 void ACharacterBase::HandleSpecialMoves()
 {
 	Super::HandleSpecialMoves();
-
-	if (!bIsExecutingSpecialMove)
-	{
-		bIsExecutingSpecialMove = true;
-		bCanMove = false;
-		// Checking if there are enough stamina
-		int bIsEnoughStamina = SpecialMoves[nCurrentSpecialMove].StaminaCost <= Stamina;
-		if (bIsEnoughStamina)
-		{
-			if ((SpecialMoves[nCurrentSpecialMove].CanBeDoneInGround && GetCharacterMovement()->IsMovingOnGround())
-				|| (SpecialMoves[nCurrentSpecialMove].CanBeDoneInAir && !GetCharacterMovement()->IsMovingOnGround()))
-			{
-				ConsumeStamina(SpecialMoves[nCurrentSpecialMove].StaminaCost);
-				DoSpecialMove(SpecialMoves[nCurrentSpecialMove]);
-			}
-			else
-			{
-				InputBuffer.ClearBuffer();
-			}
-		}
-		else
-		{
-			CurrentFlipbook->SetFlipbook(SpecialMoves[nCurrentSpecialMove].NoStaminaAnimation);
-			AnimationSpecialTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-		}
-	}
-	if (AnimationSpecialTimeStop < GetCurrentTime())
-	{
-		bIsSpecialMove = false;
-		bIsExecutingSpecialMove = false;
-		bCanMove = true;
-		nCurrentSpecialMove = 0;
-		SpecialMoveFinalLocation = FVector(0.f, 0.f, 0.f);
-		GetCapsuleComponent()->SetSimulatePhysics(false);
-	}
 }
 
 void ACharacterBase::HandleProjectile(UObject* Projectile)
@@ -537,86 +452,9 @@ void ACharacterBase::ShowBufferOnScreen()
 	}
 }
 
-void ACharacterBase::DoSpecialMove(FSpecialMoveStruct SpecialMove)
+void ACharacterBase::DoActionAnimation()
 {
-	Super::DoSpecialMove(SpecialMove);
-
-	TArray<FSpecialMoveAnimationFlagsStruct>& AnimationsFlags = SpecialMovesAnimationsFlags[nCurrentSpecialMove].Animations;
-	FSpecialMoveCompleteAnimationStruct& CompleteSpecialMove = SpecialMove.SpecialMoveAnimation[nCurrentSpecialMoveAnimation];
-
-	// First time in this special move
-	if (AnimationSpecialTimeStop == 0.f)
-	{
-		AnimationSpecialTimeStart = GetCurrentTime();
-		for (int i = 0; i < SpecialMove.SpecialMoveAnimation.Num(); ++i)
-		{
-			AnimationSpecialMoveCompleteTimeStop += SpecialMove.SpecialMoveAnimation[i].AnimationStart.Animation->GetNumFrames() / SpecialMove.SpecialMoveAnimation[i].AnimationStart.Animation->GetFramesPerSecond();
-			for (int j = 0; j < SpecialMove.SpecialMoveAnimation[i].AnimationHits.Num(); ++j)
-			{
-				AnimationSpecialMoveCompleteTimeStop += SpecialMove.SpecialMoveAnimation[i].AnimationHits[j].Animation->GetNumFrames() / SpecialMove.SpecialMoveAnimation[i].AnimationHits[j].Animation->GetFramesPerSecond();
-			}
-			AnimationSpecialMoveCompleteTimeStop += SpecialMove.SpecialMoveAnimation[i].AnimationEnd.Animation->GetNumFrames() / SpecialMove.SpecialMoveAnimation[i].AnimationEnd.Animation->GetFramesPerSecond();
-		}
-		AnimationSpecialMoveCompleteTimeStop += AnimationSpecialTimeStart;
-	}
-
-	if (AnimationSpecialTimeStop < GetCurrentTime())
-	{
-		if (!AnimationsFlags[nCurrentSpecialMoveAnimation].bIsSpecialMoveStart)
-		{
-			CurrentFlipbook->SetFlipbook(CompleteSpecialMove.AnimationStart.Animation);
-			CurrentFlipbook->SetLooping(false);
-			CurrentFlipbook->Play();
-			AnimationSpecialTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			AnimationsFlags[nCurrentSpecialMoveAnimation].bIsSpecialMoveStart = true;
-
-		}
-		else if (AnimationsFlags[nCurrentSpecialMoveAnimation].bIsCompleted && !AnimationsFlags[nCurrentSpecialMoveAnimation].bIsSpecialMoveEnd)
-		{
-			CurrentFlipbook->SetFlipbook(CompleteSpecialMove.AnimationEnd.Animation);
-			CurrentFlipbook->SetLooping(false);
-			CurrentFlipbook->Play();
-			AnimationSpecialTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			AnimationsFlags[nCurrentSpecialMoveAnimation].bIsSpecialMoveEnd = true;
-
-			if (nCurrentSpecialMoveAnimation < AnimationsFlags.Num() - 1)
-			{
-				nCurrentSpecialMoveHitAnimation = 0;
-				++nCurrentSpecialMoveAnimation;
-			}
-		}
-		else if (!AnimationsFlags[nCurrentSpecialMoveAnimation].bIsSpecialMoveHits[nCurrentSpecialMoveHitAnimation])
-		{
-			CurrentFlipbook->SetFlipbook(CompleteSpecialMove.AnimationHits[nCurrentSpecialMoveHitAnimation].Animation);
-			CurrentFlipbook->SetLooping(false);
-			CurrentFlipbook->Play();
-			AnimationSpecialTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-			AnimationsFlags[nCurrentSpecialMoveAnimation].bIsSpecialMoveHits[nCurrentSpecialMoveHitAnimation] = true;
-			if (CompleteSpecialMove.AnimationHits[nCurrentSpecialMoveHitAnimation].IsProjectile)
-			{
-				FTimerDelegate TimerDel;
-				FTimerHandle TimerHandle;
-
-				//Binding the function with specific variables
-				TimerDel.BindUFunction(this, FName("HandleProjectile"), SpecialMove.SpecialMoveAnimation[nCurrentSpecialMoveAnimation].AnimationHits[nCurrentSpecialMoveHitAnimation].GenericProjectile);
-				//Calling MyUsefulFunction after 5 seconds without looping
-				GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.1f, false);
-			}
-			if (nCurrentSpecialMoveHitAnimation < AnimationsFlags[nCurrentSpecialMoveAnimation].bIsSpecialMoveHits.Num() - 1)
-			{
-				++nCurrentSpecialMoveHitAnimation;
-			}
-			else
-			{
-				AnimationsFlags[nCurrentSpecialMoveAnimation].bIsCompleted = true;
-			}
-			//ApplyHitCollide(SpecialMove);		
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Nothing here")));
-		}
-	}
+	Super::DoActionAnimation();
 }
 
 // Play states
@@ -687,30 +525,29 @@ void ACharacterBase::HandleBuffer(KeyInput Direction)
 
 void ACharacterBase::ConsumeStamina(float Value)
 {
-	Stamina = Stamina - Value;
-	GameHUD->SetStamina(Stamina);
+	Super::ConsumeStamina(Value);
 }
 
-void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
-{
-	Super::ApplyHitCollide(Combo);
-
-	// Tracing collision
-	FHitResult* HitResult = new FHitResult();
-	if (!CurrentAttackHasHitObjective && UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentTraceHit, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true, FLinearColor::Red, FLinearColor::Green, 0.5f))
-	{
-		if (HitResult->Actor->ActorHasTag("Enemy"))
-		{
-			ACharacterCommon* EnemyCasted = Cast<ACharacterCommon>(HitResult->Actor);
-			EnemyCasted->SetDamage(Combo[nAttackNumber].AnimationHits[nCurrentComboHit].DamageValue);
-			if (nCurrentComboHit >= Combo[nAttackNumber].AnimationHits.Num())
-			{
-				CurrentAttackHasHitObjective = true;
-			}
-			bCurrentHitCollisionIsDone = true;
-		}
-	}
-}
+//void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
+//{
+//	Super::ApplyHitCollide(Combo);
+//
+//	// Tracing collision
+//	FHitResult* HitResult = new FHitResult();
+//	if (!CurrentAttackHasHitObjective && UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentTraceHit, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true, FLinearColor::Red, FLinearColor::Green, 0.5f))
+//	{
+//		if (HitResult->Actor->ActorHasTag("Enemy"))
+//		{
+//			ACharacterCommon* EnemyCasted = Cast<ACharacterCommon>(HitResult->Actor);
+//			EnemyCasted->SetDamage(Combo[nAttackNumber].AnimationHits[nCurrentComboHit].DamageValue);
+//			if (nCurrentComboHit >= Combo[nAttackNumber].AnimationHits.Num())
+//			{
+//				CurrentAttackHasHitObjective = true;
+//			}
+//			bCurrentHitCollisionIsDone = true;
+//		}
+//	}
+//}
 
 // Resetting states
 void ACharacterBase::StopHandleStaminaCharge()
@@ -721,71 +558,12 @@ void ACharacterBase::StopHandleStaminaCharge()
 	SpecialKeyPressedTimeStop = -1;
 }
 
-void ACharacterBase::ResetAttack()
+void ACharacterBase::SetActionAnimationFlags()
 {
-	Super::ResetAttack();
-
-	nAttackNumber = 0;
-	nCurrentComboHit = 0;
+	Super::SetActionAnimationFlags();
 }
 
-void ACharacterBase::SetAttackAnimationFlags()
+void ACharacterBase::ResetActionAnimationFlags()
 {
-	Super::SetAttackAnimationFlags();
-	/*for (FComboAttackStruct combo : AttackingComboAnimation)
-	{
-		FComboAnimationFlagsStruct element;
-		for (FComboAttackHitsStruct hit : combo.AnimationHits)
-		{
-			element.bIsComboHits.Add(false);
-		}
-		element.bIsComboStart = false;
-		element.bIsComboEnd = false;
-		ComboAnimationFlags.Add(element);
-	}*/
-}
-
-void ACharacterBase::ResetAttackAnimationFlags()
-{
-	Super::ResetAttackAnimationFlags();
-	/*ComboAnimationFlags.Empty();
-	SetAttackAnimationFlags();*/
-}
-
-void ACharacterBase::SetSpecialMoveAnimationFlags()
-{
-	Super::SetSpecialMoveAnimationFlags();
-
-	SpecialMovesAnimationsFlags.Empty();
-	if (SpecialMoves.Num() > 0)
-	{
-		for (int i = 0; i != SpecialMoves.Num(); ++i)
-		{
-			FSpecialMoveAnimationsFlagsStruct SpecialMove;
-			for (int j = 0; j != SpecialMoves[i].SpecialMoveAnimation.Num(); ++j)
-			{
-				FSpecialMoveAnimationFlagsStruct Animations;
-				Animations.bIsCompleted = false;
-				Animations.bIsSpecialMoveStart = false;
-				Animations.bIsSpecialMoveEnd = false;
-				for (int k = 0; k != SpecialMoves[i].SpecialMoveAnimation[j].AnimationHits.Num(); ++k)
-				{
-					Animations.bIsSpecialMoveHits.Add(false);
-				}
-				SpecialMove.Animations.Add(Animations);
-			}
-			SpecialMovesAnimationsFlags.Add(SpecialMove);
-		}
-	}
-}
-
-void ACharacterBase::ResetSpecialMoveAnimationFlags()
-{
-	Super::ResetSpecialMoveAnimationFlags();
-
-	nCurrentSpecialMoveHitAnimation = 0;
-	nCurrentSpecialMoveAnimation = 0;
-	AnimationSpecialTimeStop = 0.f;
-	AnimationSpecialMoveCompleteTimeStop = 0.f;
-	SetSpecialMoveAnimationFlags();
+	Super::ResetActionAnimationFlags();
 }

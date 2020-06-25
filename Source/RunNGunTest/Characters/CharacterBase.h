@@ -56,7 +56,6 @@ public:
 	UPROPERTY()
 		int32 ComboCount = 0;
 
-
 	// Key Pressing Times
 	UPROPERTY()
 		float AttackKeyPressedTimeStart;
@@ -73,7 +72,6 @@ public:
 
 	UPROPERTY()
 		FTimerHandle GlobalTimerHandle;
-
 
 	// Flip books
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
@@ -132,30 +130,26 @@ public:
 
 	void HandleAttack();
 
-	//void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
-
-	void NotifyComboToHUD();
-
-	UFUNCTION()
-		void ShowBufferOnScreen();
-
 	void HandleSpecialMoves();
-
-	void DoActionAnimation();
-
-	void SetActionAnimationFlags();
-
-	void ResetActionAnimationFlags();
 
 	UFUNCTION()
 		virtual void HandleProjectile(UObject* Projectile);
 
 	UFUNCTION()
+		void HandleDead();
+
+	// HUD related
+	void NotifyComboToHUD();
+
+	UFUNCTION()
+		void ShowBufferOnScreen();
+
+	// Stamina related
+	UFUNCTION()
 		void HandleStaminaCharge();
 
 	UFUNCTION()
 		void StopHandleStaminaCharge();
-
 
 	UFUNCTION()
 		void ControlStamina();
@@ -170,7 +164,6 @@ public:
 
 	// -- Health related
 	void SetDamage(float Value);
-	void HealLife(float Value);
 	void HealStamina(float Value);
 	void DrainLife();
 	void ConsumeStamina(float Value);
@@ -181,5 +174,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 };

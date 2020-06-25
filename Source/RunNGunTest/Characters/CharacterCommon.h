@@ -177,7 +177,7 @@ public:
 	UPROPERTY()
 		int8 nCurrentComboHit = 0;
 	UPROPERTY()
-		bool bIsAttackFinished = false;
+		bool bIsAttackFinished = true;
 	UPROPERTY()
 		float nLastActionTime = 0.f;
 
@@ -186,7 +186,7 @@ public:
 	UPROPERTY()
 		bool bIsMovingRight;
 	UPROPERTY()
-		bool bCanMove = true;
+		bool bCanMove;
 	UPROPERTY()
 		bool bIsDucking;
 	UPROPERTY()
@@ -226,7 +226,7 @@ public:
 	UPROPERTY()
 		float AnimationActionCompleteTimeStop;
 	UPROPERTY()
-		bool bIsExecutingAction;
+		bool bIsExecutingSpecialMove;
 	UPROPERTY()
 		int8 nCurrentAction = 0;
 	UPROPERTY()
@@ -262,11 +262,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
 		TArray<AActor*> ActorsToIgnore;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attack Moves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
 		TArray<FActionStruct> AttackMoves;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Special Moves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+		TArray<FActionStruct> JumpAttackMoves;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
 		TArray<FActionStruct> SpecialMoves;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations No Stamina")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
 		TArray<FActionStruct> NoStaminaMoves;
 
 	UPROPERTY()
@@ -280,6 +282,11 @@ public:
 		int32 nCurrentActionAnimation = 0;
 	UPROPERTY()
 		float nCurrentAnimationInterpolationSpeed = 0.f;
+
+	UFUNCTION()
+		virtual void SetCanMove(bool State);
+	UFUNCTION()
+		bool CanMove();
 
 
 	UFUNCTION()
@@ -306,6 +313,9 @@ public:
 	UFUNCTION()
 		virtual void ResetSpecialMove();
 
+	UFUNCTION()
+		virtual FVector GetFacingVector(FVector OriginalVector);
+
 	// Other stuff
 	UFUNCTION()
 		virtual void UpdateAnimations();
@@ -318,6 +328,9 @@ public:
 
 	UFUNCTION()
 		virtual void ResetActionAnimationFlags();
+
+	UFUNCTION()
+		virtual void SetAnimationState(AnimationState State);
 
 	UFUNCTION()
 		virtual void ConsumeStamina(float Value);
@@ -346,6 +359,8 @@ public:
 	UFUNCTION()
 		virtual void DoActionAnimation();
 
+	UFUNCTION()
+		virtual void SetAnimationBehaviour(FActionAnimationStruct AnimationStruct, bool bIsLoop);
 
 	UFUNCTION()
 		virtual void NotifyComboToHUD();

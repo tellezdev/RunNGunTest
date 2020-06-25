@@ -34,11 +34,6 @@ public:
 	// Animation Times
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Times")
 		float TimeBetweenAttacks = 2.f;
-	UPROPERTY()
-		float LastAttackTime;
-
-	bool bIsAttacking = false;
-
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Collision Areas")
 		USphereComponent* VisibilityArea;
@@ -47,38 +42,22 @@ public:
 
 
 	// Movement related
-	UFUNCTION(BlueprintCallable)
-		void AttackStart();
+	void AttackStart();
 
 	UFUNCTION()
 		void FacePlayer();
 
-	void HandleAttack();
-
 	//void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
-
-	UFUNCTION()
-		void SetAttackAnimation();
-
-	void ResetAttack();
 
 	void UpdateAnimations();
 
 	void ControlCharacterAnimations(float characterMovementSpeed);
 
 	void SetDamage(float Value);
-	void HealLife(float Value);
-
-	void SetAttackAnimationFlags();
-
-	void ResetAttackAnimationFlags();
 
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION()
 		FVector GetPlayerPosition();

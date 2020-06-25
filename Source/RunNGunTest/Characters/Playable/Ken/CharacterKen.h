@@ -26,17 +26,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual void HandleSpecialMoves() override;
-
-	// Specials
-	UFUNCTION()
-		void SpecialHadouken();
-
-	UFUNCTION()
-		void SpecialShoryuken();
-
-	UFUNCTION()
-		void SpecialTatsumaki();
-
 };

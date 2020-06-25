@@ -54,9 +54,6 @@ void AEnemyBase::BeginPlay()
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
-	SetAttackAnimationFlags();
-	ResetAttackAnimationFlags();
-
 	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 }
 
@@ -65,16 +62,11 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (LastAttackTime + TimeBetweenAttacks < GetCurrentTime())
+	if (!bIsDamaged && !bIsAttacking && bCanMove && VisibilityArea->IsOverlappingActor(Player) && nLastActionTime + TimeBetweenAttacks < GetCurrentTime())
 	{
-		bCanMove = true;
-	}
-
-	if (!bIsDamaged && !bIsAttacking && bCanMove && VisibilityArea->IsOverlappingActor(Player))
-	{
+		SetCanMove(true);
 		// Depending on distance from player, attack, follow him or wait
 		float DistanceBetweenActors = GetActorLocation().Distance(GetActorLocation(), Player->GetActorLocation());
-
 
 		if (DistanceBetweenActors > 60.f)
 		{
@@ -91,17 +83,6 @@ void AEnemyBase::Tick(float DeltaTime)
 		{
 			AttackStart();
 		}
-		else
-		{
-			ResetAttack();
-		}
-
-
-		if (AnimationActionTimeStop > GetCurrentTime())
-		{
-			HandleAttack();
-		}
-
 	}
 	else
 	{
@@ -128,71 +109,23 @@ void AEnemyBase::AttackStart()
 {
 	bIsAttacking = true;
 
-	// Animation has to finish, with a little window to input next command
-	//if (AnimationAttackCompleteTimeStop + 1.f > GetCurrentTime())
-	//{
-	//	if (GetCharacterMovement()->IsMovingOnGround())
-	//	{
-	//		// If attack is pressed continuously, it will be a combo 
-	//		if (nAttackNumber >= AttackingComboAnimation.Num() - 1)
-	//		{
-	//			ResetAttack();
-	//		}
-	//		else
-	//		{
-	//			++nAttackNumber;
-	//			CurrentAttackHasHitObjective = false;
-	//		}
-	//	}
-	//}
-}
-
-// Handling actions
-void AEnemyBase::HandleAttack()
-{
-	/*Super::HandleAttack();
-
-	bCanMove = false;
-
-	if (AnimationAttackCompleteTimeStop < GetCurrentTime())
+	if (bIsAttackFinished && AnimationActionCompleteTimeStop < GetCurrentTime())
 	{
-		bIsAttacking = false;
-		CurrentAttackHasHitObjective = false;
-		EAnimationState = AnimationState::Idle;
-		LastAttackTime = GetCurrentTime();
-		ResetAttackAnimationFlags();
-	}*/
-}
-
-//void AEnemyBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
-//{
-//	//Super::ApplyHitCollide(Combo);
-//
-//	//// Tracing collision
-//	//FHitResult* HitResult = new FHitResult();
-//	//if (UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentTraceHit, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true))
-//	//{
-//	//	if (&HitResult->Actor)
-//	//	{
-//	//		Player->SetDamage(Combo[nAttackNumber].AnimationHits[nCurrentComboHit].DamageValue);
-//	//		if (nCurrentComboHit >= Combo[nAttackNumber].AnimationHits.Num())
-//	//		{
-//	//			CurrentAttackHasHitObjective = true;
-//	//		}
-//	//	}
-//	//}
-//}
-
-void AEnemyBase::SetAttackAnimation()
-{
-	HandleAttack();
-}
-
-void AEnemyBase::ResetAttack()
-{
-	bIsAttacking = false;
-	EAnimationState = AnimationState::Idle;
-	//bCanMove = true;
+		bIsAttackFinished = false;
+		if (nCurrentAction < AttackMoves.Num() - 1)
+		{
+			if (!bIsFirstAttack)
+			{
+				++nCurrentAction;
+			}
+			nCurrentActionAnimation = 0;
+		}
+		else
+		{
+			ResetAttackCombo();
+		}
+		HandleAttack();
+	}
 }
 
 void AEnemyBase::UpdateAnimations()
@@ -212,7 +145,7 @@ void AEnemyBase::UpdateAnimations()
 		CurrentFlipbook->SetFlipbook(JumpingForwardAnimation);
 		break;
 	case AnimationState::Attacking:
-		HandleAttack();
+		//HandleAttack();
 		break;
 	case AnimationState::HitTop:
 		CurrentFlipbook->SetFlipbook(HitTopAnimation);
@@ -222,24 +155,23 @@ void AEnemyBase::UpdateAnimations()
 		break;
 	}
 }
-
 void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
 {
 	if (!GetCharacterMovement()->IsMovingOnGround())
 	{
 		if (bIsAttacking)
 		{
-			EAnimationState = AnimationState::Attacking;
+			SetAnimationState(Attacking);
 		}
 		else
 		{
 			if (fabs(characterMovementSpeed) > 0.f)
 			{
-				EAnimationState = AnimationState::JumpingForward;
+				SetAnimationState(JumpingForward);
 			}
 			else
 			{
-				EAnimationState = AnimationState::Jumping;
+				SetAnimationState(Jumping);
 			}
 		}
 	}
@@ -247,27 +179,32 @@ void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
 	{
 		if (bIsDamaged)
 		{
-			EAnimationState = AnimationState::HitTop;
+			SetAnimationState(HitTop);
 		}
 		else
 		{
 			if (bIsAttacking)
 			{
-				EAnimationState = AnimationState::Attacking;
+				SetAnimationState(Attacking);
 			}
 			else
 			{
 				if (fabs(characterMovementSpeed) > 0.f)
 				{
-					EAnimationState = AnimationState::Walking;
+					SetAnimationState(Walking);
 				}
 				else
 				{
-					EAnimationState = AnimationState::Idle;
-
+					SetAnimationState(Idle);
 				}
 			}
 		}
+	}
+
+	if (!bIsSpecialMove)
+	{
+		CurrentFlipbook->SetLooping(true);
+		CurrentFlipbook->Play();
 	}
 	UpdateAnimations();
 }
@@ -276,44 +213,10 @@ void AEnemyBase::SetDamage(float Value)
 {
 	Super::SetDamage(Value);
 
-	Life -= Value;
 	if (Life <= 0)
 	{
 		Destroy();
 	}
-}
-
-void AEnemyBase::HealLife(float Value)
-{
-	Life += Value;
-}
-
-void AEnemyBase::SetAttackAnimationFlags()
-{
-	/*for (FComboAttackStruct combo : AttackingComboAnimation)
-	{
-		FComboAnimationFlagsStruct element;
-		for (FComboAttackHitsStruct hit : combo.AnimationHits)
-		{
-			element.bIsComboHits.Add(false);
-		}
-		element.bIsComboStart = false;
-		element.bIsComboEnd = false;
-		ComboAnimationFlags.Add(element);
-	}*/
-}
-
-void AEnemyBase::ResetAttackAnimationFlags()
-{
-	//ComboAnimationFlags.Empty();
-	SetAttackAnimationFlags();
-}
-
-// Called to bind functionality to input
-void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 FVector AEnemyBase::GetPlayerPosition()

@@ -134,21 +134,21 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 	{
 		if (bIsSpecialMove)
 		{
-			EAnimationState = AnimationState::SpecialMove;
+			SetAnimationState(SpecialMove);
 		}
 		else if (bIsAttacking)
 		{
-			EAnimationState = AnimationState::Attacking;
+			SetAnimationState(Attacking);
 		}
 		else
 		{
 			if (fabs(characterMovementSpeed) > 0.0f)
 			{
-				EAnimationState = AnimationState::JumpingForward;
+				SetAnimationState(JumpingForward);
 			}
 			else
 			{
-				EAnimationState = AnimationState::Jumping;
+				SetAnimationState(Jumping);
 			}
 		}
 	}
@@ -156,37 +156,37 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 	{
 		if (bIsDamaged)
 		{
-			EAnimationState = AnimationState::HitTop;
+			SetAnimationState(HitTop);
 		}
 		else
 		{
 			if (bIsChargingup)
 			{
-				EAnimationState = AnimationState::ChargingUp;
+				SetAnimationState(ChargingUp);
 			}
 			else if (bIsSpecialMove)
 			{
-				EAnimationState = AnimationState::SpecialMove;
+				SetAnimationState(SpecialMove);
 			}
 			else if (bIsAttacking)
 			{
-				EAnimationState = AnimationState::Attacking;
+				SetAnimationState(Attacking);
 			}
 			else
 			{
 				if (fabs(characterMovementSpeed) > 0.0f)
 				{
-					EAnimationState = AnimationState::Walking;
+					SetAnimationState(Walking);
 				}
 				else
 				{
 					if (bIsDucking)
 					{
-						EAnimationState = AnimationState::Ducking;
+						SetAnimationState(Ducking);
 					}
 					else
 					{
-						EAnimationState = AnimationState::Idle;
+						SetAnimationState(Idle);
 					}
 				}
 			}
@@ -205,7 +205,7 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 void ACharacterBase::HandleDirections()
 {
 	float MovementSpeed = 0.f;
-	if (bCanMove)
+	if (CanMove())
 	{
 		if (bIsLeft && bIsDown)
 		{
@@ -323,11 +323,11 @@ void ACharacterBase::UpDirectionStop()
 // Triggers
 void ACharacterBase::JumpStart()
 {
-	bCanMove = true;
+	SetCanMove(true);
 	bPressedJump = true;
 	bIsAttacking = false;
 	ResetAttackCombo();
-	EAnimationState = AnimationState::Jumping;
+	SetAnimationState(Jumping);
 }
 
 void ACharacterBase::JumpStop()
@@ -388,7 +388,7 @@ void ACharacterBase::SpecialStart()
 		}
 		else
 		{
-			bCanMove = true;
+			SetCanMove(true);
 		}
 	}
 }
@@ -432,6 +432,9 @@ void ACharacterBase::HandleStaminaCharge()
 		Stamina += StaminaChargingUnit;
 		GameHUD->SetStamina(Stamina);
 		SpecialKeyPressedTimeStart = GetCurrentTime();
+		/*TArray<FString> DebugString;
+		DebugString.Add(FString::Printf(TEXT("Charging!: %f"), GetCurrentTime()));
+		GameHUD->InsertDebugData(DebugString);*/
 	}
 }
 
@@ -452,30 +455,13 @@ void ACharacterBase::ShowBufferOnScreen()
 	}
 }
 
-void ACharacterBase::DoActionAnimation()
-{
-	Super::DoActionAnimation();
-}
-
 // Play states
 void ACharacterBase::SetDamage(float Value)
 {
 	Super::SetDamage(Value);
 
 	GameHUD->SetLife(Life);
-	if (Life <= 0.f)
-	{
-		UGameplayStatics::OpenLevel(this, "level_00");
-	}
-}
-
-void ACharacterBase::HealLife(float Value)
-{
-	if (Life < MaxLife)
-	{
-		Life += Value;
-		GameHUD->SetLife(Life);
-	}
+	HandleDead();
 }
 
 void ACharacterBase::HealStamina(float Value)
@@ -491,8 +477,7 @@ void ACharacterBase::DrainLife()
 {
 	Super::DrainLife();
 
-	Life = 0.1f;
-	GameHUD->SetLife(Life);
+	HandleDead();
 }
 
 void ACharacterBase::DrainStamina()
@@ -503,6 +488,13 @@ void ACharacterBase::DrainStamina()
 	GameHUD->SetStamina(Stamina);
 }
 
+void ACharacterBase::HandleDead()
+{
+	if (Life <= 0.f)
+	{
+		UGameplayStatics::OpenLevel(this, "level_00");
+	}
+}
 // Stamina
 void ACharacterBase::ControlStamina()
 {
@@ -528,42 +520,10 @@ void ACharacterBase::ConsumeStamina(float Value)
 	Super::ConsumeStamina(Value);
 }
 
-//void ACharacterBase::ApplyHitCollide(TArray<FComboAttackStruct> Combo)
-//{
-//	Super::ApplyHitCollide(Combo);
-//
-//	// Tracing collision
-//	FHitResult* HitResult = new FHitResult();
-//	if (!CurrentAttackHasHitObjective && UKismetSystemLibrary::BoxTraceSingle(GetWorld(), GetActorLocation(), CurrentTraceHit, FVector(20.0, 20.0, 20.0), GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResult, true, FLinearColor::Red, FLinearColor::Green, 0.5f))
-//	{
-//		if (HitResult->Actor->ActorHasTag("Enemy"))
-//		{
-//			ACharacterCommon* EnemyCasted = Cast<ACharacterCommon>(HitResult->Actor);
-//			EnemyCasted->SetDamage(Combo[nAttackNumber].AnimationHits[nCurrentComboHit].DamageValue);
-//			if (nCurrentComboHit >= Combo[nAttackNumber].AnimationHits.Num())
-//			{
-//				CurrentAttackHasHitObjective = true;
-//			}
-//			bCurrentHitCollisionIsDone = true;
-//		}
-//	}
-//}
-
 // Resetting states
 void ACharacterBase::StopHandleStaminaCharge()
 {
 	bIsChargingup = false;
-	bCanMove = true;
 	SpecialKeyPressedTimeStart = -1;
 	SpecialKeyPressedTimeStop = -1;
-}
-
-void ACharacterBase::SetActionAnimationFlags()
-{
-	Super::SetActionAnimationFlags();
-}
-
-void ACharacterBase::ResetActionAnimationFlags()
-{
-	Super::ResetActionAnimationFlags();
 }

@@ -29,13 +29,6 @@ void ACharacterKen::BeginPlay()
 void ACharacterKen::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (bIsExecutingAction && ActionFinalLocation != FVector(0.f, 0.f, 0.f))
-	{
-		//FVector ToVinterp = FMath::VInterpConstantTo(GetActorLocation(), ActionFinalLocation, DeltaTime, Actions[nCurrentAction].InterpolationSpeed * 100.f);
-		//SetActorLocation(ToVinterp);
-	}
-
 }
 
 // Called to bind functionality to input
@@ -44,24 +37,3 @@ void ACharacterKen::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ACharacterKen::HandleSpecialMoves()
-{
-	Super::HandleSpecialMoves();
-}
-
-void ACharacterKen::SpecialHadouken()
-{
-	//DoActionAnimation(Actions[nCurrentAction]);
-}
-
-void ACharacterKen::SpecialShoryuken()
-{
-	//ActionFinalLocation = GetActorLocation() + Actions[nCurrentAction].ImpulseToCharacter;
-	//GetCapsuleComponent()->SetSimulatePhysics(true);
-}
-
-void ACharacterKen::SpecialTatsumaki()
-{
-	//ActionFinalLocation = GetActorLocation() + Actions[nCurrentAction].ImpulseToCharacter;
-	//GetCapsuleComponent()->SetSimulatePhysics(true);
-}

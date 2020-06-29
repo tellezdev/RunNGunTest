@@ -27,6 +27,17 @@ enum AnimationState
 	HitTop
 };
 
+//UENUM(BlueprintType)
+//enum ActionState
+//{
+//	Idle,
+//	Attacking,
+//	SpecialMove,
+//	Chargingup,
+//	Ducking,
+//	Damaged
+//};
+
 // Action Animations Structs
 USTRUCT()
 struct FActionAnimationFlagsStruct
@@ -36,6 +47,8 @@ struct FActionAnimationFlagsStruct
 public:
 	UPROPERTY()
 		bool bIsActionStart = false;
+	UPROPERTY()
+		bool bIsActionCharge = false;
 	UPROPERTY()
 		TArray<bool> bIsActionHits;
 	UPROPERTY()
@@ -69,7 +82,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector HitBoxSize = FVector(0.f, 0.f, 0.f);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector ImpulseToCharacter = FVector(0.f, 0.f, 0.f);
+		FVector ImpulseToOwner = FVector(0.f, 0.f, 0.f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector ImpulseToReceiver = FVector(0.f, 0.f, 0.f);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float InterpolationSpeed = 5.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -86,6 +101,8 @@ struct FActionCompleteAnimationStruct
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FActionAnimationStruct AnimationStart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FActionAnimationStruct AnimationCharge;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FActionAnimationStruct> AnimationHits;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -116,6 +133,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float WindowFrameTimeToContinue = 0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool CanBeCharged;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FActionCompleteAnimationStruct> ActionAnimation;
@@ -165,8 +185,6 @@ public:
 
 	// Attacking Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bIsDamaged = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsInHitAttackFrames = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool CurrentAttackHasHitObjective = false;
@@ -180,6 +198,10 @@ public:
 		bool bIsAttackFinished = true;
 	UPROPERTY()
 		float nLastActionTime = 0.f;
+	UPROPERTY()
+		int32 nCurrentFrame = -1;
+	UPROPERTY()
+		int32 nCurrentAnimationTotalFrames = -1;
 
 
 	// Character Movement
@@ -188,8 +210,6 @@ public:
 	UPROPERTY()
 		bool bCanMove;
 	UPROPERTY()
-		bool bIsDucking;
-	UPROPERTY()
 		bool bIsLeft;
 	UPROPERTY()
 		bool bIsRight;
@@ -197,12 +217,18 @@ public:
 		bool bIsUp;
 	UPROPERTY()
 		bool bIsDown;
+	// DEPRECATED
 	UPROPERTY()
 		bool bIsAttacking;
 	UPROPERTY()
 		bool bIsSpecialMove;
 	UPROPERTY()
 		bool bIsChargingup;
+	UPROPERTY()
+		bool bIsDucking;
+	UPROPERTY()
+		bool bIsDamaged;
+	// DEPRECATED---
 	UPROPERTY()
 		bool bIsFirstAttack = true;
 	UPROPERTY()
@@ -220,9 +246,9 @@ public:
 
 	// Special Moves
 	UPROPERTY()
-		float AnimationActionTimeStart;
+		float AnimationActionCurrentTimeStart;
 	UPROPERTY()
-		float AnimationActionTimeStop;
+		float AnimationActionCurrentTimeStop;
 	UPROPERTY()
 		float AnimationActionCompleteTimeStop;
 	UPROPERTY()
@@ -238,6 +264,8 @@ public:
 
 	UPROPERTY()
 		TEnumAsByte<AnimationState> EAnimationState = AnimationState::Idle;
+	/*UPROPERTY()
+		TEnumAsByte<ActionState> EActionState = ActionState::Idle;*/
 
 	// Inherited Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -270,6 +298,8 @@ public:
 		TArray<FActionStruct> SpecialMoves;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
 		TArray<FActionStruct> NoStaminaMoves;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+		TArray<FActionStruct> ChargingStaminaAnimation;
 
 	UPROPERTY()
 		TArray<FActionStruct> Actions;
@@ -312,6 +342,9 @@ public:
 
 	UFUNCTION()
 		virtual void ResetSpecialMove();
+
+	UFUNCTION()
+		virtual void ResetChargingUp();
 
 	UFUNCTION()
 		virtual FVector GetFacingVector(FVector OriginalVector);

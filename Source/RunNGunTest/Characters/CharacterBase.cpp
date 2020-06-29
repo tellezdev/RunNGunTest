@@ -116,8 +116,8 @@ void ACharacterBase::UpdateAnimations()
 		//HandleAttack();
 		break;
 	case AnimationState::ChargingUp:
-		CurrentFlipbook->SetFlipbook(ChargingUpAnimation);
-		HandleStaminaCharge();
+		//CurrentFlipbook->SetFlipbook(ChargingUpAnimation);
+		//HandleStaminaCharge();
 		break;
 	case AnimationState::HitTop:
 		CurrentFlipbook->SetFlipbook(HitTopAnimation);
@@ -134,21 +134,21 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 	{
 		if (bIsSpecialMove)
 		{
-			SetAnimationState(SpecialMove);
+			SetAnimationState(AnimationState::SpecialMove);
 		}
 		else if (bIsAttacking)
 		{
-			SetAnimationState(Attacking);
+			SetAnimationState(AnimationState::Attacking);
 		}
 		else
 		{
 			if (fabs(characterMovementSpeed) > 0.0f)
 			{
-				SetAnimationState(JumpingForward);
+				SetAnimationState(AnimationState::JumpingForward);
 			}
 			else
 			{
-				SetAnimationState(Jumping);
+				SetAnimationState(AnimationState::Jumping);
 			}
 		}
 	}
@@ -156,37 +156,37 @@ void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0
 	{
 		if (bIsDamaged)
 		{
-			SetAnimationState(HitTop);
+			SetAnimationState(AnimationState::HitTop);
 		}
 		else
 		{
 			if (bIsChargingup)
 			{
-				SetAnimationState(ChargingUp);
+				SetAnimationState(AnimationState::ChargingUp);
 			}
 			else if (bIsSpecialMove)
 			{
-				SetAnimationState(SpecialMove);
+				SetAnimationState(AnimationState::SpecialMove);
 			}
 			else if (bIsAttacking)
 			{
-				SetAnimationState(Attacking);
+				SetAnimationState(AnimationState::Attacking);
 			}
 			else
 			{
 				if (fabs(characterMovementSpeed) > 0.0f)
 				{
-					SetAnimationState(Walking);
+					SetAnimationState(AnimationState::Walking);
 				}
 				else
 				{
 					if (bIsDucking)
 					{
-						SetAnimationState(Ducking);
+						SetAnimationState(AnimationState::Ducking);
 					}
 					else
 					{
-						SetAnimationState(Idle);
+						SetAnimationState(AnimationState::Idle);
 					}
 				}
 			}
@@ -426,7 +426,7 @@ void ACharacterBase::HandleProjectile(UObject* Projectile)
 }
 
 void ACharacterBase::HandleStaminaCharge()
-{
+{	
 	if (bIsChargingup && GetCurrentTime() > SpecialKeyPressedTimeStart + StaminaVelocityChargingInSeconds)
 	{
 		Stamina += StaminaChargingUnit;
@@ -495,12 +495,21 @@ void ACharacterBase::HandleDead()
 		UGameplayStatics::OpenLevel(this, "level_00");
 	}
 }
+
 // Stamina
 void ACharacterBase::ControlStamina()
 {
 	if (Stamina < MaxStamina)
 	{
+		if (!bIsChargingup)
+		{
+			Actions = ChargingStaminaAnimation;
+			SetActionAnimationFlags();
+			SetCanMove(false);
+			DoActionAnimation();
+		}
 		bIsChargingup = true;
+		HandleStaminaCharge();
 	}
 	else
 	{
@@ -526,4 +535,6 @@ void ACharacterBase::StopHandleStaminaCharge()
 	bIsChargingup = false;
 	SpecialKeyPressedTimeStart = -1;
 	SpecialKeyPressedTimeStop = -1;
+	/*nCurrentActionAnimation = 0;
+	nCurrentActionHitAnimation = 0;*/
 }

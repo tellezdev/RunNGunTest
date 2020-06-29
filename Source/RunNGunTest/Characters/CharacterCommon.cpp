@@ -24,8 +24,8 @@ void ACharacterCommon::BeginPlay()
 	ResetActionAnimationFlags();
 
 	AnimationFlipbookTimeStop = -1.f;
-	AnimationActionTimeStart = -1.f;
-	AnimationActionTimeStop = -1.f;
+	AnimationActionCurrentTimeStart = -1.f;
+	AnimationActionCurrentTimeStop = -1.f;
 	AnimationActionCompleteTimeStop = 0.f;
 	SetCanMove(true);
 }
@@ -59,6 +59,10 @@ void ACharacterCommon::Tick(float DeltaTime)
 		if (bIsAttacking)
 		{
 			ResetAttack();
+		}
+		if (bIsChargingup)
+		{
+			ResetChargingUp();
 		}
 
 		CurrentFlipbook->SetLooping(true);
@@ -181,6 +185,8 @@ void ACharacterCommon::ResetAttack()
 	bIsAttacking = false;
 	bIsAttackFinished = true;
 	bCurrentHitCollisionIsDone = false;
+	nCurrentFrame = -1;
+	nCurrentAnimationTotalFrames = -1;
 	SetCanMove(true);
 }
 
@@ -192,9 +198,23 @@ void ACharacterCommon::ResetSpecialMove()
 	nCurrentActionHitAnimation = 0;
 	ActionsAnimationsFlags.Empty();
 	bIsExecutingSpecialMove = false;
+	nCurrentFrame = -1;
+	nCurrentAnimationTotalFrames = -1;
 	SetCanMove(true);
 	ActionFinalLocation = FVector(0.f, 0.f, 0.f);
 	GetCapsuleComponent()->SetSimulatePhysics(false);
+}
+
+void ACharacterCommon::ResetChargingUp()
+{
+	bIsChargingup = false;
+	nCurrentAction = 0;
+	nCurrentActionAnimation = 0;
+	nCurrentActionHitAnimation = 0;
+	ActionsAnimationsFlags.Empty();
+	nCurrentFrame = -1;
+	nCurrentAnimationTotalFrames = -1;
+	SetCanMove(true);
 }
 
 FVector ACharacterCommon::GetFacingVector(FVector OriginalVector)
@@ -246,7 +266,7 @@ void ACharacterCommon::ResetActionAnimationFlags()
 {
 	nCurrentActionHitAnimation = 0;
 	nCurrentActionAnimation = 0;
-	AnimationActionTimeStop = 0.f;
+	AnimationActionCurrentTimeStop = 0.f;
 	AnimationActionCompleteTimeStop = 0.f;
 	SetActionAnimationFlags();
 }
@@ -273,6 +293,10 @@ void ACharacterCommon::SetDamage(float Value)
 	if (bIsSpecialMove)
 	{
 		ResetSpecialMove();
+	}
+	if (bIsChargingup)
+	{
+		ResetChargingUp();
 	}
 	Life -= Value;
 }
@@ -324,42 +348,50 @@ void ACharacterCommon::DoActionAnimation()
 {
 	if (Actions.Num() > 0 && Actions.Num() >= nCurrentAction + 1)
 	{
+
+
+		TArray<FString> DebugString; //DEBUG
+
 		FActionStruct Action = Actions[nCurrentAction];
 		if (ActionsAnimationsFlags.Num() > 0)
 		{
 			TArray<FActionAnimationFlagsStruct>& AnimationsFlags = ActionsAnimationsFlags[nCurrentAction].Animations;
 			FActionCompleteAnimationStruct& CompleteAction = Action.ActionAnimation[nCurrentActionAnimation];
 
-			// First time in this special move
+			//First time in this special move
 			if (AnimationActionCompleteTimeStop == 0.f)
 			{
-				AnimationActionTimeStart = GetCurrentTime();
+				AnimationActionCurrentTimeStart = GetCurrentTime();
 				for (int i = 0; i < Action.ActionAnimation.Num(); ++i)
 				{
 					// Start animation is mandatory
 					AnimationActionCompleteTimeStop += Action.ActionAnimation[i].AnimationStart.Animation->GetNumFrames() / Action.ActionAnimation[i].AnimationStart.Animation->GetFramesPerSecond();
 					if (Action.ActionAnimation[i].AnimationHits.Num() > 0)
 					{
-						for (int j = 0; j < Action.ActionAnimation[i].AnimationHits.Num(); ++j)
+						/*for (int j = 0; j < Action.ActionAnimation[i].AnimationHits.Num(); ++j)
 						{
 							AnimationActionCompleteTimeStop += Action.ActionAnimation[i].AnimationHits[j].Animation->GetNumFrames() / Action.ActionAnimation[i].AnimationHits[j].Animation->GetFramesPerSecond();
-						}
+						}*/
 					}
 					if (Action.ActionAnimation[i].AnimationEnd.Animation != nullptr)
 					{
 						AnimationActionCompleteTimeStop += Action.ActionAnimation[i].AnimationEnd.Animation->GetNumFrames() / Action.ActionAnimation[i].AnimationEnd.Animation->GetFramesPerSecond();
 					}
 				}
-				AnimationActionCompleteTimeStop += AnimationActionTimeStart;
+				AnimationActionCompleteTimeStop += AnimationActionCurrentTimeStart;
 			}
 
-			if (AnimationActionTimeStop < GetCurrentTime())
+			if (AnimationActionCurrentTimeStop < GetCurrentTime())
 			{
+				if (!Action.CanBeCharged)
+				{
+					AnimationsFlags[nCurrentActionAnimation].bIsActionCharge;
+				}
+
 				if (!AnimationsFlags[nCurrentActionAnimation].bIsActionStart)
 				{
 					SetAnimationBehaviour(CompleteAction.AnimationStart, false);
 					AnimationsFlags[nCurrentActionAnimation].bIsActionStart = true;
-
 				}
 				else if (AnimationsFlags[nCurrentActionAnimation].bIsCompleted && !AnimationsFlags[nCurrentActionAnimation].bIsActionEnd)
 				{
@@ -371,11 +403,26 @@ void ACharacterCommon::DoActionAnimation()
 						nCurrentActionHitAnimation = 0;
 						++nCurrentActionAnimation;
 					}
+
+				}
+				else if (!AnimationsFlags[nCurrentActionAnimation].bIsActionCharge && Action.CanBeCharged)
+				{
+					if (bIsChargingup)
+					{
+						SetAnimationBehaviour(CompleteAction.AnimationCharge, true);
+						AnimationActionCompleteTimeStop += CurrentFlipbook->GetFlipbookLength();
+					}
+					else
+					{
+						AnimationsFlags[nCurrentActionAnimation].bIsActionCharge = true;
+					}
+
 				}
 				else if (!AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation])
 				{
 					SetAnimationBehaviour(CompleteAction.AnimationHits[nCurrentActionHitAnimation], true);
 					AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation] = true;
+					AnimationActionCompleteTimeStop += CurrentFlipbook->GetFlipbookLength();
 
 					if (CompleteAction.AnimationHits[nCurrentActionHitAnimation].IsProjectile)
 					{
@@ -395,12 +442,21 @@ void ACharacterCommon::DoActionAnimation()
 					{
 						AnimationsFlags[nCurrentActionAnimation].bIsCompleted = true;
 					}
+
 				}
 				else
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Nothing here")));
 				}
 			}
+
+
+
+
+			DebugString.Add(FString::Printf(TEXT("currentflipbook: %s"), *CurrentFlipbook->GetFlipbook()->GetName())); //DEBUG
+			DebugString.Add(FString::Printf(TEXT("TimeStop: %f"), AnimationActionCurrentTimeStop)); //DEBUG
+			DebugString.Add(FString::Printf(TEXT("CurrentTime: %f"), GetCurrentTime())); //DEBUG
+			GameHUD->InsertDebugData(DebugString); //DEBUG
 		}
 	}
 }
@@ -410,11 +466,12 @@ void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct AnimationStr
 	CurrentFlipbook->SetFlipbook(AnimationStruct.Animation);
 	CurrentFlipbook->SetLooping(bIsLoop);
 	CurrentFlipbook->Play();
-	AnimationActionTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+	nCurrentFrame = 0;
+	AnimationActionCurrentTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
 	nCurrentAnimationInterpolationSpeed = AnimationStruct.InterpolationSpeed;
-	if (AnimationStruct.ImpulseToCharacter != FVector(0.f, 0.f, 0.f))
+	if (AnimationStruct.ImpulseToOwner != FVector(0.f, 0.f, 0.f))
 	{
-		ActionFinalLocation = GetActorLocation() + GetFacingVector(AnimationStruct.ImpulseToCharacter);
+		ActionFinalLocation = GetActorLocation() + GetFacingVector(AnimationStruct.ImpulseToOwner);
 		//GetCapsuleComponent()->SetSimulatePhysics(true);
 
 	}

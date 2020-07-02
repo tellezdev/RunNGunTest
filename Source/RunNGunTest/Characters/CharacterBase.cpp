@@ -362,7 +362,7 @@ void ACharacterBase::AttackStop()
 void ACharacterBase::SpecialStart()
 {
 	SpecialKeyPressedTimeStart = GetCurrentTime() + DelayTimeUntilChargingUp;
-	bIsSpecialButtonPressed = true;
+	bIsChargingup = true;
 	HandleBuffer(KeyInput::Special);
 	if (bActionAnimationIsFinished)
 	{
@@ -387,7 +387,7 @@ void ACharacterBase::SpecialStop()
 {
 	StopHandleStaminaCharge();
 
-	bIsSpecialButtonPressed = false;
+	bIsChargingup = false;
 	SpecialKeyPressedTimeStop = GetCurrentTime(); // Not used for now
 }
 
@@ -524,5 +524,5 @@ void ACharacterBase::StopHandleStaminaCharge()
 {
 	SpecialKeyPressedTimeStart = -1;
 	SpecialKeyPressedTimeStop = -1;
-	bIsSpecialButtonPressed = false;
+	bIsChargingup = false;
 }

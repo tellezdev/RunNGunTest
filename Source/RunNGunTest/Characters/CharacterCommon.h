@@ -141,9 +141,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FActionCompleteAnimationStruct> ActionAnimation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* NoStaminaAnimation;
 };
 
 UCLASS()
@@ -225,18 +222,16 @@ public:
 	UPROPERTY()
 		bool bIsSpecialMove;
 	UPROPERTY()
-		bool bIsChargingup;
-	UPROPERTY()
 		bool bIsDucking;
 	UPROPERTY()
 		bool bIsDamaged;
 	// DEPRECATED---
 	UPROPERTY()
+		bool bIsChargingup;
+	UPROPERTY()
 		bool bActionAnimationIsFinished;
 	UPROPERTY()
 		bool bIsFirstAttack = true;
-	UPROPERTY()
-		bool bIsSpecialButtonPressed;
 	UPROPERTY()
 		FVector ActionFinalLocation;
 

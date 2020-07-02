@@ -75,10 +75,6 @@ public:
 	UPROPERTY()
 		FTimerHandle GlobalTimerHandle;
 
-	// Flip books
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
-		UPaperFlipbook* ChargingUpAnimation;
-
 	// Movement related
 	UFUNCTION()
 		void LeftDirectionStart();

@@ -209,8 +209,6 @@ void ACharacterCommon::ResetSpecialMove()
 
 void ACharacterCommon::ResetChargingUp()
 {
-	//bIsChargingup = false;
-	//SetActionState(EActionState::ActionIdle);
 	nCurrentAction = 0;
 	nCurrentActionAnimation = 0;
 	nCurrentActionHitAnimation = 0;
@@ -371,10 +369,14 @@ void ACharacterCommon::DoActionAnimation()
 
 			if (AnimationActionCurrentTimeStop < GetCurrentTime())
 			{
-				if (!Action.CanBeCharged ||
-					!bIsSpecialButtonPressed)
+				if (!Action.CanBeCharged || !bIsChargingup)
 				{
 					AnimationsFlags[nCurrentActionAnimation].bIsActionCharge = true;
+				}
+
+				if (AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() == 0)
+				{
+					AnimationsFlags[nCurrentActionAnimation].bIsCompleted = true;
 				}
 
 				if (!AnimationsFlags[nCurrentActionAnimation].bIsActionStart)
@@ -396,7 +398,7 @@ void ACharacterCommon::DoActionAnimation()
 				}
 				else if (!AnimationsFlags[nCurrentActionAnimation].bIsActionCharge && Action.CanBeCharged)
 				{
-					if (ActionState == EActionState::ActionChargingup)
+					if (bIsChargingup)
 					{
 						SetAnimationBehaviour(CompleteAction.AnimationCharge, true);
 						AnimationActionCompleteTimeStop += CompleteAction.AnimationHits[nCurrentActionHitAnimation].Animation->GetNumFrames() / CompleteAction.AnimationHits[nCurrentActionHitAnimation].Animation->GetFramesPerSecond();
@@ -406,7 +408,8 @@ void ACharacterCommon::DoActionAnimation()
 						AnimationsFlags[nCurrentActionAnimation].bIsActionCharge = true;
 					}
 				}
-				else if (!AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation])
+				else if (AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() > 0 &&
+						 !AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation])
 				{
 					SetAnimationBehaviour(CompleteAction.AnimationHits[nCurrentActionHitAnimation], true);
 					AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation] = true;

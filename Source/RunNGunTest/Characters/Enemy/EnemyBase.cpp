@@ -130,24 +130,24 @@ void AEnemyBase::AttackStart()
 
 void AEnemyBase::UpdateAnimations()
 {
-	switch (EAnimationState)
+	switch (AnimationState)
 	{
-	case AnimationState::Idle:
+	case EAnimationState::AnimIdle:
 		CurrentFlipbook->SetFlipbook(IdleAnimation);
 		break;
-	case AnimationState::Walking:
+	case EAnimationState::AnimWalking:
 		CurrentFlipbook->SetFlipbook(WalkingAnimation);
 		break;
-	case AnimationState::Jumping:
+	case EAnimationState::AnimJumping:
 		CurrentFlipbook->SetFlipbook(JumpingAnimation);
 		break;
-	case AnimationState::JumpingForward:
+	case EAnimationState::AnimJumpingForward:
 		CurrentFlipbook->SetFlipbook(JumpingForwardAnimation);
 		break;
-	case AnimationState::Attacking:
+	case EAnimationState::AnimAttacking:
 		//HandleAttack();
 		break;
-	case AnimationState::HitTop:
+	case EAnimationState::AnimHitTop:
 		CurrentFlipbook->SetFlipbook(HitTopAnimation);
 		break;
 	default:
@@ -161,17 +161,17 @@ void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
 	{
 		if (bIsAttacking)
 		{
-			SetAnimationState(Attacking);
+			SetAnimationState(EAnimationState::AnimAttacking);
 		}
 		else
 		{
 			if (fabs(characterMovementSpeed) > 0.f)
 			{
-				SetAnimationState(JumpingForward);
+				SetAnimationState(EAnimationState::AnimJumpingForward);
 			}
 			else
 			{
-				SetAnimationState(Jumping);
+				SetAnimationState(EAnimationState::AnimJumping);
 			}
 		}
 	}
@@ -179,23 +179,23 @@ void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
 	{
 		if (bIsDamaged)
 		{
-			SetAnimationState(HitTop);
+			SetAnimationState(EAnimationState::AnimHitTop);
 		}
 		else
 		{
 			if (bIsAttacking)
 			{
-				SetAnimationState(Attacking);
+				SetAnimationState(EAnimationState::AnimAttacking);
 			}
 			else
 			{
 				if (fabs(characterMovementSpeed) > 0.f)
 				{
-					SetAnimationState(Walking);
+					SetAnimationState(EAnimationState::AnimWalking);
 				}
 				else
 				{
-					SetAnimationState(Idle);
+					SetAnimationState(EAnimationState::AnimIdle);
 				}
 			}
 		}

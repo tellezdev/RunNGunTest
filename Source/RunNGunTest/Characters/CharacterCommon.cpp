@@ -2,9 +2,12 @@
 
 /*
 		// Show debug string in HUD
+		if (GameHUD)
+		{
 		TArray<FString> DebugString;
 		DebugString.Add(FString::Printf(TEXT("test: %s"), somethingToShow));
 		GameHUD->InsertDebugData(DebugString);
+		}
 */
 
 #include "CharacterCommon.h"
@@ -34,9 +37,14 @@ void ACharacterCommon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	bActionAnimationIsFinished = AnimationActionCompleteTimeStop < GetCurrentTime();
+
 	ControlCharacterRotation();
 
-	SetDamagedState(DeltaTime);
+	if (ActionState == EActionState::ActionDamaged)
+	{
+		SetDamagedState(DeltaTime);
+	}
 
 	if (bIsExecutingSpecialMove && ActionFinalLocation != FVector(0.f, 0.f, 0.f))
 	{
@@ -45,30 +53,21 @@ void ACharacterCommon::Tick(float DeltaTime)
 		SetActorLocation(FVector(XInterp, 0.f, ZInterp));
 	}
 
-	if (AnimationActionCompleteTimeStop > GetCurrentTime())
+
+
+	if (!bActionAnimationIsFinished)
 	{
 		DoActionAnimation();
 		nLastActionTime = GetCurrentTime();
+
 	}
 	else
 	{
-		if (bIsSpecialMove)
+		if (ActionState != EActionState::ActionIdle && ActionState != EActionState::ActionDucking)
 		{
-			ResetSpecialMove();
+			SetActionState(EActionState::ActionIdle);
+			ResetActionAnimationFlags();
 		}
-		if (bIsAttacking)
-		{
-			ResetAttack();
-		}
-		if (bIsChargingup)
-		{
-			ResetChargingUp();
-		}
-
-		CurrentFlipbook->SetLooping(true);
-		CurrentFlipbook->Play();
-		SetAnimationState(Idle);
-		ResetActionAnimationFlags();
 	}
 }
 
@@ -98,7 +97,8 @@ void ACharacterCommon::SetDamagedState(float DeltaTime)
 {
 	if (AnimationOtherTimeStop < GetCurrentTime())
 	{
-		bIsDamaged = false;
+		//bIsDamaged = false;
+		SetActionState(EActionState::ActionIdle);
 	}
 	else
 	{
@@ -112,7 +112,7 @@ void ACharacterCommon::BindDataHUD()
 
 void ACharacterCommon::HandleAttack()
 {
-	if (AnimationActionCompleteTimeStop < GetCurrentTime())
+	if (bActionAnimationIsFinished)
 	{
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
@@ -182,7 +182,8 @@ void ACharacterCommon::ResetAttackCombo()
 
 void ACharacterCommon::ResetAttack()
 {
-	bIsAttacking = false;
+	//bIsAttacking = false;
+	//SetActionState(EActionState::ActionIdle);
 	bIsAttackFinished = true;
 	bCurrentHitCollisionIsDone = false;
 	nCurrentFrame = -1;
@@ -192,7 +193,8 @@ void ACharacterCommon::ResetAttack()
 
 void ACharacterCommon::ResetSpecialMove()
 {
-	bIsSpecialMove = false;
+	//bIsSpecialMove = false;
+	//SetActionState(EActionState::ActionIdle);
 	nCurrentAction = 0;
 	nCurrentActionAnimation = 0;
 	nCurrentActionHitAnimation = 0;
@@ -207,7 +209,8 @@ void ACharacterCommon::ResetSpecialMove()
 
 void ACharacterCommon::ResetChargingUp()
 {
-	bIsChargingup = false;
+	//bIsChargingup = false;
+	//SetActionState(EActionState::ActionIdle);
 	nCurrentAction = 0;
 	nCurrentActionAnimation = 0;
 	nCurrentActionHitAnimation = 0;
@@ -271,9 +274,9 @@ void ACharacterCommon::ResetActionAnimationFlags()
 	SetActionAnimationFlags();
 }
 
-void ACharacterCommon::SetAnimationState(AnimationState State)
+void ACharacterCommon::SetAnimationState(EAnimationState State)
 {
-	EAnimationState = State;
+	AnimationState = State;
 }
 
 float ACharacterCommon::GetCurrentTime()
@@ -283,21 +286,10 @@ float ACharacterCommon::GetCurrentTime()
 
 void ACharacterCommon::SetDamage(float Value)
 {
-	bIsDamaged = true;
-	SetAnimationState(HitTop);
+	/*bIsDamaged = true;*/
+	SetActionState(EActionState::ActionDamaged);
+	SetAnimationState(EAnimationState::AnimHitTop);
 	AnimationOtherTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
-	if (bIsAttacking)
-	{
-		ResetAttack();
-	}
-	if (bIsSpecialMove)
-	{
-		ResetSpecialMove();
-	}
-	if (bIsChargingup)
-	{
-		ResetChargingUp();
-	}
 	Life -= Value;
 }
 
@@ -348,10 +340,6 @@ void ACharacterCommon::DoActionAnimation()
 {
 	if (Actions.Num() > 0 && Actions.Num() >= nCurrentAction + 1)
 	{
-
-
-		TArray<FString> DebugString; //DEBUG
-
 		FActionStruct Action = Actions[nCurrentAction];
 		if (ActionsAnimationsFlags.Num() > 0)
 		{
@@ -383,9 +371,10 @@ void ACharacterCommon::DoActionAnimation()
 
 			if (AnimationActionCurrentTimeStop < GetCurrentTime())
 			{
-				if (!Action.CanBeCharged)
+				if (!Action.CanBeCharged ||
+					!bIsSpecialButtonPressed)
 				{
-					AnimationsFlags[nCurrentActionAnimation].bIsActionCharge;
+					AnimationsFlags[nCurrentActionAnimation].bIsActionCharge = true;
 				}
 
 				if (!AnimationsFlags[nCurrentActionAnimation].bIsActionStart)
@@ -407,16 +396,15 @@ void ACharacterCommon::DoActionAnimation()
 				}
 				else if (!AnimationsFlags[nCurrentActionAnimation].bIsActionCharge && Action.CanBeCharged)
 				{
-					if (bIsChargingup)
+					if (ActionState == EActionState::ActionChargingup)
 					{
 						SetAnimationBehaviour(CompleteAction.AnimationCharge, true);
-						AnimationActionCompleteTimeStop += CurrentFlipbook->GetFlipbookLength();
+						AnimationActionCompleteTimeStop += CompleteAction.AnimationHits[nCurrentActionHitAnimation].Animation->GetNumFrames() / CompleteAction.AnimationHits[nCurrentActionHitAnimation].Animation->GetFramesPerSecond();
 					}
 					else
 					{
 						AnimationsFlags[nCurrentActionAnimation].bIsActionCharge = true;
 					}
-
 				}
 				else if (!AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation])
 				{
@@ -442,21 +430,13 @@ void ACharacterCommon::DoActionAnimation()
 					{
 						AnimationsFlags[nCurrentActionAnimation].bIsCompleted = true;
 					}
-
 				}
 				else
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Nothing here")));
+					AnimationActionCompleteTimeStop = 0.f;
 				}
 			}
-
-
-
-
-			DebugString.Add(FString::Printf(TEXT("currentflipbook: %s"), *CurrentFlipbook->GetFlipbook()->GetName())); //DEBUG
-			DebugString.Add(FString::Printf(TEXT("TimeStop: %f"), AnimationActionCurrentTimeStop)); //DEBUG
-			DebugString.Add(FString::Printf(TEXT("CurrentTime: %f"), GetCurrentTime())); //DEBUG
-			GameHUD->InsertDebugData(DebugString); //DEBUG
 		}
 	}
 }
@@ -480,5 +460,37 @@ void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct AnimationStr
 
 void ACharacterCommon::NotifyComboToHUD()
 {
+}
+
+void ACharacterCommon::SetActionState(EActionState State)
+{
+	switch (ActionState)
+	{
+	case EActionState::ActionAttacking:
+		if (State != EActionState::ActionAttacking)
+		{
+			ResetAttack();
+		}
+		break;
+	case EActionState::ActionChargingup:
+		ResetChargingUp();
+		break;
+	case EActionState::ActionDamaged:
+
+		break;
+	case EActionState::ActionDucking:
+
+		break;
+	case EActionState::ActionIdle:
+
+		break;
+	case EActionState::ActionSpecialMove:
+		ResetSpecialMove();
+		break;
+	default:
+		break;
+	}
+
+	ActionState = State;
 }
 

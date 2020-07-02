@@ -14,29 +14,31 @@
 
 
 UENUM(BlueprintType)
-enum AnimationState
+enum class EAnimationState : uint8
 {
-	Idle,
-	Jumping,
-	JumpingForward,
-	Walking,
-	Ducking,
-	Attacking,
-	SpecialMove,
-	ChargingUp,
-	HitTop
+	AnimIdle,
+	AnimJumping,
+	AnimJumpingForward,
+	AnimWalking,
+	AnimDucking,
+	AnimAttacking,
+	AnimSpecialMove,
+	AnimChargingUp,
+	AnimHitTop
 };
+ENUM_CLASS_FLAGS(EAnimationState);
 
-//UENUM(BlueprintType)
-//enum ActionState
-//{
-//	Idle,
-//	Attacking,
-//	SpecialMove,
-//	Chargingup,
-//	Ducking,
-//	Damaged
-//};
+UENUM(BlueprintType)
+enum class EActionState : uint8
+{
+	ActionIdle,
+	ActionAttacking,
+	ActionSpecialMove,
+	ActionChargingup,
+	ActionDucking,
+	ActionDamaged
+};
+ENUM_CLASS_FLAGS(EActionState);
 
 // Action Animations Structs
 USTRUCT()
@@ -230,7 +232,11 @@ public:
 		bool bIsDamaged;
 	// DEPRECATED---
 	UPROPERTY()
+		bool bActionAnimationIsFinished;
+	UPROPERTY()
 		bool bIsFirstAttack = true;
+	UPROPERTY()
+		bool bIsSpecialButtonPressed;
 	UPROPERTY()
 		FVector ActionFinalLocation;
 
@@ -262,10 +268,10 @@ public:
 	UPROPERTY()
 		AGameHUD* GameHUD;
 
-	UPROPERTY()
-		TEnumAsByte<AnimationState> EAnimationState = AnimationState::Idle;
-	/*UPROPERTY()
-		TEnumAsByte<ActionState> EActionState = ActionState::Idle;*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		EAnimationState AnimationState = EAnimationState::AnimIdle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		EActionState ActionState = EActionState::ActionIdle;
 
 	// Inherited Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -363,7 +369,7 @@ public:
 		virtual void ResetActionAnimationFlags();
 
 	UFUNCTION()
-		virtual void SetAnimationState(AnimationState State);
+		virtual void SetAnimationState(EAnimationState State);
 
 	UFUNCTION()
 		virtual void ConsumeStamina(float Value);
@@ -397,4 +403,7 @@ public:
 
 	UFUNCTION()
 		virtual void NotifyComboToHUD();
+
+	UFUNCTION()
+		virtual void SetActionState(EActionState State);
 };

@@ -49,6 +49,8 @@ public:
 		bool bShowBuffer = true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		float MaxComboTime = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		float DelayTimeUntilChargingUp = 0.5f;
 
 	// Character Movement
 	UPROPERTY()

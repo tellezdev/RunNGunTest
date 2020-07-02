@@ -44,6 +44,7 @@ void ACharacterBase::BeginPlay()
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
+
 }
 
 // Called every frame
@@ -52,7 +53,7 @@ void ACharacterBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// If special button is pressed, stamina grows up
-	if (SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime())
+	if (SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime()) // bActionAnimationIsFinished
 	{
 		ControlStamina();
 	}
@@ -63,7 +64,12 @@ void ACharacterBase::Tick(float DeltaTime)
 		NotifyComboToHUD();
 	}
 
-
+	if (GameHUD)
+	{
+		TArray<FString> DebugString;
+		DebugString.Add(FString::Printf(TEXT("CurrentState: %i"), ActionState));
+		GameHUD->InsertDebugData(DebugString);
+	}
 	HandleDirections();
 }
 
@@ -92,34 +98,34 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 // Animations
 void ACharacterBase::UpdateAnimations()
 {
-	switch (EAnimationState)
+	switch (AnimationState)
 	{
-	case AnimationState::Idle:
+	case EAnimationState::AnimIdle:
 		CurrentFlipbook->SetFlipbook(IdleAnimation);
 		break;
-	case AnimationState::Walking:
+	case EAnimationState::AnimWalking:
 		CurrentFlipbook->SetFlipbook(WalkingAnimation);
 		break;
-	case AnimationState::Jumping:
+	case EAnimationState::AnimJumping:
 		CurrentFlipbook->SetFlipbook(JumpingAnimation);
 		break;
-	case AnimationState::JumpingForward:
+	case EAnimationState::AnimJumpingForward:
 		CurrentFlipbook->SetFlipbook(JumpingForwardAnimation);
 		break;
-	case AnimationState::Ducking:
+	case EAnimationState::AnimDucking:
 		CurrentFlipbook->SetFlipbook(DuckingAnimation);
 		break;
-	case AnimationState::SpecialMove:
+	case EAnimationState::AnimSpecialMove:
 		//HandleSpecialMoves();
 		break;
-	case AnimationState::Attacking:
+	case EAnimationState::AnimAttacking:
 		//HandleAttack();
 		break;
-	case AnimationState::ChargingUp:
+	case EAnimationState::AnimChargingUp:
 		//CurrentFlipbook->SetFlipbook(ChargingUpAnimation);
 		//HandleStaminaCharge();
 		break;
-	case AnimationState::HitTop:
+	case EAnimationState::AnimHitTop:
 		CurrentFlipbook->SetFlipbook(HitTopAnimation);
 		break;
 	default:
@@ -130,70 +136,53 @@ void ACharacterBase::UpdateAnimations()
 
 void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0.f)
 {
-	if (!GetCharacterMovement()->IsMovingOnGround())
+	switch (ActionState)
 	{
-		if (bIsSpecialMove)
+	case EActionState::ActionAttacking:
+		SetAnimationState(EAnimationState::AnimAttacking);
+		break;
+	case EActionState::ActionChargingup:
+		SetAnimationState(EAnimationState::AnimChargingUp);
+		break;
+	case EActionState::ActionDamaged:
+		SetAnimationState(EAnimationState::AnimHitTop);
+		break;
+	case EActionState::ActionDucking:
+		SetAnimationState(EAnimationState::AnimDucking);
+		break;
+	case EActionState::ActionIdle:
+		if (!GetCharacterMovement()->IsMovingOnGround())
 		{
-			SetAnimationState(AnimationState::SpecialMove);
-		}
-		else if (bIsAttacking)
-		{
-			SetAnimationState(AnimationState::Attacking);
+			if (fabs(characterMovementSpeed) > 0.0f)
+			{
+				SetAnimationState(EAnimationState::AnimJumpingForward);
+			}
+			else
+			{
+				SetAnimationState(EAnimationState::AnimJumping);
+			}
 		}
 		else
 		{
 			if (fabs(characterMovementSpeed) > 0.0f)
 			{
-				SetAnimationState(AnimationState::JumpingForward);
+				SetAnimationState(EAnimationState::AnimWalking);
 			}
 			else
 			{
-				SetAnimationState(AnimationState::Jumping);
+				SetAnimationState(EAnimationState::AnimIdle);
 			}
 		}
-	}
-	else
-	{
-		if (bIsDamaged)
-		{
-			SetAnimationState(AnimationState::HitTop);
-		}
-		else
-		{
-			if (bIsChargingup)
-			{
-				SetAnimationState(AnimationState::ChargingUp);
-			}
-			else if (bIsSpecialMove)
-			{
-				SetAnimationState(AnimationState::SpecialMove);
-			}
-			else if (bIsAttacking)
-			{
-				SetAnimationState(AnimationState::Attacking);
-			}
-			else
-			{
-				if (fabs(characterMovementSpeed) > 0.0f)
-				{
-					SetAnimationState(AnimationState::Walking);
-				}
-				else
-				{
-					if (bIsDucking)
-					{
-						SetAnimationState(AnimationState::Ducking);
-					}
-					else
-					{
-						SetAnimationState(AnimationState::Idle);
-					}
-				}
-			}
-		}
+		break;
+	case EActionState::ActionSpecialMove:
+		SetAnimationState(EAnimationState::AnimSpecialMove);
+		break;
+	default:
+		SetAnimationState(EAnimationState::AnimIdle);
+		break;
 	}
 
-	if (!bIsSpecialMove)
+	if (ActionState != EActionState::ActionSpecialMove)
 	{
 		CurrentFlipbook->SetLooping(true);
 		CurrentFlipbook->Play();
@@ -298,12 +287,19 @@ void ACharacterBase::RightDirectionStop()
 
 void ACharacterBase::DownDirectionStart()
 {
-	bIsDucking = true;
 	bIsDown = true;
+	if (CanMove())
+	{
+		SetActionState(EActionState::ActionDucking);
+	}
 }
 
 void ACharacterBase::DownDirectionStop()
 {
+	if (CanMove())
+	{
+		SetActionState(EActionState::ActionIdle);
+	}
 	bIsDucking = false;
 	bIsDown = false;
 	bIsDirectionPressed = false;
@@ -323,11 +319,15 @@ void ACharacterBase::UpDirectionStop()
 // Triggers
 void ACharacterBase::JumpStart()
 {
-	SetCanMove(true);
-	bPressedJump = true;
-	bIsAttacking = false;
-	ResetAttackCombo();
-	SetAnimationState(Jumping);
+	if (CanMove())
+	{
+		//SetCanMove(true);
+		bPressedJump = true;
+		//bIsAttacking = false;
+		SetActionState(EActionState::ActionIdle);
+		ResetAttackCombo();
+		SetAnimationState(EAnimationState::AnimJumping);
+	}
 }
 
 void ACharacterBase::JumpStop()
@@ -337,27 +337,30 @@ void ACharacterBase::JumpStop()
 
 void ACharacterBase::AttackStart()
 {
-	bIsAttacking = true;
-	if (bIsAttackFinished && AnimationActionCompleteTimeStop < GetCurrentTime())
+	if (CanMove())
 	{
-		bIsAttackFinished = false;
-		if (nCurrentAction < AttackMoves.Num() - 1)
+		SetActionState(EActionState::ActionAttacking);
+		if (bIsAttackFinished && bActionAnimationIsFinished)
 		{
-			if (!bIsFirstAttack)
+			bIsAttackFinished = false;
+			if (nCurrentAction < AttackMoves.Num() - 1)
 			{
-				++nCurrentAction;
+				if (!bIsFirstAttack)
+				{
+					++nCurrentAction;
+				}
+				nCurrentActionAnimation = 0;
 			}
-			nCurrentActionAnimation = 0;
+			else
+			{
+				ResetAttackCombo();
+				//InputBuffer.ClearBuffer();				
+			}
+			HandleAttack();
+			++ComboCount;
 		}
-		else
-		{
-			ResetAttackCombo();
-			//InputBuffer.ClearBuffer();				
-		}
-		HandleAttack();
-		++ComboCount;
+		HandleBuffer(KeyInput::Attack);
 	}
-	HandleBuffer(KeyInput::Attack);
 }
 
 void ACharacterBase::AttackStop()
@@ -367,11 +370,11 @@ void ACharacterBase::AttackStop()
 
 void ACharacterBase::SpecialStart()
 {
-	if (AnimationActionCompleteTimeStop < GetCurrentTime())
+	SpecialKeyPressedTimeStart = GetCurrentTime() + DelayTimeUntilChargingUp;
+	bIsSpecialButtonPressed = true;
+	HandleBuffer(KeyInput::Special);
+	if (bActionAnimationIsFinished)
 	{
-		SpecialKeyPressedTimeStart = GetCurrentTime() + 1.f;
-		HandleBuffer(KeyInput::Special);
-
 		TArray<int32> MatchingActions;
 		for (int i = 0; i < SpecialMoves.Num(); ++i)
 		{
@@ -383,12 +386,8 @@ void ACharacterBase::SpecialStart()
 		if (MatchingActions.Num() > 0)
 		{
 			nCurrentAction = MatchingActions[MatchingActions.Num() - 1];
-			bIsSpecialMove = true;
+			SetActionState(EActionState::ActionSpecialMove);
 			HandleSpecialMoves();
-		}
-		else
-		{
-			SetCanMove(true);
 		}
 	}
 }
@@ -396,6 +395,8 @@ void ACharacterBase::SpecialStart()
 void ACharacterBase::SpecialStop()
 {
 	StopHandleStaminaCharge();
+
+	bIsSpecialButtonPressed = false;
 	SpecialKeyPressedTimeStop = GetCurrentTime(); // Not used for now
 }
 
@@ -426,15 +427,12 @@ void ACharacterBase::HandleProjectile(UObject* Projectile)
 }
 
 void ACharacterBase::HandleStaminaCharge()
-{	
-	if (bIsChargingup && GetCurrentTime() > SpecialKeyPressedTimeStart + StaminaVelocityChargingInSeconds)
+{
+	if (ActionState == EActionState::ActionChargingup && SpecialKeyPressedTimeStart + StaminaVelocityChargingInSeconds < GetCurrentTime())
 	{
 		Stamina += StaminaChargingUnit;
 		GameHUD->SetStamina(Stamina);
 		SpecialKeyPressedTimeStart = GetCurrentTime();
-		/*TArray<FString> DebugString;
-		DebugString.Add(FString::Printf(TEXT("Charging!: %f"), GetCurrentTime()));
-		GameHUD->InsertDebugData(DebugString);*/
 	}
 }
 
@@ -501,14 +499,14 @@ void ACharacterBase::ControlStamina()
 {
 	if (Stamina < MaxStamina)
 	{
-		if (!bIsChargingup)
+		if (ActionState != EActionState::ActionChargingup)
 		{
 			Actions = ChargingStaminaAnimation;
 			SetActionAnimationFlags();
 			SetCanMove(false);
+			SetActionState(EActionState::ActionChargingup);
 			DoActionAnimation();
 		}
-		bIsChargingup = true;
 		HandleStaminaCharge();
 	}
 	else
@@ -532,7 +530,8 @@ void ACharacterBase::ConsumeStamina(float Value)
 // Resetting states
 void ACharacterBase::StopHandleStaminaCharge()
 {
-	bIsChargingup = false;
+	//bIsChargingup = false;
+	//SetActionState(EActionState::ActionIdle);
 	SpecialKeyPressedTimeStart = -1;
 	SpecialKeyPressedTimeStop = -1;
 	/*nCurrentActionAnimation = 0;

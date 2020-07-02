@@ -91,96 +91,12 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 // Animations
 void ACharacterBase::UpdateAnimations()
 {
-	switch (AnimationState)
-	{
-	case EAnimationState::AnimIdle:
-		CurrentFlipbook->SetFlipbook(IdleAnimation);
-		break;
-	case EAnimationState::AnimWalking:
-		CurrentFlipbook->SetFlipbook(WalkingAnimation);
-		break;
-	case EAnimationState::AnimJumping:
-		CurrentFlipbook->SetFlipbook(JumpingAnimation);
-		break;
-	case EAnimationState::AnimJumpingForward:
-		CurrentFlipbook->SetFlipbook(JumpingForwardAnimation);
-		break;
-	case EAnimationState::AnimDucking:
-		CurrentFlipbook->SetFlipbook(DuckingAnimation);
-		break;
-	case EAnimationState::AnimSpecialMove:
-		//HandleSpecialMoves();
-		break;
-	case EAnimationState::AnimAttacking:
-		//HandleAttack();
-		break;
-	case EAnimationState::AnimChargingUp:
-		//CurrentFlipbook->SetFlipbook(ChargingUpAnimation);
-		//HandleStaminaCharge();
-		break;
-	case EAnimationState::AnimHitTop:
-		CurrentFlipbook->SetFlipbook(HitTopAnimation);
-		break;
-	default:
-		CurrentFlipbook->SetFlipbook(IdleAnimation);
-		break;
-	}
+	Super::UpdateAnimations();
 }
 
 void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0.f)
 {
-	switch (ActionState)
-	{
-	case EActionState::ActionAttacking:
-		SetAnimationState(EAnimationState::AnimAttacking);
-		break;
-	case EActionState::ActionChargingup:
-		SetAnimationState(EAnimationState::AnimChargingUp);
-		break;
-	case EActionState::ActionDamaged:
-		SetAnimationState(EAnimationState::AnimHitTop);
-		break;
-	case EActionState::ActionDucking:
-		SetAnimationState(EAnimationState::AnimDucking);
-		break;
-	case EActionState::ActionIdle:
-		if (!GetCharacterMovement()->IsMovingOnGround())
-		{
-			if (fabs(characterMovementSpeed) > 0.0f)
-			{
-				SetAnimationState(EAnimationState::AnimJumpingForward);
-			}
-			else
-			{
-				SetAnimationState(EAnimationState::AnimJumping);
-			}
-		}
-		else
-		{
-			if (fabs(characterMovementSpeed) > 0.0f)
-			{
-				SetAnimationState(EAnimationState::AnimWalking);
-			}
-			else
-			{
-				SetAnimationState(EAnimationState::AnimIdle);
-			}
-		}
-		break;
-	case EActionState::ActionSpecialMove:
-		SetAnimationState(EAnimationState::AnimSpecialMove);
-		break;
-	default:
-		SetAnimationState(EAnimationState::AnimIdle);
-		break;
-	}
-
-	if (ActionState != EActionState::ActionSpecialMove)
-	{
-		CurrentFlipbook->SetLooping(true);
-		CurrentFlipbook->Play();
-	}
-	UpdateAnimations();
+	Super::ControlCharacterAnimations(characterMovementSpeed);
 }
 
 // Basic moving
@@ -293,7 +209,6 @@ void ACharacterBase::DownDirectionStop()
 	{
 		SetActionState(EActionState::ActionIdle);
 	}
-	bIsDucking = false;
 	bIsDown = false;
 	bIsDirectionPressed = false;
 }

@@ -41,12 +41,7 @@ void ACharacterCommon::Tick(float DeltaTime)
 
 	ControlCharacterRotation();
 
-	if (ActionState == EActionState::ActionDamaged)
-	{
-		SetDamagedState(DeltaTime);
-	}
-
-	if (bIsExecutingSpecialMove && ActionFinalLocation != FVector(0.f, 0.f, 0.f))
+	if (ActionFinalLocation != FVector(0.f, 0.f, 0.f)) //bIsExecutingSpecialMove &&
 	{
 		float XInterp = FMath::FInterpConstantTo(GetActorLocation().X, ActionFinalLocation.X, DeltaTime, nCurrentAnimationInterpolationSpeed * 100.f);
 		float ZInterp = FMath::FInterpConstantTo(GetActorLocation().Z, ActionFinalLocation.Z, DeltaTime, nCurrentAnimationInterpolationSpeed * 100.f);
@@ -59,7 +54,6 @@ void ACharacterCommon::Tick(float DeltaTime)
 	{
 		DoActionAnimation();
 		nLastActionTime = GetCurrentTime();
-
 	}
 	else
 	{
@@ -91,19 +85,6 @@ void ACharacterCommon::ControlCharacterRotation()
 	}
 	FRotator* rotation = new FRotator(0.0f, yaw, 1.0f);
 	GetController()->SetControlRotation(*rotation);
-}
-
-void ACharacterCommon::SetDamagedState(float DeltaTime)
-{
-	if (AnimationOtherTimeStop < GetCurrentTime())
-	{
-		//bIsDamaged = false;
-		SetActionState(EActionState::ActionIdle);
-	}
-	else
-	{
-		GetCapsuleComponent()->MoveComponent(FVector(bIsMovingRight ? -70.f * DeltaTime : 70.f * DeltaTime, 0.f, 0.f), GetActorRotation(), true);
-	}
 }
 
 void ACharacterCommon::BindDataHUD()
@@ -182,8 +163,6 @@ void ACharacterCommon::ResetAttackCombo()
 
 void ACharacterCommon::ResetAttack()
 {
-	//bIsAttacking = false;
-	//SetActionState(EActionState::ActionIdle);
 	bIsAttackFinished = true;
 	bCurrentHitCollisionIsDone = false;
 	nCurrentFrame = -1;
@@ -193,8 +172,6 @@ void ACharacterCommon::ResetAttack()
 
 void ACharacterCommon::ResetSpecialMove()
 {
-	//bIsSpecialMove = false;
-	//SetActionState(EActionState::ActionIdle);
 	nCurrentAction = 0;
 	nCurrentActionAnimation = 0;
 	nCurrentActionHitAnimation = 0;
@@ -218,6 +195,15 @@ void ACharacterCommon::ResetChargingUp()
 	SetCanMove(true);
 }
 
+void ACharacterCommon::ResetDamage()
+{
+	nCurrentFrame = -1;
+	nCurrentAnimationTotalFrames = -1;
+	SetCanMove(true);
+	ActionFinalLocation = FVector(0.f, 0.f, 0.f);
+	GetCapsuleComponent()->SetSimulatePhysics(false);
+}
+
 FVector ACharacterCommon::GetFacingVector(FVector OriginalVector)
 {
 	FVector FinalVector = OriginalVector;
@@ -230,12 +216,91 @@ FVector ACharacterCommon::GetFacingVector(FVector OriginalVector)
 
 void ACharacterCommon::UpdateAnimations()
 {
-
+	switch (AnimationState)
+	{
+	case EAnimationState::AnimIdle:
+		CurrentFlipbook->SetFlipbook(IdleAnimation);
+		break;
+	case EAnimationState::AnimWalking:
+		CurrentFlipbook->SetFlipbook(WalkingAnimation);
+		break;
+	case EAnimationState::AnimJumping:
+		CurrentFlipbook->SetFlipbook(JumpingAnimation);
+		break;
+	case EAnimationState::AnimJumpingForward:
+		CurrentFlipbook->SetFlipbook(JumpingForwardAnimation);
+		break;
+	case EAnimationState::AnimDucking:
+		CurrentFlipbook->SetFlipbook(DuckingAnimation);
+		break;
+	case EAnimationState::AnimSpecialMove:
+		break;
+	case EAnimationState::AnimAttacking:
+		break;
+	case EAnimationState::AnimChargingUp:
+		break;
+	case EAnimationState::AnimHitTop:
+		break;
+	default:
+		CurrentFlipbook->SetFlipbook(IdleAnimation);
+		break;
+	}
 }
 
 void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 {
+	switch (ActionState)
+	{
+	case EActionState::ActionAttacking:
+		SetAnimationState(EAnimationState::AnimAttacking);
+		break;
+	case EActionState::ActionChargingup:
+		SetAnimationState(EAnimationState::AnimChargingUp);
+		break;
+	case EActionState::ActionDamaged:
+		SetAnimationState(EAnimationState::AnimHitTop);
+		break;
+	case EActionState::ActionDucking:
+		SetAnimationState(EAnimationState::AnimDucking);
+		break;
+	case EActionState::ActionIdle:
+		if (!GetCharacterMovement()->IsMovingOnGround())
+		{
+			if (fabs(characterMovementSpeed) > 0.0f)
+			{
+				SetAnimationState(EAnimationState::AnimJumpingForward);
+			}
+			else
+			{
+				SetAnimationState(EAnimationState::AnimJumping);
+			}
+		}
+		else
+		{
+			if (fabs(characterMovementSpeed) > 0.0f)
+			{
+				SetAnimationState(EAnimationState::AnimWalking);
+			}
+			else
+			{
+				SetAnimationState(EAnimationState::AnimIdle);
+			}
+		}
+		break;
+	case EActionState::ActionSpecialMove:
+		SetAnimationState(EAnimationState::AnimSpecialMove);
+		break;
+	default:
+		SetAnimationState(EAnimationState::AnimIdle);
+		break;
+	}
 
+	if (ActionState != EActionState::ActionSpecialMove)
+	{
+		CurrentFlipbook->SetLooping(true);
+		CurrentFlipbook->Play();
+	}
+	UpdateAnimations();
 }
 
 void ACharacterCommon::SetActionAnimationFlags()
@@ -284,10 +349,14 @@ float ACharacterCommon::GetCurrentTime()
 
 void ACharacterCommon::SetDamage(float Value)
 {
-	/*bIsDamaged = true;*/
 	SetActionState(EActionState::ActionDamaged);
-	SetAnimationState(EAnimationState::AnimHitTop);
-	AnimationOtherTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
+
+	Actions = DamageAnimations;
+	SetCanMove(false);
+
+	SetActionAnimationFlags();
+	DoActionAnimation();
+
 	Life -= Value;
 }
 
@@ -436,7 +505,7 @@ void ACharacterCommon::DoActionAnimation()
 				}
 				else
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Nothing here")));
+					//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Nothing here")));
 					AnimationActionCompleteTimeStop = 0.f;
 				}
 			}
@@ -455,8 +524,6 @@ void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct AnimationStr
 	if (AnimationStruct.ImpulseToOwner != FVector(0.f, 0.f, 0.f))
 	{
 		ActionFinalLocation = GetActorLocation() + GetFacingVector(AnimationStruct.ImpulseToOwner);
-		//GetCapsuleComponent()->SetSimulatePhysics(true);
-
 	}
 	ApplyHitCollide(AnimationStruct);
 }
@@ -479,13 +546,12 @@ void ACharacterCommon::SetActionState(EActionState State)
 		ResetChargingUp();
 		break;
 	case EActionState::ActionDamaged:
-
+		ResetDamage();
 		break;
 	case EActionState::ActionDucking:
 
 		break;
 	case EActionState::ActionIdle:
-
 		break;
 	case EActionState::ActionSpecialMove:
 		ResetSpecialMove();

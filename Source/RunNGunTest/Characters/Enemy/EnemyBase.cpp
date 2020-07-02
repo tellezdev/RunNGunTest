@@ -62,7 +62,7 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!bIsDamaged && !bIsAttacking && bCanMove && VisibilityArea->IsOverlappingActor(Player) && nLastActionTime + TimeBetweenAttacks < GetCurrentTime())
+	if (ActionState != EActionState::ActionDamaged && ActionState != EActionState::ActionAttacking && CanMove() && VisibilityArea->IsOverlappingActor(Player) && nLastActionTime + TimeBetweenAttacks < GetCurrentTime())
 	{
 		SetCanMove(true);
 		// Depending on distance from player, attack, follow him or wait
@@ -107,106 +107,38 @@ void AEnemyBase::FacePlayer()
 
 void AEnemyBase::AttackStart()
 {
-	bIsAttacking = true;
-
-	if (bIsAttackFinished && AnimationActionCompleteTimeStop < GetCurrentTime())
+	if (CanMove())
 	{
-		bIsAttackFinished = false;
-		if (nCurrentAction < AttackMoves.Num() - 1)
+		SetActionState(EActionState::ActionAttacking);
+
+		if (bIsAttackFinished && AnimationActionCompleteTimeStop < GetCurrentTime())
 		{
-			if (!bIsFirstAttack)
+			bIsAttackFinished = false;
+			if (nCurrentAction < AttackMoves.Num() - 1)
 			{
-				++nCurrentAction;
+				if (!bIsFirstAttack)
+				{
+					++nCurrentAction;
+				}
+				nCurrentActionAnimation = 0;
 			}
-			nCurrentActionAnimation = 0;
+			else
+			{
+				ResetAttackCombo();
+			}
+			HandleAttack();
 		}
-		else
-		{
-			ResetAttackCombo();
-		}
-		HandleAttack();
 	}
 }
 
 void AEnemyBase::UpdateAnimations()
 {
-	switch (AnimationState)
-	{
-	case EAnimationState::AnimIdle:
-		CurrentFlipbook->SetFlipbook(IdleAnimation);
-		break;
-	case EAnimationState::AnimWalking:
-		CurrentFlipbook->SetFlipbook(WalkingAnimation);
-		break;
-	case EAnimationState::AnimJumping:
-		CurrentFlipbook->SetFlipbook(JumpingAnimation);
-		break;
-	case EAnimationState::AnimJumpingForward:
-		CurrentFlipbook->SetFlipbook(JumpingForwardAnimation);
-		break;
-	case EAnimationState::AnimAttacking:
-		//HandleAttack();
-		break;
-	case EAnimationState::AnimHitTop:
-		CurrentFlipbook->SetFlipbook(HitTopAnimation);
-		break;
-	default:
-		CurrentFlipbook->SetFlipbook(IdleAnimation);
-		break;
-	}
+	Super::UpdateAnimations();
 }
+
 void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
 {
-	if (!GetCharacterMovement()->IsMovingOnGround())
-	{
-		if (bIsAttacking)
-		{
-			SetAnimationState(EAnimationState::AnimAttacking);
-		}
-		else
-		{
-			if (fabs(characterMovementSpeed) > 0.f)
-			{
-				SetAnimationState(EAnimationState::AnimJumpingForward);
-			}
-			else
-			{
-				SetAnimationState(EAnimationState::AnimJumping);
-			}
-		}
-	}
-	else
-	{
-		if (bIsDamaged)
-		{
-			SetAnimationState(EAnimationState::AnimHitTop);
-		}
-		else
-		{
-			if (bIsAttacking)
-			{
-				SetAnimationState(EAnimationState::AnimAttacking);
-			}
-			else
-			{
-				if (fabs(characterMovementSpeed) > 0.f)
-				{
-					SetAnimationState(EAnimationState::AnimWalking);
-				}
-				else
-				{
-					SetAnimationState(EAnimationState::AnimIdle);
-				}
-			}
-		}
-	}
-
-	if (!bIsSpecialMove)
-	{
-		CurrentFlipbook->SetLooping(true);
-		CurrentFlipbook->Play();
-	}
-	UpdateAnimations();
+	Super::ControlCharacterAnimations(characterMovementSpeed);
 }
 
 void AEnemyBase::SetDamage(float Value)

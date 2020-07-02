@@ -216,16 +216,6 @@ public:
 		bool bIsUp;
 	UPROPERTY()
 		bool bIsDown;
-	// DEPRECATED
-	UPROPERTY()
-		bool bIsAttacking;
-	UPROPERTY()
-		bool bIsSpecialMove;
-	UPROPERTY()
-		bool bIsDucking;
-	UPROPERTY()
-		bool bIsDamaged;
-	// DEPRECATED---
 	UPROPERTY()
 		bool bIsChargingup;
 	UPROPERTY()
@@ -301,10 +291,11 @@ public:
 		TArray<FActionStruct> NoStaminaMoves;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
 		TArray<FActionStruct> ChargingStaminaAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+		TArray<FActionStruct> DamageAnimations;
 
 	UPROPERTY()
 		TArray<FActionStruct> Actions;
-
 
 	// Animation Flags
 	UPROPERTY()
@@ -322,9 +313,6 @@ public:
 
 	UFUNCTION()
 		void ControlCharacterRotation();
-
-	UFUNCTION()
-		void SetDamagedState(float DeltaTime);
 
 	UFUNCTION()
 		virtual void BindDataHUD();
@@ -346,6 +334,9 @@ public:
 
 	UFUNCTION()
 		virtual void ResetChargingUp();
+
+	UFUNCTION()
+		virtual void ResetDamage();
 
 	UFUNCTION()
 		virtual FVector GetFacingVector(FVector OriginalVector);

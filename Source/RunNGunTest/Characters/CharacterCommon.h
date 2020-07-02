@@ -36,7 +36,7 @@ enum class EActionState : uint8
 	ActionSpecialMove,
 	ActionChargingup,
 	ActionDucking,
-	ActionDamaged
+	ActionDamaged,
 };
 ENUM_CLASS_FLAGS(EActionState);
 

@@ -44,7 +44,6 @@ void ACharacterBase::BeginPlay()
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
-
 }
 
 // Called every frame
@@ -53,7 +52,8 @@ void ACharacterBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// If special button is pressed, stamina grows up
-	if (SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime()) // bActionAnimationIsFinished
+	bool bCanCharge = bActionAnimationIsFinished || ActionState == EActionState::ActionChargingup;
+	if (bCanCharge && SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime())
 	{
 		ControlStamina();
 	}
@@ -62,13 +62,6 @@ void ACharacterBase::Tick(float DeltaTime)
 	if (nLastActionTime + MaxComboTime < GetCurrentTime())
 	{
 		NotifyComboToHUD();
-	}
-
-	if (GameHUD)
-	{
-		TArray<FString> DebugString;
-		DebugString.Add(FString::Printf(TEXT("CurrentState: %i"), ActionState));
-		GameHUD->InsertDebugData(DebugString);
 	}
 	HandleDirections();
 }
@@ -321,9 +314,7 @@ void ACharacterBase::JumpStart()
 {
 	if (CanMove())
 	{
-		//SetCanMove(true);
 		bPressedJump = true;
-		//bIsAttacking = false;
 		SetActionState(EActionState::ActionIdle);
 		ResetAttackCombo();
 		SetAnimationState(EAnimationState::AnimJumping);
@@ -507,6 +498,7 @@ void ACharacterBase::ControlStamina()
 			SetActionState(EActionState::ActionChargingup);
 			DoActionAnimation();
 		}
+
 		HandleStaminaCharge();
 	}
 	else
@@ -530,10 +522,7 @@ void ACharacterBase::ConsumeStamina(float Value)
 // Resetting states
 void ACharacterBase::StopHandleStaminaCharge()
 {
-	//bIsChargingup = false;
-	//SetActionState(EActionState::ActionIdle);
 	SpecialKeyPressedTimeStart = -1;
 	SpecialKeyPressedTimeStop = -1;
-	/*nCurrentActionAnimation = 0;
-	nCurrentActionHitAnimation = 0;*/
+	bIsSpecialButtonPressed = false;
 }

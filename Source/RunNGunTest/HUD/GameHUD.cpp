@@ -3,6 +3,7 @@
 
 #include "GameHUD.h"
 #include "Engine/Engine.h"
+#include "../Characters/CharacterCommon.h"
 #include "GameFramework/HUD.h"
 
 AGameHUD::AGameHUD()

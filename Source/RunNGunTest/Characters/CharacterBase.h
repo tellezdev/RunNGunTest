@@ -130,8 +130,7 @@ public:
 
 	void HandleSpecialMoves();
 
-	UFUNCTION()
-		virtual void HandleProjectile(UObject* Projectile);
+	void HandleProjectile(UObject* Projectile);
 
 	UFUNCTION()
 		void HandleDead();

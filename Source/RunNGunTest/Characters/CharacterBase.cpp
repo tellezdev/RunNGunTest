@@ -320,16 +320,7 @@ void ACharacterBase::HandleSpecialMoves()
 
 void ACharacterBase::HandleProjectile(UObject* Projectile)
 {
-	UObject* SpawnActor = Projectile;
-
-	UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	GetWorld()->SpawnActor<AActor>(GeneratedBP->GeneratedClass, GetActorLocation(), GetActorRotation(), SpawnParams);
-
-	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, CharacterArrowComponent->GetComponentLocation().ToString());
+	Super::HandleProjectile(Projectile);
 }
 
 void ACharacterBase::HandleStaminaCharge()

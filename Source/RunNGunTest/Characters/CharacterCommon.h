@@ -24,7 +24,7 @@ enum class EAnimationState : uint8
 	AnimAttacking,
 	AnimSpecialMove,
 	AnimChargingUp,
-	AnimHitTop
+	AnimHit
 };
 ENUM_CLASS_FLAGS(EAnimationState);
 
@@ -161,6 +161,8 @@ public:
 	ACharacterCommon();
 
 	// Basic Character Data
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Data")
+		uint8 UUID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
 		FString Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
@@ -201,6 +203,10 @@ public:
 		int32 nCurrentFrame = -1;
 	UPROPERTY()
 		int32 nCurrentAnimationTotalFrames = -1;
+	UPROPERTY()
+		float nCurrentHitImpulseX = 0.f;
+	UPROPERTY()
+		float nCurrentHitImpulseZ = 0.f;
 
 
 	// Character Movement
@@ -275,8 +281,6 @@ public:
 		UPaperFlipbook* JumpingForwardAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* DuckingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
-		UPaperFlipbook* HitTopAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
 		TArray<AActor*> ActorsToIgnore;
@@ -322,6 +326,9 @@ public:
 
 	UFUNCTION()
 		virtual void HandleSpecialMoves();
+
+	UFUNCTION()
+		virtual void HandleProjectile(UObject* Projectile);
 
 	UFUNCTION()
 		virtual void ResetAttackCombo();
@@ -392,4 +399,7 @@ public:
 
 	UFUNCTION()
 		virtual void SetActionState(EActionState State);
+
+	UFUNCTION()
+		virtual FVector GetHitSide(FVector Impulse, FVector OwnerPosition, FVector ReceiverPosition);
 };

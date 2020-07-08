@@ -51,8 +51,6 @@ void AGenericProjectile::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	if (OtherActor->ActorHasTag("Scenario") || OtherActor->ActorHasTag("Enemy"))
 	{
-		FString debug0 = FString::Printf(TEXT("Actor: %s"), *OtherActor->GetName());
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Orange, debug0);
 		if (OtherActor->ActorHasTag("Enemy"))
 		{
 			Enemy = Cast<AEnemyBase>(OtherActor);

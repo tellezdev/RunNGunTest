@@ -21,14 +21,14 @@ public:
 	virtual void NativeConstruct() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		class UImage* PlayerAvatar;
+		class UImage* Avatar;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
 		class UProgressBar* LifeBar;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidget))
 		class UProgressBar* StaminaBar;
 
 	UFUNCTION()
-		void BindAvatar(UTexture2D* Avatar);
+		void BindAvatar(UTexture2D* Texture);
 	UFUNCTION()
 		void SetLife(float Life);
 	UFUNCTION()

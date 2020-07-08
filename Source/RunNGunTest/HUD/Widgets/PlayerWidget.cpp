@@ -17,9 +17,9 @@ void UPlayerWidget::NativeConstruct()
 	StaminaBar->SetPercent(100);
 }
 
-void UPlayerWidget::BindAvatar(UTexture2D* Avatar)
+void UPlayerWidget::BindAvatar(UTexture2D* Texture)
 {
-	PlayerAvatar->SetBrushFromTexture(Avatar);
+	Avatar->SetBrushFromTexture(Texture);
 }
 
 void UPlayerWidget::SetLife(float Life)

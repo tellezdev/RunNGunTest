@@ -41,14 +41,6 @@ void ACharacterCommon::Tick(float DeltaTime)
 
 	ControlCharacterRotation();
 
-	if (ActionFinalLocation != FVector(0.f, 0.f, 0.f))
-	{
-		GetCapsuleComponent()->SetSimulatePhysics(true);
-
-		float XInterp = FMath::FInterpConstantTo(GetActorLocation().X, ActionFinalLocation.X, DeltaTime, nCurrentAnimationInterpolationSpeed * 100.f);
-		float ZInterp = FMath::FInterpConstantTo(GetActorLocation().Z, ActionFinalLocation.Z, DeltaTime, nCurrentAnimationInterpolationSpeed * 100.f);
-		SetActorLocation(FVector(XInterp, 0.f, ZInterp));
-	}
 
 	if (!bActionAnimationIsFinished)
 	{
@@ -57,10 +49,32 @@ void ACharacterCommon::Tick(float DeltaTime)
 	}
 	else
 	{
-		if (ActionState != EActionState::ActionIdle && ActionState != EActionState::ActionDucking)
+		switch (ActionState)
 		{
+		case EActionState::ActionIdle:
+			break;
+		case EActionState::ActionDucking:
+			break;
+		case EActionState::ActionDamaged:
+			if (GetCharacterMovement()->IsFlying())
+			{
+				GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+			}
+			if (GetCharacterMovement()->IsMovingOnGround())
+			{
+				SetActionState(EActionState::ActionGettingUp);
+				ResetActionAnimationFlags();
+				SetCanMove(false);
+			}
+			break;
+		case EActionState::ActionGettingUp:
 			SetActionState(EActionState::ActionIdle);
 			ResetActionAnimationFlags();
+			break;
+		default:
+			SetActionState(EActionState::ActionIdle);
+			ResetActionAnimationFlags();
+			break;
 		}
 	}
 }
@@ -194,8 +208,7 @@ void ACharacterCommon::ResetSpecialMove()
 	nCurrentFrame = -1;
 	nCurrentAnimationTotalFrames = -1;
 	SetCanMove(true);
-	ActionFinalLocation = FVector(0.f, 0.f, 0.f);
-	GetCapsuleComponent()->SetSimulatePhysics(false);
+	ActionFinalLocation = FVector::ZeroVector;
 }
 
 void ACharacterCommon::ResetChargingUp()
@@ -214,8 +227,7 @@ void ACharacterCommon::ResetDamage()
 	nCurrentFrame = -1;
 	nCurrentAnimationTotalFrames = -1;
 	SetCanMove(true);
-	ActionFinalLocation = FVector(0.f, 0.f, 0.f);
-	GetCapsuleComponent()->SetSimulatePhysics(false);
+	ActionFinalLocation = FVector::ZeroVector;
 }
 
 void ACharacterCommon::UpdateAnimations()
@@ -243,7 +255,14 @@ void ACharacterCommon::UpdateAnimations()
 		break;
 	case EAnimationState::AnimChargingUp:
 		break;
-	case EAnimationState::AnimHit:
+	case EAnimationState::AnimDamage:
+		break;
+	case EAnimationState::AnimDamageAir:
+		break;
+	case EAnimationState::AnimGettingUp:
+		Actions = DamageAnimations;
+		nCurrentAction = 2;
+		DoActionAnimation();
 		break;
 	default:
 		CurrentFlipbook->SetFlipbook(IdleAnimation);
@@ -262,7 +281,17 @@ void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 		SetAnimationState(EAnimationState::AnimChargingUp);
 		break;
 	case EActionState::ActionDamaged:
-		SetAnimationState(EAnimationState::AnimHit);
+		if (!GetCharacterMovement()->IsMovingOnGround())
+		{
+			SetAnimationState(EAnimationState::AnimDamageAir);
+		}
+		else
+		{
+			SetAnimationState(EAnimationState::AnimDamage);
+		}
+		break;
+	case EActionState::ActionGettingUp:
+		SetAnimationState(EAnimationState::AnimGettingUp);
 		break;
 	case EActionState::ActionDucking:
 		SetAnimationState(EAnimationState::AnimDucking);
@@ -270,6 +299,7 @@ void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 	case EActionState::ActionIdle:
 		if (!GetCharacterMovement()->IsMovingOnGround())
 		{
+			GetCharacterMovement()->SetMovementMode(MOVE_Falling);
 			if (fabs(characterMovementSpeed) > 0.0f)
 			{
 				SetAnimationState(EAnimationState::AnimJumpingForward);
@@ -281,6 +311,7 @@ void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 		}
 		else
 		{
+			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 			if (fabs(characterMovementSpeed) > 0.0f)
 			{
 				SetAnimationState(EAnimationState::AnimWalking);
@@ -295,7 +326,6 @@ void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 		SetAnimationState(EAnimationState::AnimSpecialMove);
 		break;
 	default:
-		SetAnimationState(EAnimationState::AnimIdle);
 		break;
 	}
 
@@ -356,6 +386,14 @@ void ACharacterCommon::SetDamage(float Value)
 	SetActionState(EActionState::ActionDamaged);
 
 	Actions = DamageAnimations;
+	if (GetCharacterMovement()->IsMovingOnGround())
+	{
+		nCurrentAction = 0;
+	}
+	else
+	{
+		nCurrentAction = 1;
+	}
 	SetCanMove(false);
 	SetActionAnimationFlags();
 	DoActionAnimation();
@@ -388,7 +426,7 @@ void ACharacterCommon::DrainStamina()
 
 void ACharacterCommon::ApplyHitCollide(FActionAnimationStruct CurrentAction)
 {
-	FVector Hitbox = GetFacingVector(CurrentAction.HitBoxPosition);
+	FVector Hitbox = FaceElement(CurrentAction.HitBoxPosition);
 	// Hit box will grow to detect collision
 	CurrentTraceHit = FVector(GetActorLocation().X + Hitbox.X, GetActorLocation().Y + Hitbox.Y, GetActorLocation().Z + Hitbox.Z);
 
@@ -399,9 +437,21 @@ void ACharacterCommon::ApplyHitCollide(FActionAnimationStruct CurrentAction)
 		if (HitResult->Actor->ActorHasTag("Damageable"))
 		{
 			ACharacterCommon* ActorReceiver = Cast<ACharacterCommon>(HitResult->Actor);
-			if (CurrentAction.ImpulseToReceiver != FVector(0.f, 0.f, 0.f))
+			if (CurrentAction.ImpulseToReceiver != FVector::ZeroVector)
 			{
-				ActorReceiver->ActionFinalLocation = GetHitSide(CurrentAction.ImpulseToReceiver, GetActorLocation(), ActorReceiver->GetActorLocation());
+				EMovementMode ModeToReceiver;
+				if (Actions[nCurrentAction].HitMode == EMovementMode::MOVE_Flying)
+				{
+					ModeToReceiver = MOVE_Falling;
+				}
+				else
+				{
+					ModeToReceiver = Actions[nCurrentAction].HitMode;
+				}
+				ActorReceiver->GetCharacterMovement()->SetMovementMode(ModeToReceiver);
+				ActorReceiver->GetCharacterMovement()->Velocity.Z = FMath::Max(0.f, CurrentAction.ImpulseToReceiver.Z * 100.f);
+				ActorReceiver->GetCharacterMovement()->Velocity.X = GetFacingWhenHit(CurrentAction.ImpulseToReceiver.X, GetActorLocation(), ActorReceiver->GetActorLocation());
+
 			}
 			ActorReceiver->SetDamage(CurrentAction.DamageValue);
 
@@ -420,7 +470,7 @@ void ACharacterCommon::DoActionAnimation()
 			TArray<FActionAnimationFlagsStruct>& AnimationsFlags = ActionsAnimationsFlags[nCurrentAction].Animations;
 			FActionCompleteAnimationStruct& CompleteAction = Action.ActionAnimation[nCurrentActionAnimation];
 
-			//First time in this special move
+			// Takes the duration of start and end animations
 			if (AnimationActionCompleteTimeStop == 0.f)
 			{
 				AnimationActionCurrentTimeStart = GetCurrentTime();
@@ -438,6 +488,7 @@ void ACharacterCommon::DoActionAnimation()
 
 			if (AnimationActionCurrentTimeStop < GetCurrentTime())
 			{
+				// Initial verifications
 				if (!Action.CanBeCharged || !bIsChargingup)
 				{
 					AnimationsFlags[nCurrentActionAnimation].bIsActionCharge = true;
@@ -448,6 +499,7 @@ void ACharacterCommon::DoActionAnimation()
 					AnimationsFlags[nCurrentActionAnimation].bIsCompleted = true;
 				}
 
+				// Setting every part of the complete animation
 				if (!AnimationsFlags[nCurrentActionAnimation].bIsActionStart)
 				{
 					SetAnimationBehaviour(CompleteAction.AnimationStart, false);
@@ -463,7 +515,6 @@ void ACharacterCommon::DoActionAnimation()
 						nCurrentActionHitAnimation = 0;
 						++nCurrentActionAnimation;
 					}
-
 				}
 				else if (!AnimationsFlags[nCurrentActionAnimation].bIsActionCharge && Action.CanBeCharged)
 				{
@@ -481,26 +532,35 @@ void ACharacterCommon::DoActionAnimation()
 						 !AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation])
 				{
 					SetAnimationBehaviour(CompleteAction.AnimationHits[nCurrentActionHitAnimation], true);
-					AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation] = true;
-					AnimationActionCompleteTimeStop += CurrentFlipbook->GetFlipbookLength();
 
-					if (CompleteAction.AnimationHits[nCurrentActionHitAnimation].IsProjectile)
+					// If character is falling damaged, animation will remain until touches the ground.
+					if (ActionState == EActionState::ActionDamaged && !GetCharacterMovement()->IsMovingOnGround())
 					{
-						FTimerDelegate TimerDel;
-						FTimerHandle TimerHandle;
-
-						//Binding the function with specific variables
-						TimerDel.BindUFunction(this, FName("HandleProjectile"), Action.ActionAnimation[nCurrentActionAnimation].AnimationHits[nCurrentActionHitAnimation].GenericProjectile);
-						//Calling MyUsefulFunction after 5 seconds without looping
-						GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.1f, false);
-					}
-					if (nCurrentActionHitAnimation < AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() - 1)
-					{
-						++nCurrentActionHitAnimation;
+						AnimationActionCompleteTimeStop += CurrentFlipbook->GetFlipbookLength();
 					}
 					else
 					{
-						AnimationsFlags[nCurrentActionAnimation].bIsCompleted = true;
+						AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation] = true;
+						AnimationActionCompleteTimeStop += CurrentFlipbook->GetFlipbookLength();
+
+						if (CompleteAction.AnimationHits[nCurrentActionHitAnimation].IsProjectile)
+						{
+							FTimerDelegate TimerDel;
+							FTimerHandle TimerHandle;
+
+							//Binding the function with specific variables
+							TimerDel.BindUFunction(this, FName("HandleProjectile"), Action.ActionAnimation[nCurrentActionAnimation].AnimationHits[nCurrentActionHitAnimation].GenericProjectile);
+							//Calling MyUsefulFunction after 5 seconds without looping
+							GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.1f, false);
+						}
+						if (nCurrentActionHitAnimation < AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() - 1)
+						{
+							++nCurrentActionHitAnimation;
+						}
+						else
+						{
+							AnimationsFlags[nCurrentActionAnimation].bIsCompleted = true;
+						}
 					}
 				}
 				else
@@ -521,9 +581,11 @@ void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct AnimationStr
 	nCurrentFrame = 0;
 	AnimationActionCurrentTimeStop = GetCurrentTime() + CurrentFlipbook->GetFlipbookLength();
 	nCurrentAnimationInterpolationSpeed = AnimationStruct.InterpolationSpeed;
-	if (AnimationStruct.ImpulseToOwner != FVector(0.f, 0.f, 0.f))
+	if (AnimationStruct.ImpulseToOwner != FVector::ZeroVector)
 	{
-		ActionFinalLocation = GetActorLocation() + GetFacingVector(AnimationStruct.ImpulseToOwner);
+		GetCharacterMovement()->SetMovementMode(Actions[nCurrentAction].HitMode);
+		GetCharacterMovement()->Velocity.Z = FMath::Max(0.f, AnimationStruct.ImpulseToOwner.Z * 100.f);
+		GetCharacterMovement()->Velocity.X = GetFacingX(AnimationStruct.ImpulseToOwner.X);
 	}
 	ApplyHitCollide(AnimationStruct);
 }
@@ -546,6 +608,12 @@ void ACharacterCommon::SetActionState(EActionState State)
 		ResetChargingUp();
 		break;
 	case EActionState::ActionDamaged:
+		if (State != ActionState)
+		{
+			ResetDamage();
+		}
+		break;
+	case EActionState::ActionGettingUp:
 		ResetDamage();
 		break;
 	case EActionState::ActionDucking:
@@ -563,23 +631,31 @@ void ACharacterCommon::SetActionState(EActionState State)
 	ActionState = State;
 }
 
-FVector ACharacterCommon::GetFacingVector(FVector OriginalVector)
+float ACharacterCommon::GetFacingX(float Impulse)
 {
-	FVector FinalVector = OriginalVector;
 	if (!bIsMovingRight)
 	{
-		FinalVector = FVector(OriginalVector.X * -1, OriginalVector.Y, OriginalVector.Z);
+		return FMath::Min(0.f, Impulse * -100.f);
 	}
-	return FinalVector;
+	return FMath::Max(0.f, Impulse * 100.f);
 }
 
-FVector ACharacterCommon::GetHitSide(FVector Impulse, FVector OwnerPosition, FVector ReceiverPosition)
+float ACharacterCommon::GetFacingWhenHit(float Impulse, FVector OwnerPosition, FVector ReceiverPosition)
 {
-	FVector FinalVector = Impulse;
 	if (OwnerPosition.X > ReceiverPosition.X)
 	{
-		FinalVector = FVector(Impulse.X * -1, Impulse.Y, Impulse.Z);
+		return FMath::Min(0.f, Impulse * -100.f);
 	}
-	return ReceiverPosition + FinalVector;
+	return FMath::Max(0.f, Impulse * 100.f);
+}
+
+FVector ACharacterCommon::FaceElement(FVector Vector)
+{
+	FVector FinalVector = Vector;
+	if (!bIsMovingRight)
+	{
+		FinalVector = FVector(Vector.X * -1, Vector.Y, Vector.Z);
+	}
+	return FinalVector;
 }
 

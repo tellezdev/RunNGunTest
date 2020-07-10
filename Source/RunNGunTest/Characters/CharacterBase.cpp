@@ -63,6 +63,13 @@ void ACharacterBase::Tick(float DeltaTime)
 	{
 		NotifyComboToHUD();
 	}
+	if (GameHUD)
+	{
+		TArray<FString> DebugString;
+		DebugString.Add(FString::Printf(TEXT("Player Position: %s"), *GetActorLocation().ToString()));
+		GameHUD->InsertDebugData(DebugString);
+	}
+
 	HandleDirections();
 }
 

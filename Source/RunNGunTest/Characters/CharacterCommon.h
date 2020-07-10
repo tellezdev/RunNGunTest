@@ -24,7 +24,9 @@ enum class EAnimationState : uint8
 	AnimAttacking,
 	AnimSpecialMove,
 	AnimChargingUp,
-	AnimHit
+	AnimDamage,
+	AnimDamageAir,
+	AnimGettingUp
 };
 ENUM_CLASS_FLAGS(EAnimationState);
 
@@ -37,6 +39,7 @@ enum class EActionState : uint8
 	ActionChargingup,
 	ActionDucking,
 	ActionDamaged,
+	ActionGettingUp
 };
 ENUM_CLASS_FLAGS(EActionState);
 
@@ -80,13 +83,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DamageValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector HitBoxPosition = FVector(0.f, 0.f, 0.f);
+		FVector HitBoxPosition = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector HitBoxSize = FVector(0.f, 0.f, 0.f);
+		FVector HitBoxSize = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector ImpulseToOwner = FVector(0.f, 0.f, 0.f);
+		FVector ImpulseToOwner = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector ImpulseToReceiver = FVector(0.f, 0.f, 0.f);
+		FVector ImpulseToReceiver = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float InterpolationSpeed = 5.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -138,6 +141,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool CanBeCharged;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TEnumAsByte<EMovementMode> HitMode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FActionCompleteAnimationStruct> ActionAnimation;
@@ -345,8 +351,6 @@ public:
 	UFUNCTION()
 		virtual void ResetDamage();
 
-	UFUNCTION()
-		virtual FVector GetFacingVector(FVector OriginalVector);
 
 	// Other stuff
 	UFUNCTION()
@@ -401,5 +405,11 @@ public:
 		virtual void SetActionState(EActionState State);
 
 	UFUNCTION()
-		virtual FVector GetHitSide(FVector Impulse, FVector OwnerPosition, FVector ReceiverPosition);
+		virtual float GetFacingX(float Impulse);
+
+	UFUNCTION()
+		virtual float GetFacingWhenHit(float Impulse, FVector OwnerPosition, FVector ReceiverPosition);
+
+	UFUNCTION()
+		virtual FVector FaceElement(FVector Vector);
 };

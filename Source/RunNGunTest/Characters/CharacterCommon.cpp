@@ -24,6 +24,9 @@ void ACharacterCommon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
+
 	ResetActionAnimationFlags();
 	UUID = rand() % 1000 + 1;
 	AnimationFlipbookTimeStop = -1.f;
@@ -164,13 +167,12 @@ void ACharacterCommon::HandleSpecialMoves()
 
 void ACharacterCommon::HandleProjectile(UObject* Projectile)
 {
-	UObject* SpawnActor = Projectile;
-
-	UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
+	UBlueprint* GeneratedBP = Cast<UBlueprint>(Projectile);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
 	GetWorld()->SpawnActor<AActor>(GeneratedBP->GeneratedClass, GetActorLocation(), GetActorRotation(), SpawnParams);
 
 	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, CharacterArrowComponent->GetComponentLocation().ToString());
@@ -545,13 +547,14 @@ void ACharacterCommon::DoActionAnimation()
 
 						if (CompleteAction.AnimationHits[nCurrentActionHitAnimation].IsProjectile)
 						{
-							FTimerDelegate TimerDel;
+							FTimerDelegate TimerDelegate;
 							FTimerHandle TimerHandle;
 
 							//Binding the function with specific variables
-							TimerDel.BindUFunction(this, FName("HandleProjectile"), Action.ActionAnimation[nCurrentActionAnimation].AnimationHits[nCurrentActionHitAnimation].GenericProjectile);
+							TimerDelegate.BindUFunction(this, FName("HandleProjectile"), Action.ActionAnimation[nCurrentActionAnimation].AnimationHits[nCurrentActionHitAnimation].GenericProjectile);
 							//Calling MyUsefulFunction after 5 seconds without looping
-							GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.1f, false);
+							GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.1f, false);
+
 						}
 						if (nCurrentActionHitAnimation < AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() - 1)
 						{

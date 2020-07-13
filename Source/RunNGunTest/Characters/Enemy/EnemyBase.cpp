@@ -81,6 +81,7 @@ void AEnemyBase::Tick(float DeltaTime)
 
 		if (HitArea->IsOverlappingActor(Player))
 		{
+			FacePlayer();
 			AttackStart();
 		}
 	}
@@ -91,18 +92,20 @@ void AEnemyBase::Tick(float DeltaTime)
 }
 
 void AEnemyBase::FacePlayer()
-{
-	FRotator toPlayerRotation = GetPlayerPosition().Rotation();
-	toPlayerRotation.Pitch = 0;
-	if (toPlayerRotation.Yaw == 0.f)
+{	
+	float yaw = 0.0f;
+	if (Player->GetActorLocation().X < GetActorLocation().X)
 	{
-		bIsMovingRight = true;
+		bIsMovingRight = false;
+		yaw = 180.0f;
 	}
 	else
 	{
-		bIsMovingRight = false;
+		bIsMovingRight = true;
 	}
-	RootComponent->SetWorldRotation(toPlayerRotation);
+
+	FRotator* rotation = new FRotator(0.0f, yaw, 1.0f);
+	RootComponent->SetWorldRotation(*rotation);
 }
 
 void AEnemyBase::AttackStart()

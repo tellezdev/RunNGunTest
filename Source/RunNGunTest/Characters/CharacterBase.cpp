@@ -16,7 +16,7 @@ ACharacterBase::ACharacterBase()
 	this->Tags.Add("Player");
 
 	CharacterArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("CharacterArrowComponent"));
-	CharacterArrowComponent->SetupAttachment(GetArrowComponent());
+	//CharacterArrowComponent->SetupAttachment(GetArrowComponent());
 	CurrentFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("CurrentFlipbook"));
 	CurrentFlipbook->SetupAttachment(GetCapsuleComponent());
 
@@ -41,9 +41,6 @@ ACharacterBase::ACharacterBase()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
 }
 
 // Called every frame
@@ -62,12 +59,6 @@ void ACharacterBase::Tick(float DeltaTime)
 	if (nLastActionTime + MaxComboTime < GetCurrentTime())
 	{
 		NotifyComboToHUD();
-	}
-	if (GameHUD)
-	{
-		TArray<FString> DebugString;
-		DebugString.Add(FString::Printf(TEXT("Player Position: %s"), *GetActorLocation().ToString()));
-		GameHUD->InsertDebugData(DebugString);
 	}
 
 	HandleDirections();

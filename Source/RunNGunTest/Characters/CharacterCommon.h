@@ -261,6 +261,9 @@ public:
 	UPROPERTY()
 		int8 nCurrentActionHitAnimation = 0;
 
+	UPROPERTY()
+		int32 ComboCount = 0;
+
 	// HUD
 	UPROPERTY()
 		AGameHUD* GameHUD;
@@ -350,6 +353,9 @@ public:
 
 	UFUNCTION()
 		virtual void ResetDamage();
+
+	UFUNCTION()
+		virtual void DoAttack();
 
 
 	// Other stuff

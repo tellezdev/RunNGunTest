@@ -55,8 +55,6 @@ public:
 	// Character Movement
 	UPROPERTY()
 		bool bIsDirectionPressed;
-	UPROPERTY()
-		int32 ComboCount = 0;
 
 	// Key Pressing Times
 	UPROPERTY()

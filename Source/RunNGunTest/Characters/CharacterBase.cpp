@@ -243,26 +243,7 @@ void ACharacterBase::AttackStart()
 {
 	if (CanMove())
 	{
-		SetActionState(EActionState::ActionAttacking);
-		if (bIsAttackFinished && bActionAnimationIsFinished)
-		{
-			bIsAttackFinished = false;
-			if (nCurrentAction < AttackMoves.Num() - 1)
-			{
-				if (!bIsFirstAttack)
-				{
-					++nCurrentAction;
-				}
-				nCurrentActionAnimation = 0;
-			}
-			else
-			{
-				ResetAttackCombo();
-				//InputBuffer.ClearBuffer();				
-			}
-			HandleAttack();
-			++ComboCount;
-		}
+		DoAttack();
 		HandleBuffer(KeyInput::Attack);
 	}
 }

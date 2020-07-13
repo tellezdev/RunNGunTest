@@ -226,10 +226,38 @@ void ACharacterCommon::ResetChargingUp()
 
 void ACharacterCommon::ResetDamage()
 {
+	nCurrentAction = 0;
 	nCurrentFrame = -1;
 	nCurrentAnimationTotalFrames = -1;
 	SetCanMove(true);
 	ActionFinalLocation = FVector::ZeroVector;
+}
+
+void ACharacterCommon::DoAttack()
+{
+	SetActionState(EActionState::ActionAttacking);
+	if (bIsAttackFinished && bActionAnimationIsFinished)
+	{
+		bIsAttackFinished = false;
+		if (nCurrentAction < AttackMoves.Num() - 1)
+		{
+			if (!bIsFirstAttack)
+			{
+				++nCurrentAction;
+			}
+			else
+			{
+				nCurrentAction = 0;
+			}
+			nCurrentActionAnimation = 0;
+		}
+		else
+		{
+			ResetAttackCombo();
+		}
+		HandleAttack();
+		++ComboCount;
+	}
 }
 
 void ACharacterCommon::UpdateAnimations()

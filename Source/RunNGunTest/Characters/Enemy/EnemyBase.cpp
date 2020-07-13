@@ -92,7 +92,7 @@ void AEnemyBase::Tick(float DeltaTime)
 }
 
 void AEnemyBase::FacePlayer()
-{	
+{
 	float yaw = 0.0f;
 	if (Player->GetActorLocation().X < GetActorLocation().X)
 	{
@@ -112,25 +112,7 @@ void AEnemyBase::AttackStart()
 {
 	if (CanMove())
 	{
-		SetActionState(EActionState::ActionAttacking);
-
-		if (bIsAttackFinished && AnimationActionCompleteTimeStop < GetCurrentTime())
-		{
-			bIsAttackFinished = false;
-			if (nCurrentAction < AttackMoves.Num() - 1)
-			{
-				if (!bIsFirstAttack)
-				{
-					++nCurrentAction;
-				}
-				nCurrentActionAnimation = 0;
-			}
-			else
-			{
-				ResetAttackCombo();
-			}
-			HandleAttack();
-		}
+		DoAttack();
 	}
 }
 

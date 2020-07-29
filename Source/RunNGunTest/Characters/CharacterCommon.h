@@ -43,6 +43,16 @@ enum class EActionState : uint8
 };
 ENUM_CLASS_FLAGS(EActionState);
 
+UENUM(BlueprintType)
+enum class ECurrentAnimationState : uint8
+{
+	CurrentAnimationStart,
+	CurrentAnimationCharging,
+	CurrentAnimationHit,
+	CurrentAnimationEnd
+};
+ENUM_CLASS_FLAGS(ECurrentAnimationState);
+
 // Action Animations Structs
 USTRUCT()
 struct FActionAnimationFlagsStruct
@@ -96,6 +106,9 @@ public:
 		bool IsProjectile;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UObject* GenericProjectile;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool CanMove;
+
 };
 
 USTRUCT(BlueprintType)
@@ -196,8 +209,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool CurrentAttackHasHitObjective = false;
 	UPROPERTY()
-		bool bCurrentHitCollisionIsDone = false;
-	UPROPERTY()
 		int8 nAttackNumber = 0;
 	UPROPERTY()
 		int8 nCurrentComboHit = 0;
@@ -271,6 +282,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 		EAnimationState AnimationState = EAnimationState::AnimIdle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		ECurrentAnimationState CurrentAnimationState = ECurrentAnimationState::CurrentAnimationStart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 		EActionState ActionState = EActionState::ActionIdle;
 
 	// Inherited Components
@@ -291,7 +304,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* DuckingAnimation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Attacking")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
 		TArray<AActor*> ActorsToIgnore;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
@@ -338,6 +351,9 @@ public:
 
 	UFUNCTION()
 		virtual void HandleProjectile(UObject* Projectile);
+
+	UFUNCTION()
+		virtual void PrepareProjectile(FActionAnimationStruct CurrentAnimation);
 
 	UFUNCTION()
 		virtual void ResetAttackCombo();
@@ -399,7 +415,10 @@ public:
 		virtual void ApplyHitCollide(FActionAnimationStruct CurrentAction);
 
 	UFUNCTION()
-		virtual void DoActionAnimation();
+		virtual void PrepareAnimation();
+
+	UFUNCTION()
+		virtual void ApplyCurrentAnimation(FActionStruct Action, TArray<FActionAnimationFlagsStruct>& AnimationsFlags);
 
 	UFUNCTION()
 		virtual void SetAnimationBehaviour(FActionAnimationStruct AnimationStruct, bool bIsLoop);
@@ -418,4 +437,7 @@ public:
 
 	UFUNCTION()
 		virtual FVector FaceElement(FVector Vector);
+
+	UFUNCTION()
+		virtual TArray<AActor*> GetActorsWithOtherTag(FName Tag);
 };

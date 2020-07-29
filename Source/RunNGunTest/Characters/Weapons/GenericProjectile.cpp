@@ -53,7 +53,7 @@ void AGenericProjectile::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		if (OtherActor->ActorHasTag("Enemy"))
 		{
-			Enemy = Cast<AEnemyBase>(OtherActor);
+			Enemy = Cast<ACharacterEnemy>(OtherActor);
 			if (Enemy->GetCapsuleComponent()->IsOverlappingComponent(OverlappedComponent))
 			{
 				Enemy->SetDamage(Damage);

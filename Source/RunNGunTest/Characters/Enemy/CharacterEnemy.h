@@ -9,11 +9,11 @@
 #include "PaperSprite.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
-#include "EnemyBase.generated.h"
+#include "CharacterEnemy.generated.h"
 
 
 UCLASS()
-class RUNNGUNTEST_API AEnemyBase : public ACharacterCommon
+class RUNNGUNTEST_API ACharacterEnemy : public ACharacterCommon
 {
 	GENERATED_BODY()
 
@@ -23,7 +23,7 @@ protected:
 
 public:
 	// Sets default values for this character's properties
-	AEnemyBase();
+	ACharacterEnemy();
 
 	UPROPERTY()
 		ACharacterCommon* Player;

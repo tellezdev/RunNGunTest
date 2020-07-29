@@ -2,7 +2,7 @@
 
 
 #include "RNGTGameModeBase.h"
-#include "Characters/CharacterBase.h"
+#include "Characters/CharacterPlayer.h"
 #include "Blueprint/UserWidget.h"
 #include "Engine/Engine.h"
 #include "HUD/GameHUD.h"

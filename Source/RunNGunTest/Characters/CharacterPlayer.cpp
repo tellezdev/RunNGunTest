@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CharacterBase.h"
+#include "CharacterPlayer.h"
 #include "PaperFlipbookComponent.h"
 #include "Weapons/GenericProjectile.h"
 #include "GameFramework/Character.h"
@@ -9,7 +9,7 @@
 
 
 // Sets default values
-ACharacterBase::ACharacterBase()
+ACharacterPlayer::ACharacterPlayer()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -38,13 +38,14 @@ ACharacterBase::ACharacterBase()
 }
 
 // Called when the game starts or when spawned
-void ACharacterBase::BeginPlay()
+void ACharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	ActorsToIgnore.Append(GetActorsWithOtherTag("Player"));
 }
 
 // Called every frame
-void ACharacterBase::Tick(float DeltaTime)
+void ACharacterPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -59,46 +60,36 @@ void ACharacterBase::Tick(float DeltaTime)
 	if (nLastActionTime + MaxComboTime < GetCurrentTime())
 	{
 		NotifyComboToHUD();
+		ResetAttackCombo();
 	}
 
 	HandleDirections();
 }
 
 // Called to bind functionality to input
-void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ACharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterBase::MoveRight);
-	PlayerInputComponent->BindAction("LeftDirection", IE_Pressed, this, &ACharacterBase::LeftDirectionStart);
-	PlayerInputComponent->BindAction("LeftDirection", IE_Released, this, &ACharacterBase::LeftDirectionStop);
-	PlayerInputComponent->BindAction("RightDirection", IE_Pressed, this, &ACharacterBase::RightDirectionStart);
-	PlayerInputComponent->BindAction("RightDirection", IE_Released, this, &ACharacterBase::RightDirectionStop);
-	PlayerInputComponent->BindAction("DownDirection", IE_Pressed, this, &ACharacterBase::DownDirectionStart);
-	PlayerInputComponent->BindAction("DownDirection", IE_Released, this, &ACharacterBase::DownDirectionStop);
-	PlayerInputComponent->BindAction("UpDirection", IE_Pressed, this, &ACharacterBase::UpDirectionStart);
-	PlayerInputComponent->BindAction("UpDirection", IE_Released, this, &ACharacterBase::UpDirectionStop);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacterBase::JumpStart);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacterBase::JumpStop);
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACharacterBase::AttackStart);
-	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ACharacterBase::AttackStop);
-	PlayerInputComponent->BindAction("Special", IE_Pressed, this, &ACharacterBase::SpecialStart);
-	PlayerInputComponent->BindAction("Special", IE_Released, this, &ACharacterBase::SpecialStop);
-}
-
-// Animations
-void ACharacterBase::UpdateAnimations()
-{
-	Super::UpdateAnimations();
-}
-
-void ACharacterBase::ControlCharacterAnimations(float characterMovementSpeed = 0.f)
-{
-	Super::ControlCharacterAnimations(characterMovementSpeed);
+	//PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterPlayer::MoveRight);
+	PlayerInputComponent->BindAction("LeftDirection", IE_Pressed, this, &ACharacterPlayer::LeftDirectionStart);
+	PlayerInputComponent->BindAction("LeftDirection", IE_Released, this, &ACharacterPlayer::LeftDirectionStop);
+	PlayerInputComponent->BindAction("RightDirection", IE_Pressed, this, &ACharacterPlayer::RightDirectionStart);
+	PlayerInputComponent->BindAction("RightDirection", IE_Released, this, &ACharacterPlayer::RightDirectionStop);
+	PlayerInputComponent->BindAction("DownDirection", IE_Pressed, this, &ACharacterPlayer::DownDirectionStart);
+	PlayerInputComponent->BindAction("DownDirection", IE_Released, this, &ACharacterPlayer::DownDirectionStop);
+	PlayerInputComponent->BindAction("UpDirection", IE_Pressed, this, &ACharacterPlayer::UpDirectionStart);
+	PlayerInputComponent->BindAction("UpDirection", IE_Released, this, &ACharacterPlayer::UpDirectionStop);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacterPlayer::JumpStart);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacterPlayer::JumpStop);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACharacterPlayer::AttackStart);
+	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ACharacterPlayer::AttackStop);
+	PlayerInputComponent->BindAction("Special", IE_Pressed, this, &ACharacterPlayer::SpecialStart);
+	PlayerInputComponent->BindAction("Special", IE_Released, this, &ACharacterPlayer::SpecialStop);
 }
 
 // Basic moving
-void ACharacterBase::HandleDirections()
+void ACharacterPlayer::HandleDirections()
 {
 	float MovementSpeed = 0.f;
 	if (CanMove())
@@ -163,36 +154,36 @@ void ACharacterBase::HandleDirections()
 	ControlCharacterAnimations(MovementSpeed);
 }
 
-void ACharacterBase::MoveCharacter(float MovementSpeed, bool IsFacingRight)
+void ACharacterPlayer::MoveCharacter(float MovementSpeed, bool IsFacingRight)
 {
 	bIsMovingRight = IsFacingRight;
 	FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
 	AddMovementInput(*Direction, MovementSpeed);
 }
 
-void ACharacterBase::LeftDirectionStart()
+void ACharacterPlayer::LeftDirectionStart()
 {
 	bIsLeft = true;
 }
 
-void ACharacterBase::LeftDirectionStop()
+void ACharacterPlayer::LeftDirectionStop()
 {
 	bIsLeft = false;
 	bIsDirectionPressed = false;
 }
 
-void ACharacterBase::RightDirectionStart()
+void ACharacterPlayer::RightDirectionStart()
 {
 	bIsRight = true;
 }
 
-void ACharacterBase::RightDirectionStop()
+void ACharacterPlayer::RightDirectionStop()
 {
 	bIsRight = false;
 	bIsDirectionPressed = false;
 }
 
-void ACharacterBase::DownDirectionStart()
+void ACharacterPlayer::DownDirectionStart()
 {
 	bIsDown = true;
 	if (CanMove())
@@ -201,7 +192,7 @@ void ACharacterBase::DownDirectionStart()
 	}
 }
 
-void ACharacterBase::DownDirectionStop()
+void ACharacterPlayer::DownDirectionStop()
 {
 	if (CanMove())
 	{
@@ -211,19 +202,19 @@ void ACharacterBase::DownDirectionStop()
 	bIsDirectionPressed = false;
 }
 
-void ACharacterBase::UpDirectionStart()
+void ACharacterPlayer::UpDirectionStart()
 {
 	bIsUp = true;
 }
 
-void ACharacterBase::UpDirectionStop()
+void ACharacterPlayer::UpDirectionStop()
 {
 	bIsUp = false;
 	bIsDirectionPressed = false;
 }
 
 // Triggers
-void ACharacterBase::JumpStart()
+void ACharacterPlayer::JumpStart()
 {
 	if (CanMove())
 	{
@@ -234,12 +225,12 @@ void ACharacterBase::JumpStart()
 	}
 }
 
-void ACharacterBase::JumpStop()
+void ACharacterPlayer::JumpStop()
 {
 	bPressedJump = false;
 }
 
-void ACharacterBase::AttackStart()
+void ACharacterPlayer::AttackStart()
 {
 	if (CanMove())
 	{
@@ -248,12 +239,12 @@ void ACharacterBase::AttackStart()
 	}
 }
 
-void ACharacterBase::AttackStop()
+void ACharacterPlayer::AttackStop()
 {
 	AttackKeyPressedTimeStop = GetCurrentTime(); // Not used for now
 }
 
-void ACharacterBase::SpecialStart()
+void ACharacterPlayer::SpecialStart()
 {
 	SpecialKeyPressedTimeStart = GetCurrentTime() + DelayTimeUntilChargingUp;
 	bIsChargingup = true;
@@ -277,7 +268,7 @@ void ACharacterBase::SpecialStart()
 	}
 }
 
-void ACharacterBase::SpecialStop()
+void ACharacterPlayer::SpecialStop()
 {
 	StopHandleStaminaCharge();
 
@@ -286,23 +277,13 @@ void ACharacterBase::SpecialStop()
 }
 
 // Handling actions
-void ACharacterBase::HandleAttack()
+void ACharacterPlayer::HandleAttack()
 {
 	Super::HandleAttack();
 	ShowBufferOnScreen();
 }
 
-void ACharacterBase::HandleSpecialMoves()
-{
-	Super::HandleSpecialMoves();
-}
-
-void ACharacterBase::HandleProjectile(UObject* Projectile)
-{
-	Super::HandleProjectile(Projectile);
-}
-
-void ACharacterBase::HandleStaminaCharge()
+void ACharacterPlayer::HandleStaminaCharge()
 {
 	if (ActionState == EActionState::ActionChargingup && SpecialKeyPressedTimeStart + StaminaVelocityChargingInSeconds < GetCurrentTime())
 	{
@@ -312,7 +293,7 @@ void ACharacterBase::HandleStaminaCharge()
 	}
 }
 
-void ACharacterBase::NotifyComboToHUD()
+void ACharacterPlayer::NotifyComboToHUD()
 {
 	if (ComboCount > 2)
 	{
@@ -321,7 +302,7 @@ void ACharacterBase::NotifyComboToHUD()
 	ComboCount = 0;
 }
 
-void ACharacterBase::ShowBufferOnScreen()
+void ACharacterPlayer::ShowBufferOnScreen()
 {
 	if (bShowBuffer)
 	{
@@ -330,7 +311,7 @@ void ACharacterBase::ShowBufferOnScreen()
 }
 
 // Play states
-void ACharacterBase::SetDamage(float Value)
+void ACharacterPlayer::SetDamage(float Value)
 {
 	Super::SetDamage(Value);
 
@@ -338,7 +319,7 @@ void ACharacterBase::SetDamage(float Value)
 	HandleDead();
 }
 
-void ACharacterBase::HealStamina(float Value)
+void ACharacterPlayer::HealStamina(float Value)
 {
 	if (Stamina < MaxStamina)
 	{
@@ -347,14 +328,14 @@ void ACharacterBase::HealStamina(float Value)
 	}
 }
 
-void ACharacterBase::DrainLife()
+void ACharacterPlayer::DrainLife()
 {
 	Super::DrainLife();
 
 	HandleDead();
 }
 
-void ACharacterBase::DrainStamina()
+void ACharacterPlayer::DrainStamina()
 {
 	Super::DrainStamina();
 
@@ -362,7 +343,7 @@ void ACharacterBase::DrainStamina()
 	GameHUD->SetStamina(Stamina);
 }
 
-void ACharacterBase::HandleDead()
+void ACharacterPlayer::HandleDead()
 {
 	if (Life <= 0.f)
 	{
@@ -371,7 +352,7 @@ void ACharacterBase::HandleDead()
 }
 
 // Stamina
-void ACharacterBase::ControlStamina()
+void ACharacterPlayer::ControlStamina()
 {
 	if (Stamina < MaxStamina)
 	{
@@ -381,7 +362,7 @@ void ACharacterBase::ControlStamina()
 			SetActionAnimationFlags();
 			SetCanMove(false);
 			SetActionState(EActionState::ActionChargingup);
-			DoActionAnimation();
+			PrepareAnimation();
 		}
 
 		HandleStaminaCharge();
@@ -393,19 +374,14 @@ void ACharacterBase::ControlStamina()
 }
 
 // Buffer
-void ACharacterBase::HandleBuffer(KeyInput Direction)
+void ACharacterPlayer::HandleBuffer(KeyInput Direction)
 {
 	InputBuffer.InsertInputBuffer(Direction, bIsDirectionPressed);
 	ShowBufferOnScreen();
 }
 
-void ACharacterBase::ConsumeStamina(float Value)
-{
-	Super::ConsumeStamina(Value);
-}
-
 // Resetting states
-void ACharacterBase::StopHandleStaminaCharge()
+void ACharacterPlayer::StopHandleStaminaCharge()
 {
 	SpecialKeyPressedTimeStart = -1;
 	SpecialKeyPressedTimeStop = -1;

@@ -10,7 +10,7 @@
 #include "PaperSpriteComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "System/InputBuffer.h"
-#include "CharacterBase.generated.h"
+#include "CharacterPlayer.generated.h"
 
 
 UENUM(BlueprintType)
@@ -29,7 +29,7 @@ enum KeyInput
 };
 
 UCLASS()
-class RUNNGUNTEST_API ACharacterBase : public ACharacterCommon
+class RUNNGUNTEST_API ACharacterPlayer : public ACharacterCommon
 {
 	GENERATED_BODY()
 
@@ -41,7 +41,7 @@ protected:
 
 public:
 	// Sets default values for this character's properties
-	ACharacterBase();
+	ACharacterPlayer();
 
 	AInputBuffer InputBuffer;
 
@@ -126,10 +126,6 @@ public:
 
 	void HandleAttack();
 
-	void HandleSpecialMoves();
-
-	void HandleProjectile(UObject* Projectile);
-
 	UFUNCTION()
 		void HandleDead();
 
@@ -153,15 +149,10 @@ public:
 	UFUNCTION()
 		void HandleBuffer(KeyInput Direction);
 
-	// Animations
-	void UpdateAnimations();
-	void ControlCharacterAnimations(float characterMovementSpeed);
-
 	// -- Health related
 	void SetDamage(float Value);
 	void HealStamina(float Value);
 	void DrainLife();
-	void ConsumeStamina(float Value);
 	void DrainStamina();
 
 	// Called every frame

@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "EnemyBase.h"
+#include "CharacterEnemy.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
 // Sets default values
-AEnemyBase::AEnemyBase()
+ACharacterEnemy::ACharacterEnemy()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -48,17 +48,19 @@ AEnemyBase::AEnemyBase()
 }
 
 // Called when the game starts or when spawned
-void AEnemyBase::BeginPlay()
+void ACharacterEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
 	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	ActorsToIgnore.Append(GetActorsWithOtherTag("Enemy"));
 }
 
 // Called every frame
-void AEnemyBase::Tick(float DeltaTime)
+void ACharacterEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -91,7 +93,7 @@ void AEnemyBase::Tick(float DeltaTime)
 	}
 }
 
-void AEnemyBase::FacePlayer()
+void ACharacterEnemy::FacePlayer()
 {
 	float yaw = 0.0f;
 	if (Player->GetActorLocation().X < GetActorLocation().X)
@@ -108,7 +110,7 @@ void AEnemyBase::FacePlayer()
 	RootComponent->SetWorldRotation(*rotation);
 }
 
-void AEnemyBase::AttackStart()
+void ACharacterEnemy::AttackStart()
 {
 	if (CanMove())
 	{
@@ -116,17 +118,17 @@ void AEnemyBase::AttackStart()
 	}
 }
 
-void AEnemyBase::UpdateAnimations()
+void ACharacterEnemy::UpdateAnimations()
 {
 	Super::UpdateAnimations();
 }
 
-void AEnemyBase::ControlCharacterAnimations(float characterMovementSpeed)
+void ACharacterEnemy::ControlCharacterAnimations(float characterMovementSpeed)
 {
 	Super::ControlCharacterAnimations(characterMovementSpeed);
 }
 
-void AEnemyBase::SetDamage(float Value)
+void ACharacterEnemy::SetDamage(float Value)
 {
 	Super::SetDamage(Value);
 
@@ -136,7 +138,7 @@ void AEnemyBase::SetDamage(float Value)
 	}
 }
 
-FVector AEnemyBase::GetPlayerPosition()
+FVector ACharacterEnemy::GetPlayerPosition()
 {
 	FVector PlayerPosition = Player->GetActorLocation() - GetActorLocation();
 	PlayerPosition.Normalize();

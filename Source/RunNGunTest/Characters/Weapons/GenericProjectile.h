@@ -7,7 +7,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "../Enemy/EnemyBase.h"
+#include "../Enemy/CharacterEnemy.h"
 #include "GenericProjectile.generated.h"
 
 UCLASS()
@@ -19,7 +19,7 @@ public:
 	// Sets default values for this actor's properties
 	AGenericProjectile();
 
-	AEnemyBase* Enemy;
+	ACharacterEnemy* Enemy;
 
 protected:
 	// Called when the game starts or when spawned

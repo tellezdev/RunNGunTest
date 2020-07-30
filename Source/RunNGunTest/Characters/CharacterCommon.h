@@ -291,6 +291,8 @@ public:
 		UArrowComponent* CharacterArrowComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UPaperFlipbookComponent* CurrentFlipbook;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UPaperFlipbookComponent* EffectsFlipbook;
 
 	// Flip books
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
@@ -303,6 +305,8 @@ public:
 		UPaperFlipbook* JumpingForwardAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* DuckingAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+		UPaperFlipbook* EffectAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
 		TArray<AActor*> ActorsToIgnore;

@@ -18,6 +18,7 @@ ACharacterPlayer::ACharacterPlayer()
 	CharacterArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("CharacterArrowComponent"));
 	//CharacterArrowComponent->SetupAttachment(GetArrowComponent());
 	CurrentFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("CurrentFlipbook"));
+	EffectsFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("EffectsFlipbook"));
 	CurrentFlipbook->SetupAttachment(GetCapsuleComponent());
 
 	// Setting default character movement's params

@@ -50,14 +50,14 @@ void ACharacterPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// If special button is pressed, stamina grows up
-	bool bCanCharge = bActionAnimationIsFinished || ActionState == EActionState::ActionChargingup;
+	bCanCharge = bActionAnimationIsFinished || ActionState == EActionState::ActionChargingup;
 	if (bCanCharge && SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime())
 	{
 		ControlStamina();
 	}
 
 	// User stops doing combo
-	if (nLastActionTime + MaxComboTime < GetCurrentTime())
+	if (nLastActionTime > 0.f && nLastActionTime + MaxComboTime < GetCurrentTime())
 	{
 		NotifyComboToHUD();
 		ResetAttackCombo();
@@ -271,9 +271,6 @@ void ACharacterPlayer::SpecialStart()
 void ACharacterPlayer::SpecialStop()
 {
 	StopHandleStaminaCharge();
-
-	bIsChargingup = false;
-	SpecialKeyPressedTimeStop = GetCurrentTime(); // Not used for now
 }
 
 // Handling actions

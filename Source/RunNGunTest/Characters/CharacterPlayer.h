@@ -55,6 +55,8 @@ public:
 	// Character Movement
 	UPROPERTY()
 		bool bIsDirectionPressed;
+	UPROPERTY()
+		bool bCanCharge;
 
 	// Key Pressing Times
 	UPROPERTY()

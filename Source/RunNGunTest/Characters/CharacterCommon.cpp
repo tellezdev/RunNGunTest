@@ -8,6 +8,9 @@
 		DebugString.Add(FString::Printf(TEXT("test: %s"), somethingToShow));
 		GameHUD->InsertDebugData(DebugString);
 		}
+
+		// Instant message on screen
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Start"));
 */
 
 #include "CharacterCommon.h"
@@ -207,6 +210,7 @@ void ACharacterCommon::ConsumeStamina(float Value)
 void ACharacterCommon::ResetAttackCombo()
 {
 	nCurrentAction = 0;
+	nLastActionTime = 0.f;
 	bIsFirstAttack = true;
 	CurrentAttackHasHitObjective = false;
 	ResetActionAnimationFlags();
@@ -330,7 +334,10 @@ void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 		SetAnimationState(EAnimationState::AnimAttacking);
 		break;
 	case EActionState::ActionChargingup:
-		SetAnimationState(EAnimationState::AnimChargingUp);
+		if (GetCharacterMovement()->IsMovingOnGround())
+		{
+			SetAnimationState(EAnimationState::AnimChargingUp);
+		}
 		break;
 	case EActionState::ActionDamaged:
 		if (!GetCharacterMovement()->IsMovingOnGround())

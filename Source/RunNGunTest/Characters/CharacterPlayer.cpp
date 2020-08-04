@@ -360,7 +360,7 @@ void ACharacterPlayer::ControlStamina()
 			SetActionAnimationFlags();
 			SetCanMove(false);
 			SetActionState(EActionState::ActionChargingup);
-			PrepareAnimation();
+			ControlAnimation();
 		}
 
 		HandleStaminaCharge();

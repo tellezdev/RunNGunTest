@@ -217,8 +217,6 @@ public:
 	UPROPERTY()
 		float nLastActionTime = 0.f;
 	UPROPERTY()
-		int32 nCurrentFrame = -1;
-	UPROPERTY()
 		int32 nCurrentAnimationTotalFrames = -1;
 	UPROPERTY()
 		float nCurrentHitImpulseX = 0.f;
@@ -265,6 +263,18 @@ public:
 		float AnimationActionCurrentTimeStop;
 	UPROPERTY()
 		float AnimationActionCompleteTimeStop;
+	// ------------------ new version
+	UPROPERTY()
+		int32 AnimationActionCurrentFrame;
+	UPROPERTY()
+		int32 AnimationActionLastFrame;
+	UPROPERTY()
+		int32 AnimationActionCompleteFramesNumber;
+	UPROPERTY()
+		int32 CurrentAnimationTotalFrames;
+	UPROPERTY()
+		bool bAnimationActionCompleteHasEnded;
+	// ------------------
 	UPROPERTY()
 		bool bIsExecutingSpecialMove;
 	UPROPERTY()
@@ -422,10 +432,13 @@ public:
 		virtual void PrepareAnimation();
 
 	UFUNCTION()
+		virtual void ControlAnimation();
+
+	UFUNCTION()
 		virtual void ApplyCurrentAnimation(FActionStruct Action, TArray<FActionAnimationFlagsStruct>& AnimationsFlags);
 
 	UFUNCTION()
-		virtual void SetAnimationBehaviour(FActionAnimationStruct AnimationStruct, bool bIsLoop);
+		virtual void SetAnimationBehaviour(FActionAnimationStruct AnimationStruct);
 
 	UFUNCTION()
 		virtual void NotifyComboToHUD();

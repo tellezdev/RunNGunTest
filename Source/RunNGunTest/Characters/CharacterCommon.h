@@ -83,6 +83,26 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct FAnimationEffectsStruct
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AnimationEffect1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector Effect1Position = FVector::ZeroVector;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AnimationEffect2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector Effect2Position = FVector::ZeroVector;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AnimationEffect3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector Effect3Position = FVector::ZeroVector;
+};
+
+USTRUCT(BlueprintType)
 struct FActionAnimationStruct
 {
 	GENERATED_BODY()
@@ -90,6 +110,8 @@ struct FActionAnimationStruct
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* Animation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FAnimationEffectsStruct AnimationEffects;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DamageValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -106,6 +128,8 @@ public:
 		bool IsProjectile;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UObject* GenericProjectile;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector ProjectileStartPosition = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool CanMove;
 
@@ -302,7 +326,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UPaperFlipbookComponent* CurrentFlipbook;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		UPaperFlipbookComponent* EffectsFlipbook;
+		UPaperFlipbookComponent* Effect1Flipbook;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UPaperFlipbookComponent* Effect2Flipbook;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UPaperFlipbookComponent* Effect3Flipbook;
 
 	// Flip books
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
@@ -364,7 +392,7 @@ public:
 		virtual void HandleSpecialMoves();
 
 	UFUNCTION()
-		virtual void HandleProjectile(UObject* Projectile);
+		virtual void HandleProjectile(UObject* Projectile, FVector ProjectilePosition);
 
 	UFUNCTION()
 		virtual void PrepareProjectile(FActionAnimationStruct CurrentAnimation);
@@ -436,6 +464,12 @@ public:
 
 	UFUNCTION()
 		virtual void ApplyCurrentAnimation(FActionStruct Action, TArray<FActionAnimationFlagsStruct>& AnimationsFlags);
+
+	UFUNCTION()
+		virtual void ApplyEffectsAnimation(FActionAnimationStruct Action);
+
+	UFUNCTION()
+		virtual void RemoveEffectsAnimation();
 
 	UFUNCTION()
 		virtual void SetAnimationBehaviour(FActionAnimationStruct AnimationStruct);

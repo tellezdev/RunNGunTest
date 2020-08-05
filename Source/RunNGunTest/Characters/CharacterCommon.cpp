@@ -20,6 +20,19 @@ ACharacterCommon::ACharacterCommon()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	CurrentFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("CurrentFlipbook");
+	CurrentFlipbook->SetupAttachment(GetCapsuleComponent());
+	CurrentFlipbook->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	Effect1Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect1Flipbook");
+	Effect1Flipbook->SetupAttachment(CurrentFlipbook);
+
+	Effect2Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect2Flipbook");
+	Effect2Flipbook->SetupAttachment(CurrentFlipbook);
+
+	Effect3Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect3Flipbook");
+	Effect3Flipbook->SetupAttachment(CurrentFlipbook);
 }
 
 // Called when the game starts or when spawned
@@ -174,7 +187,7 @@ void ACharacterCommon::HandleSpecialMoves()
 	}
 }
 
-void ACharacterCommon::HandleProjectile(UObject* Projectile)
+void ACharacterCommon::HandleProjectile(UObject* Projectile, FVector ProjectilePosition)
 {
 	UBlueprint* GeneratedBP = Cast<UBlueprint>(Projectile);
 
@@ -182,7 +195,7 @@ void ACharacterCommon::HandleProjectile(UObject* Projectile)
 	SpawnParams.Owner = this;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	GetWorld()->SpawnActor<AActor>(GeneratedBP->GeneratedClass, GetActorLocation(), GetActorRotation(), SpawnParams);
+	GetWorld()->SpawnActor<AActor>(GeneratedBP->GeneratedClass, ProjectilePosition, GetActorRotation(), SpawnParams);
 
 	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, CharacterArrowComponent->GetComponentLocation().ToString());
 }
@@ -195,7 +208,8 @@ void ACharacterCommon::PrepareProjectile(FActionAnimationStruct CurrentAnimation
 		FTimerHandle TimerHandle;
 
 		//Binding the function with specific variables
-		TimerDelegate.BindUFunction(this, FName("HandleProjectile"), CurrentAnimation.GenericProjectile);
+		FVector ProjectilePosition = GetActorLocation() + FaceElement(CurrentAnimation.ProjectileStartPosition);
+		TimerDelegate.BindUFunction(this, FName("HandleProjectile"), CurrentAnimation.GenericProjectile, ProjectilePosition);
 		//Calling MyUsefulFunction after 5 seconds without looping
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.1f, false);
 	}
@@ -426,6 +440,7 @@ void ACharacterCommon::ResetActionAnimationFlags()
 	AnimationActionCurrentFrame = 0;
 	AnimationActionCompleteFramesNumber = 0;
 	AnimationActionLastFrame = 0;
+	RemoveEffectsAnimation();
 	SetActionAnimationFlags();
 }
 
@@ -594,6 +609,7 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 	{
 	case ECurrentAnimationState::CurrentAnimationStart:
 		SetAnimationBehaviour(CompleteAction.AnimationStart);
+		ApplyEffectsAnimation(CompleteAction.AnimationStart);
 		PrepareProjectile(CompleteAction.AnimationStart);
 		AnimationsFlags[nCurrentActionAnimation].bIsActionStart = true;
 
@@ -603,6 +619,9 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 		if (bIsChargingup)
 		{
 			AnimationActionLastFrame += Action.ActionAnimation[nCurrentActionAnimation].AnimationCharge.Animation->GetNumFrames();
+			RemoveEffectsAnimation();
+			ApplyEffectsAnimation(CompleteAction.AnimationCharge);
+
 			SetAnimationBehaviour(CompleteAction.AnimationCharge);
 		}
 		else
@@ -612,6 +631,9 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 		break;
 
 	case ECurrentAnimationState::CurrentAnimationHit:
+		RemoveEffectsAnimation();
+		RemoveEffectsAnimation();
+		ApplyEffectsAnimation(CompleteAction.AnimationHits[nCurrentActionHitAnimation]);
 		SetAnimationBehaviour(CompleteAction.AnimationHits[nCurrentActionHitAnimation]);
 
 		// If character is falling damaged, animation will remain until touches the ground.
@@ -649,7 +671,10 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 		break;
 
 	case ECurrentAnimationState::CurrentAnimationEnd:
+		RemoveEffectsAnimation();
+		ApplyEffectsAnimation(CompleteAction.AnimationEnd);
 		SetAnimationBehaviour(CompleteAction.AnimationEnd);
+
 		PrepareProjectile(CompleteAction.AnimationEnd);
 		AnimationsFlags[nCurrentActionAnimation].bIsActionEnd = true;
 
@@ -660,6 +685,35 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 		}
 		break;
 	}
+}
+
+void ACharacterCommon::ApplyEffectsAnimation(FActionAnimationStruct Action)
+{
+	if (Action.AnimationEffects.AnimationEffect1 != nullptr)
+	{
+		Effect1Flipbook->SetFlipbook(Action.AnimationEffects.AnimationEffect1);
+		Effect1Flipbook->SetRelativeLocation(Action.AnimationEffects.Effect1Position);
+		Effect1Flipbook->SetVisibility(true);
+	}
+	if (Action.AnimationEffects.AnimationEffect2 != nullptr)
+	{
+		Effect2Flipbook->SetFlipbook(Action.AnimationEffects.AnimationEffect2);
+		Effect2Flipbook->SetRelativeLocation(Action.AnimationEffects.Effect2Position);
+		Effect2Flipbook->SetVisibility(true);
+	}
+	if (Action.AnimationEffects.AnimationEffect3 != nullptr)
+	{
+		Effect3Flipbook->SetFlipbook(Action.AnimationEffects.AnimationEffect3);
+		Effect3Flipbook->SetRelativeLocation(Action.AnimationEffects.Effect3Position);
+		Effect3Flipbook->SetVisibility(true);
+	}
+}
+
+void ACharacterCommon::RemoveEffectsAnimation()
+{
+	Effect1Flipbook->SetVisibility(false);
+	Effect2Flipbook->SetVisibility(false);
+	Effect3Flipbook->SetVisibility(false);
 }
 
 void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct AnimationStruct)

@@ -13,10 +13,6 @@ ACharacterEnemy::ACharacterEnemy()
 
 	this->Tags.Add("Enemy");
 
-	CurrentFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("CurrentFlipbook");
-	CurrentFlipbook->SetupAttachment(GetCapsuleComponent());
-	CurrentFlipbook->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-
 	VisibilityArea = CreateDefaultSubobject<USphereComponent>(TEXT("VisibilityArea"));
 	VisibilityArea->InitSphereRadius(300.f);
 	VisibilityArea->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);

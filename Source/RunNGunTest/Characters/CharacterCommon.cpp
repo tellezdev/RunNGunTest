@@ -44,11 +44,7 @@ void ACharacterCommon::BeginPlay()
 	GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
 
 	UUID = rand() % 1000 + 1;
-	AnimationFlipbookTimeStop = -1.f;
-	AnimationActionCurrentTimeStart = -1.f;
-	AnimationActionCurrentTimeStop = -1.f;
-	AnimationActionCompleteTimeStop = 0.f;
-	bActionAnimationIsFinished = true;
+	SetActionAnimationIsFinished(true);
 
 	ResetActionAnimationFlags();
 	SetCanMove(true);
@@ -63,10 +59,10 @@ void ACharacterCommon::Tick(float DeltaTime)
 
 	ControlCharacterRotation();
 
-	if (!bActionAnimationIsFinished)
+	if (!GetActionAnimationIsFinished())
 	{
 		ControlAnimation();
-		nLastActionTime = GetCurrentTime();
+		SetLastActionTime(GetCurrentTime());
 	}
 	else
 	{
@@ -89,6 +85,7 @@ void ACharacterCommon::Tick(float DeltaTime)
 			}
 			break;
 		case EActionState::ActionGettingUp:
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, FString::Printf(TEXT("Se acaba getting up")));
 			SetActionState(EActionState::ActionIdle);
 			ResetActionAnimationFlags();
 			break;
@@ -109,9 +106,19 @@ void ACharacterCommon::SetCanMove(bool State)
 	bCanMove = State;
 }
 
-bool ACharacterCommon::CanMove()
+bool ACharacterCommon::GetCanMove()
 {
 	return bCanMove;
+}
+
+void ACharacterCommon::SetLastActionTime(float Time)
+{
+	nLastActionTime = Time;
+}
+
+float ACharacterCommon::GetLastActionTime()
+{
+	return nLastActionTime;
 }
 
 void ACharacterCommon::ControlCharacterRotation()
@@ -132,7 +139,7 @@ void ACharacterCommon::BindDataHUD()
 
 void ACharacterCommon::HandleAttack()
 {
-	if (bActionAnimationIsFinished)
+	if (GetActionAnimationIsFinished())
 	{
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
@@ -224,7 +231,7 @@ void ACharacterCommon::ConsumeStamina(float Value)
 void ACharacterCommon::ResetAttackCombo()
 {
 	nCurrentAction = 0;
-	nLastActionTime = 0.f;
+	SetLastActionTime(0.f);
 	bIsFirstAttack = true;
 	CurrentAttackHasHitObjective = false;
 	ResetActionAnimationFlags();
@@ -272,7 +279,7 @@ void ACharacterCommon::ResetDamage()
 void ACharacterCommon::DoAttack()
 {
 	SetActionState(EActionState::ActionAttacking);
-	if (bIsAttackFinished && bActionAnimationIsFinished)
+	if (bIsAttackFinished && GetActionAnimationIsFinished())
 	{
 		bIsAttackFinished = false;
 		if (nCurrentAction < AttackMoves.Num() - 1)
@@ -435,8 +442,6 @@ void ACharacterCommon::ResetActionAnimationFlags()
 {
 	nCurrentActionHitAnimation = 0;
 	nCurrentActionAnimation = 0;
-	AnimationActionCurrentTimeStop = 0.f;
-	AnimationActionCompleteTimeStop = 0.f;
 	AnimationActionCurrentFrame = 0;
 	AnimationActionCompleteFramesNumber = 0;
 	AnimationActionLastFrame = 0;
@@ -472,6 +477,7 @@ void ACharacterCommon::SetDamage(float Value)
 	ControlAnimation();
 
 	Life -= Value;
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, FString::Printf(TEXT("Life: %f"), Life));
 }
 
 void ACharacterCommon::HealLife(float Value)
@@ -570,7 +576,7 @@ void ACharacterCommon::PrepareAnimation()
 			if (!AnimationsFlags[nCurrentActionAnimation].bIsActionStart)
 			{
 				CurrentAnimationState = ECurrentAnimationState::CurrentAnimationStart;
-				bActionAnimationIsFinished = false;
+				SetActionAnimationIsFinished(false);
 				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Start"));
 			}
 			else if (AnimationsFlags[nCurrentActionAnimation].bIsCompleted && !AnimationsFlags[nCurrentActionAnimation].bIsActionEnd)
@@ -594,7 +600,7 @@ void ACharacterCommon::PrepareAnimation()
 				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, FString::Printf(TEXT("Total Frames: %i"), AnimationActionLastFrame));
 				AnimationActionCurrentFrame = 0;
 				AnimationActionLastFrame = 0;
-				bActionAnimationIsFinished = true;
+				SetActionAnimationIsFinished(true);
 			}
 
 			ApplyCurrentAnimation(Action, AnimationsFlags);
@@ -720,6 +726,16 @@ void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct AnimationStr
 		GetCharacterMovement()->Velocity.X = GetFacingX(AnimationStruct.ImpulseToOwner.X);
 	}
 	ApplyHitCollide(AnimationStruct);
+}
+
+void ACharacterCommon::SetActionAnimationIsFinished(bool IsFinished)
+{
+	bActionAnimationIsFinished = IsFinished;
+}
+
+bool ACharacterCommon::GetActionAnimationIsFinished()
+{
+	return bActionAnimationIsFinished;
 }
 
 void ACharacterCommon::NotifyComboToHUD()

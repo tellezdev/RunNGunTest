@@ -32,23 +32,20 @@ ACharacterEnemy::ACharacterEnemy()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+
 	Life = 100.f;
 	AttackDamage = 10.f;
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(27.131327);
 	GetCapsuleComponent()->SetCapsuleRadius(18.100616);
 	CurrentFlipbook->SetWorldLocation(FVector(0, 0, -41));
-
-	AnimationFlipbookTimeStop = -1.f;
-	AnimationAttackCompleteTimeStop = -1.f;
 }
 
 // Called when the game starts or when spawned
 void ACharacterEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
 	Player = Cast<ACharacterCommon>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
@@ -60,7 +57,7 @@ void ACharacterEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (ActionState != EActionState::ActionDamaged && ActionState != EActionState::ActionAttacking && CanMove() && VisibilityArea->IsOverlappingActor(Player) && nLastActionTime + TimeBetweenAttacks < GetCurrentTime())
+	if (ActionState != EActionState::ActionDamaged && ActionState != EActionState::ActionAttacking && GetCanMove() && VisibilityArea->IsOverlappingActor(Player) && GetLastActionTime() + TimeBetweenAttacks < GetCurrentTime())
 	{
 		SetCanMove(true);
 		// Depending on distance from player, attack, follow him or wait
@@ -108,27 +105,22 @@ void ACharacterEnemy::FacePlayer()
 
 void ACharacterEnemy::AttackStart()
 {
-	if (CanMove())
+	if (GetCanMove())
 	{
-		DoAttack();
+		Super::DoAttack();
 	}
-}
-
-void ACharacterEnemy::UpdateAnimations()
-{
-	Super::UpdateAnimations();
-}
-
-void ACharacterEnemy::ControlCharacterAnimations(float characterMovementSpeed)
-{
-	Super::ControlCharacterAnimations(characterMovementSpeed);
 }
 
 void ACharacterEnemy::SetDamage(float Value)
 {
 	Super::SetDamage(Value);
 
-	if (Life <= 0)
+	HandleDead();
+}
+
+void ACharacterEnemy::HandleDead()
+{
+	if (Life <= 0.f)
 	{
 		Destroy();
 	}

@@ -3,188 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "System/Structs.h"
 #include "GameFramework/Character.h"
 #include "PaperSprite.h"
-#include "PaperFlipbookComponent.h"
-#include "PaperFlipbook.h"
 #include "PaperCharacter.h"
 #include "PaperSpriteComponent.h"
 #include "../HUD/GameHUD.h"
 #include "CharacterCommon.generated.h"
-
-
-UENUM(BlueprintType)
-enum class EAnimationState : uint8
-{
-	AnimIdle,
-	AnimJumping,
-	AnimJumpingForward,
-	AnimWalking,
-	AnimDucking,
-	AnimAttacking,
-	AnimSpecialMove,
-	AnimChargingUp,
-	AnimDamage,
-	AnimDamageAir,
-	AnimGettingUp
-};
-ENUM_CLASS_FLAGS(EAnimationState);
-
-UENUM(BlueprintType)
-enum class EActionState : uint8
-{
-	ActionIdle,
-	ActionAttacking,
-	ActionSpecialMove,
-	ActionChargingup,
-	ActionDucking,
-	ActionDamaged,
-	ActionGettingUp
-};
-ENUM_CLASS_FLAGS(EActionState);
-
-UENUM(BlueprintType)
-enum class ECurrentAnimationState : uint8
-{
-	CurrentAnimationStart,
-	CurrentAnimationCharging,
-	CurrentAnimationHit,
-	CurrentAnimationEnd
-};
-ENUM_CLASS_FLAGS(ECurrentAnimationState);
-
-// Action Animations Structs
-USTRUCT()
-struct FActionAnimationFlagsStruct
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY()
-		bool bIsActionStart = false;
-	UPROPERTY()
-		bool bIsActionCharge = false;
-	UPROPERTY()
-		TArray<bool> bIsActionHits;
-	UPROPERTY()
-		bool bIsActionEnd = false;
-	UPROPERTY()
-		bool bIsCompleted = false;
-};
-
-USTRUCT()
-struct FActionAnimationsFlagsStruct
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY()
-		TArray<FActionAnimationFlagsStruct> Animations;
-};
-
-USTRUCT(BlueprintType)
-struct FAnimationEffectsStruct
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* AnimationEffect1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector Effect1Position = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* AnimationEffect2;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector Effect2Position = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* AnimationEffect3;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector Effect3Position = FVector::ZeroVector;
-};
-
-USTRUCT(BlueprintType)
-struct FActionAnimationStruct
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* Animation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FAnimationEffectsStruct AnimationEffects;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float DamageValue;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector HitBoxPosition = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector HitBoxSize = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector ImpulseToOwner = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector ImpulseToReceiver = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float InterpolationSpeed = 5.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool IsProjectile;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UObject* GenericProjectile;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector ProjectileStartPosition = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool CanMove;
-
-};
-
-USTRUCT(BlueprintType)
-struct FActionCompleteAnimationStruct
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FActionAnimationStruct AnimationStart;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FActionAnimationStruct AnimationCharge;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<FActionAnimationStruct> AnimationHits;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FActionAnimationStruct AnimationEnd;
-};
-
-USTRUCT(BlueprintType)
-struct FActionStruct
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FString Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<int32> Directions;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 StaminaCost;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool CanBeDoneInGround;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool CanBeDoneInAir;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float WindowFrameTimeToContinue = 0.5f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool CanBeCharged;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TEnumAsByte<EMovementMode> HitMode;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<FActionCompleteAnimationStruct> ActionAnimation;
-};
 
 UCLASS()
 class RUNNGUNTEST_API ACharacterCommon : public ACharacter
@@ -228,9 +53,7 @@ public:
 		float CrouchingSpeed = 0.5f;
 
 	// Attacking Data
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bIsInHitAttackFrames = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 		bool CurrentAttackHasHitObjective = false;
 	UPROPERTY()
 		int8 nAttackNumber = 0;
@@ -246,7 +69,14 @@ public:
 		float nCurrentHitImpulseX = 0.f;
 	UPROPERTY()
 		float nCurrentHitImpulseZ = 0.f;
-
+	UPROPERTY()
+		bool bIsExecutingSpecialMove;
+	UPROPERTY()
+		int8 nCurrentAction = 0;
+	UPROPERTY()
+		int8 nCurrentActionHitAnimation = 0;
+	UPROPERTY()
+		int32 ComboCount = 0;
 
 	// Character Movement
 	UPROPERTY()
@@ -270,24 +100,7 @@ public:
 	UPROPERTY()
 		FVector ActionFinalLocation;
 
-	// Animation Times
-	UPROPERTY()
-		float AnimationAttackCompleteTimeStop;
-	UPROPERTY()
-		float AnimationFlipbookTimeStop;
-	UPROPERTY()
-		float AnimationOtherTimeStop;
-	UPROPERTY()
-		FVector CurrentTraceHit;
-
-	// Special Moves
-	UPROPERTY()
-		float AnimationActionCurrentTimeStart;
-	UPROPERTY()
-		float AnimationActionCurrentTimeStop;
-	UPROPERTY()
-		float AnimationActionCompleteTimeStop;
-	// ------------------ new version
+	// Animation System
 	UPROPERTY()
 		int32 AnimationActionCurrentFrame;
 	UPROPERTY()
@@ -298,26 +111,28 @@ public:
 		int32 CurrentAnimationTotalFrames;
 	UPROPERTY()
 		bool bAnimationActionCompleteHasEnded;
-	// ------------------
 	UPROPERTY()
-		bool bIsExecutingSpecialMove;
+		TArray<FActionAnimationsFlagsStruct> ActionsAnimationsFlags;
 	UPROPERTY()
-		int8 nCurrentAction = 0;
+		int32 nCurrentActionAnimation = 0;
 	UPROPERTY()
-		int8 nCurrentActionHitAnimation = 0;
+		float nCurrentAnimationInterpolationSpeed = 0.f;
 
+	// Collision System
 	UPROPERTY()
-		int32 ComboCount = 0;
+		FVector CurrentTraceHit = FVector::ZeroVector;
+
 
 	// HUD
 	UPROPERTY()
 		AGameHUD* GameHUD;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+	// States
+	UPROPERTY()
 		EAnimationState AnimationState = EAnimationState::AnimIdle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+	UPROPERTY()
 		ECurrentAnimationState CurrentAnimationState = ECurrentAnimationState::CurrentAnimationStart;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+	UPROPERTY()
 		EActionState ActionState = EActionState::ActionIdle;
 
 	// Inherited Components
@@ -346,9 +161,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* EffectAnimation;
 
+	// Animations Objects
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<AActor*> ActorsToIgnore;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> AttackMoves;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
@@ -365,25 +180,42 @@ public:
 	UPROPERTY()
 		TArray<FActionStruct> Actions;
 
-	// Animation Flags
-	UPROPERTY()
-		TArray<FActionAnimationsFlagsStruct> ActionsAnimationsFlags;
-	UPROPERTY()
-		int32 nCurrentActionAnimation = 0;
-	UPROPERTY()
-		float nCurrentAnimationInterpolationSpeed = 0.f;
 
+	// Getters / Setters
 	UFUNCTION()
 		virtual void SetCanMove(bool State);
-	UFUNCTION()
-		bool CanMove();
-
 
 	UFUNCTION()
-		void ControlCharacterRotation();
+		virtual bool GetCanMove();
 
 	UFUNCTION()
-		virtual void BindDataHUD();
+		virtual void SetLastActionTime(float Time);
+
+	UFUNCTION()
+		virtual float GetLastActionTime();
+
+	UFUNCTION()
+		virtual void SetAnimationState(EAnimationState State);
+
+	UFUNCTION()
+		virtual float GetCurrentTime();
+
+	UFUNCTION()
+		virtual void SetAnimationBehaviour(FActionAnimationStruct AnimationStruct);
+
+	UFUNCTION()
+		virtual void SetActionAnimationIsFinished(bool IsFinished);
+
+	UFUNCTION()
+		virtual bool GetActionAnimationIsFinished();
+
+	UFUNCTION()
+		virtual void SetActionState(EActionState State);
+
+
+	// Handling
+	UFUNCTION()
+		virtual void DoAttack();
 
 	UFUNCTION()
 		virtual void HandleAttack();
@@ -397,6 +229,7 @@ public:
 	UFUNCTION()
 		virtual void PrepareProjectile(FActionAnimationStruct CurrentAnimation);
 
+	// Resetters
 	UFUNCTION()
 		virtual void ResetAttackCombo();
 
@@ -412,11 +245,7 @@ public:
 	UFUNCTION()
 		virtual void ResetDamage();
 
-	UFUNCTION()
-		virtual void DoAttack();
-
-
-	// Other stuff
+	// Animations Methods
 	UFUNCTION()
 		virtual void UpdateAnimations();
 
@@ -430,13 +259,23 @@ public:
 		virtual void ResetActionAnimationFlags();
 
 	UFUNCTION()
-		virtual void SetAnimationState(EAnimationState State);
+		virtual void PrepareAnimation();
 
+	UFUNCTION()
+		virtual void ControlAnimation();
+
+	UFUNCTION()
+		virtual void ApplyCurrentAnimation(FActionStruct Action, TArray<FActionAnimationFlagsStruct>& AnimationsFlags);
+
+	UFUNCTION()
+		virtual void ApplyEffectsAnimation(FActionAnimationStruct Action);
+
+	UFUNCTION()
+		virtual void RemoveEffectsAnimation();
+
+	// Character System
 	UFUNCTION()
 		virtual void ConsumeStamina(float Value);
-
-	UFUNCTION()
-		virtual float GetCurrentTime();
 
 	UFUNCTION(BlueprintCallable)
 		virtual void SetDamage(float Value);
@@ -456,29 +295,15 @@ public:
 	UFUNCTION()
 		virtual void ApplyHitCollide(FActionAnimationStruct CurrentAction);
 
+	// Utils
 	UFUNCTION()
-		virtual void PrepareAnimation();
+		void ControlCharacterRotation();
 
 	UFUNCTION()
-		virtual void ControlAnimation();
-
-	UFUNCTION()
-		virtual void ApplyCurrentAnimation(FActionStruct Action, TArray<FActionAnimationFlagsStruct>& AnimationsFlags);
-
-	UFUNCTION()
-		virtual void ApplyEffectsAnimation(FActionAnimationStruct Action);
-
-	UFUNCTION()
-		virtual void RemoveEffectsAnimation();
-
-	UFUNCTION()
-		virtual void SetAnimationBehaviour(FActionAnimationStruct AnimationStruct);
+		virtual void BindDataHUD();
 
 	UFUNCTION()
 		virtual void NotifyComboToHUD();
-
-	UFUNCTION()
-		virtual void SetActionState(EActionState State);
 
 	UFUNCTION()
 		virtual float GetFacingX(float Impulse);

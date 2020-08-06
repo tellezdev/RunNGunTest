@@ -42,16 +42,13 @@ public:
 
 
 	// Movement related
-	void AttackStart();
 
 	UFUNCTION()
 		void FacePlayer();
-
-	//void ApplyHitCollide(TArray<FComboAttackStruct> Combo);
-
-	void UpdateAnimations();
-
-	void ControlCharacterAnimations(float characterMovementSpeed);
+	UFUNCTION()
+		void AttackStart();
+	UFUNCTION()
+		void HandleDead();
 
 	void SetDamage(float Value);
 

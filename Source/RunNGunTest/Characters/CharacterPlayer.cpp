@@ -55,7 +55,8 @@ void ACharacterPlayer::Tick(float DeltaTime)
 	}
 
 	// User stops doing combo
-	if (nLastActionTime > 0.f && nLastActionTime + MaxComboTime < GetCurrentTime())
+	if (GetLastActionTime() > 0.f &&
+		GetLastActionTime() + MaxComboTime < GetCurrentTime())
 	{
 		NotifyComboToHUD();
 		ResetAttackCombo();
@@ -90,7 +91,7 @@ void ACharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void ACharacterPlayer::HandleDirections()
 {
 	float MovementSpeed = 0.f;
-	if (CanMove())
+	if (GetCanMove())
 	{
 		if (bIsLeft && bIsDown)
 		{
@@ -184,7 +185,7 @@ void ACharacterPlayer::RightDirectionStop()
 void ACharacterPlayer::DownDirectionStart()
 {
 	bIsDown = true;
-	if (CanMove())
+	if (GetCanMove())
 	{
 		SetActionState(EActionState::ActionDucking);
 	}
@@ -192,7 +193,7 @@ void ACharacterPlayer::DownDirectionStart()
 
 void ACharacterPlayer::DownDirectionStop()
 {
-	if (CanMove())
+	if (GetCanMove())
 	{
 		SetActionState(EActionState::ActionIdle);
 	}
@@ -214,7 +215,7 @@ void ACharacterPlayer::UpDirectionStop()
 // Triggers
 void ACharacterPlayer::JumpStart()
 {
-	if (CanMove())
+	if (GetCanMove())
 	{
 		bPressedJump = true;
 		SetActionState(EActionState::ActionIdle);
@@ -230,7 +231,7 @@ void ACharacterPlayer::JumpStop()
 
 void ACharacterPlayer::AttackStart()
 {
-	if (CanMove())
+	if (GetCanMove())
 	{
 		HandleBuffer(KeyInput::Attack);
 		AttackKeyPressedTimeStart = GetCurrentTime();

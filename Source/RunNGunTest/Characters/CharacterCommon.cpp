@@ -623,6 +623,7 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 			ApplyEffectsAnimation(CompleteAction.AnimationCharge);
 
 			SetAnimationBehaviour(CompleteAction.AnimationCharge);
+			CurrentFlipbook->SetLooping(true);
 		}
 		else
 		{
@@ -644,20 +645,7 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 		else
 		{
 			AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation] = true;
-			//AnimationActionCompleteTimeStop += CurrentFlipbook->GetFlipbookLength();
 			PrepareProjectile(CompleteAction.AnimationHits[nCurrentActionHitAnimation]);
-
-			//if (CompleteAction.AnimationHits[nCurrentActionHitAnimation].IsProjectile)
-			//{
-			//	FTimerDelegate TimerDelegate;
-			//	FTimerHandle TimerHandle;
-
-			//	//Binding the function with specific variables
-			//	TimerDelegate.BindUFunction(this, FName("HandleProjectile"), Action.ActionAnimation[nCurrentActionAnimation].AnimationHits[nCurrentActionHitAnimation].GenericProjectile);
-			//	//Calling MyUsefulFunction after 5 seconds without looping
-			//	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.1f, false);
-
-			//}
 
 			if (nCurrentActionHitAnimation < AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() - 1)
 			{

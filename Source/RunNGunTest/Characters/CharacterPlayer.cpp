@@ -232,14 +232,35 @@ void ACharacterPlayer::AttackStart()
 {
 	if (CanMove())
 	{
-		DoAttack();
 		HandleBuffer(KeyInput::Attack);
+		AttackKeyPressedTimeStart = GetCurrentTime();
+		bIsChargingup = true;
+		TArray<int32> MatchingActions;
+		for (int i = 0; i < SpecialMoves.Num(); ++i)
+		{
+			if (InputBuffer.IsMatchingDirections(SpecialMoves[i].Directions))
+			{
+				MatchingActions.Add(i);
+			}
+		}
+		if (MatchingActions.Num() > 0)
+		{
+			nCurrentAction = MatchingActions[MatchingActions.Num() - 1];
+			SetActionState(EActionState::ActionSpecialMove);
+			HandleSpecialMoves();
+		}
+		else
+		{
+			DoAttack();
+		}
+
 	}
 }
 
 void ACharacterPlayer::AttackStop()
 {
-	AttackKeyPressedTimeStop = GetCurrentTime(); // Not used for now
+	AttackKeyPressedTimeStop = GetCurrentTime();
+	bIsChargingup = false;
 }
 
 void ACharacterPlayer::SpecialStart()

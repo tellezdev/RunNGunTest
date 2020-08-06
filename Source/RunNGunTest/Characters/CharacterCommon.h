@@ -346,20 +346,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		UPaperFlipbook* EffectAnimation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<AActor*> ActorsToIgnore;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> AttackMoves;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> JumpAttackMoves;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> SpecialMoves;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> NoStaminaMoves;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> ChargingStaminaAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations Moves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> DamageAnimations;
 
 	UPROPERTY()

@@ -140,6 +140,12 @@ public:
 		UArrowComponent* CharacterArrowComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UPaperFlipbookComponent* CurrentFlipbook;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		UPaperFlipbookComponent* DamageFlipbook;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		UPaperFlipbookComponent* HitFlipbook;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		UPaperFlipbookComponent* WorldSpaceFlipbook;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UPaperFlipbookComponent* Effect1Flipbook;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -148,18 +154,16 @@ public:
 		UPaperFlipbookComponent* Effect3Flipbook;
 
 	// Flip books
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
-		UPaperFlipbook* IdleAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
-		UPaperFlipbook* WalkingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
-		UPaperFlipbook* JumpingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
-		UPaperFlipbook* JumpingForwardAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
-		UPaperFlipbook* DuckingAnimation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
-		UPaperFlipbook* EffectAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Animations")
+		FAnimationStruct IdleAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Animations")
+		FAnimationStruct WalkingAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Animations")
+		FAnimationStruct JumpingAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Animations")
+		FAnimationStruct JumpingForwardAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Animations")
+		FAnimationStruct DuckingAnimation;
 
 	// Animations Objects
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
@@ -272,6 +276,9 @@ public:
 
 	UFUNCTION()
 		virtual void RemoveEffectsAnimation();
+
+	UFUNCTION()
+		virtual void SetFlipbooks(FAnimationStruct AnimationStruct);
 
 	// Character System
 	UFUNCTION()

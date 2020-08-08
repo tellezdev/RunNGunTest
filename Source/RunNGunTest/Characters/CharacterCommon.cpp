@@ -21,10 +21,20 @@ ACharacterCommon::ACharacterCommon()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Character flipbook
 	CurrentFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("CurrentFlipbook");
 	CurrentFlipbook->SetupAttachment(GetCapsuleComponent());
 	CurrentFlipbook->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
+	// Collision flipbooks
+	DamageFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("DamageFlipbook");
+	DamageFlipbook->SetupAttachment(CurrentFlipbook);
+	HitFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("HitFlipbook");
+	HitFlipbook->SetupAttachment(CurrentFlipbook);
+	WorldSpaceFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("WorldSpaceFlipbook");
+	WorldSpaceFlipbook->SetupAttachment(CurrentFlipbook);
+
+	// Effects flipbooks
 	Effect1Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect1Flipbook");
 	Effect1Flipbook->SetupAttachment(CurrentFlipbook);
 
@@ -85,7 +95,6 @@ void ACharacterCommon::Tick(float DeltaTime)
 			}
 			break;
 		case EActionState::ActionGettingUp:
-			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, FString::Printf(TEXT("Se acaba getting up")));
 			SetActionState(EActionState::ActionIdle);
 			ResetActionAnimationFlags();
 			break;
@@ -308,19 +317,19 @@ void ACharacterCommon::UpdateAnimations()
 	switch (AnimationState)
 	{
 	case EAnimationState::AnimIdle:
-		CurrentFlipbook->SetFlipbook(IdleAnimation);
+		SetFlipbooks(IdleAnimation);
 		break;
 	case EAnimationState::AnimWalking:
-		CurrentFlipbook->SetFlipbook(WalkingAnimation);
+		SetFlipbooks(WalkingAnimation);
 		break;
 	case EAnimationState::AnimJumping:
-		CurrentFlipbook->SetFlipbook(JumpingAnimation);
+		SetFlipbooks(JumpingAnimation);
 		break;
 	case EAnimationState::AnimJumpingForward:
-		CurrentFlipbook->SetFlipbook(JumpingForwardAnimation);
+		SetFlipbooks(JumpingForwardAnimation);
 		break;
 	case EAnimationState::AnimDucking:
-		CurrentFlipbook->SetFlipbook(DuckingAnimation);
+		SetFlipbooks(DuckingAnimation);
 		break;
 	case EAnimationState::AnimSpecialMove:
 		break;
@@ -338,7 +347,7 @@ void ACharacterCommon::UpdateAnimations()
 		ControlAnimation();
 		break;
 	default:
-		CurrentFlipbook->SetFlipbook(IdleAnimation);
+		SetFlipbooks(IdleAnimation);
 		break;
 	}
 }
@@ -504,7 +513,7 @@ void ACharacterCommon::DrainStamina()
 }
 
 void ACharacterCommon::ApplyHitCollide(FActionAnimationStruct CurrentAction)
-{
+{// A POR ESTO
 	FVector Hitbox = FaceElement(CurrentAction.HitBoxPosition);
 	// Hit box will grow to detect collision
 	CurrentTraceHit = FVector(GetActorLocation().X + Hitbox.X, GetActorLocation().Y + Hitbox.Y, GetActorLocation().Z + Hitbox.Z);
@@ -624,7 +633,7 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 	case ECurrentAnimationState::CurrentAnimationCharging:
 		if (bIsChargingup)
 		{
-			AnimationActionLastFrame += Action.ActionAnimation[nCurrentActionAnimation].AnimationCharge.Animation->GetNumFrames();
+			AnimationActionLastFrame += Action.ActionAnimation[nCurrentActionAnimation].AnimationCharge.Animation.Animation->GetNumFrames();
 			RemoveEffectsAnimation();
 			ApplyEffectsAnimation(CompleteAction.AnimationCharge);
 
@@ -683,22 +692,22 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 
 void ACharacterCommon::ApplyEffectsAnimation(FActionAnimationStruct Action)
 {
-	if (Action.AnimationEffects.AnimationEffect1 != nullptr)
+	if (Action.Animation.AnimationEffect1 != nullptr)
 	{
-		Effect1Flipbook->SetFlipbook(Action.AnimationEffects.AnimationEffect1);
-		Effect1Flipbook->SetRelativeLocation(Action.AnimationEffects.Effect1Position);
+		Effect1Flipbook->SetFlipbook(Action.Animation.AnimationEffect1);
+		Effect1Flipbook->SetRelativeLocation(Action.Animation.Effect1Position);
 		Effect1Flipbook->SetVisibility(true);
 	}
-	if (Action.AnimationEffects.AnimationEffect2 != nullptr)
+	if (Action.Animation.AnimationEffect2 != nullptr)
 	{
-		Effect2Flipbook->SetFlipbook(Action.AnimationEffects.AnimationEffect2);
-		Effect2Flipbook->SetRelativeLocation(Action.AnimationEffects.Effect2Position);
+		Effect2Flipbook->SetFlipbook(Action.Animation.AnimationEffect2);
+		Effect2Flipbook->SetRelativeLocation(Action.Animation.Effect2Position);
 		Effect2Flipbook->SetVisibility(true);
 	}
-	if (Action.AnimationEffects.AnimationEffect3 != nullptr)
+	if (Action.Animation.AnimationEffect3 != nullptr)
 	{
-		Effect3Flipbook->SetFlipbook(Action.AnimationEffects.AnimationEffect3);
-		Effect3Flipbook->SetRelativeLocation(Action.AnimationEffects.Effect3Position);
+		Effect3Flipbook->SetFlipbook(Action.Animation.AnimationEffect3);
+		Effect3Flipbook->SetRelativeLocation(Action.Animation.Effect3Position);
 		Effect3Flipbook->SetVisibility(true);
 	}
 }
@@ -710,22 +719,47 @@ void ACharacterCommon::RemoveEffectsAnimation()
 	Effect3Flipbook->SetVisibility(false);
 }
 
-void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct AnimationStruct)
+void ACharacterCommon::SetFlipbooks(FAnimationStruct AnimationStruct)
 {
-	SetCanMove(AnimationStruct.CanMove);
 	CurrentFlipbook->SetFlipbook(AnimationStruct.Animation);
+	if (AnimationStruct.AnimationDamage != nullptr)
+	{
+		DamageFlipbook->SetFlipbook(AnimationStruct.AnimationDamage);
+	}
+	if (AnimationStruct.AnimationHit != nullptr)
+	{
+		HitFlipbook->SetFlipbook(AnimationStruct.AnimationHit);
+	}
+	if (AnimationStruct.AnimationWorldSpace != nullptr)
+	{
+		WorldSpaceFlipbook->SetFlipbook(AnimationStruct.AnimationWorldSpace);
+	}
+}
+
+void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct ActionAnimationStruct)
+{
+	SetCanMove(ActionAnimationStruct.CanMove);
+	CurrentFlipbook->SetFlipbook(ActionAnimationStruct.Animation.Animation);
+	SetFlipbooks(ActionAnimationStruct.Animation);
 	CurrentFlipbook->SetLooping(false);
 	CurrentFlipbook->Play();
+	DamageFlipbook->SetLooping(false);
+	DamageFlipbook->Play();
+	HitFlipbook->SetLooping(false);
+	HitFlipbook->Play();
+	WorldSpaceFlipbook->SetLooping(false);
+	WorldSpaceFlipbook->Play();
+
 	AnimationActionLastFrame += CurrentFlipbook->GetFlipbookLengthInFrames();
 
-	nCurrentAnimationInterpolationSpeed = AnimationStruct.InterpolationSpeed;
-	if (AnimationStruct.ImpulseToOwner != FVector::ZeroVector)
+	nCurrentAnimationInterpolationSpeed = ActionAnimationStruct.InterpolationSpeed;
+	if (ActionAnimationStruct.ImpulseToOwner != FVector::ZeroVector)
 	{
 		GetCharacterMovement()->SetMovementMode(Actions[nCurrentAction].HitMode);
-		GetCharacterMovement()->Velocity.Z = FMath::Max(0.f, AnimationStruct.ImpulseToOwner.Z * 100.f);
-		GetCharacterMovement()->Velocity.X = GetFacingX(AnimationStruct.ImpulseToOwner.X);
+		GetCharacterMovement()->Velocity.Z = FMath::Max(0.f, ActionAnimationStruct.ImpulseToOwner.Z * 100.f);
+		GetCharacterMovement()->Velocity.X = GetFacingX(ActionAnimationStruct.ImpulseToOwner.X);
 	}
-	ApplyHitCollide(AnimationStruct);
+	ApplyHitCollide(ActionAnimationStruct);
 }
 
 void ACharacterCommon::SetActionAnimationIsFinished(bool IsFinished)

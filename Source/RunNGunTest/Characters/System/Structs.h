@@ -78,11 +78,20 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FAnimationEffectsStruct
+struct FAnimationStruct
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* Animation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AnimationDamage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AnimationHit;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook* AnimationWorldSpace;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* AnimationEffect1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -104,9 +113,7 @@ struct FActionAnimationStruct
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* Animation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FAnimationEffectsStruct AnimationEffects;
+		FAnimationStruct Animation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DamageValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

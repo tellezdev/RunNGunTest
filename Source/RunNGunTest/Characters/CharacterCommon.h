@@ -8,6 +8,7 @@
 #include "PaperSprite.h"
 #include "PaperCharacter.h"
 #include "PaperSpriteComponent.h"
+#include "../System/CollisionSystem.h"
 #include "../HUD/GameHUD.h"
 #include "CharacterCommon.generated.h"
 
@@ -27,6 +28,9 @@ protected:
 public:
 	// Sets default values for this character's properties
 	ACharacterCommon();
+
+	UPROPERTY()
+		UCollisionSystem* CollisionSystem;
 
 	// Basic Character Data
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Data")
@@ -63,8 +67,6 @@ public:
 		bool bIsAttackFinished = true;
 	UPROPERTY()
 		float nLastActionTime = 0.f;
-	UPROPERTY()
-		int32 nCurrentAnimationTotalFrames = -1;
 	UPROPERTY()
 		float nCurrentHitImpulseX = 0.f;
 	UPROPERTY()
@@ -108,8 +110,6 @@ public:
 	UPROPERTY()
 		int32 AnimationActionCompleteFramesNumber;
 	UPROPERTY()
-		int32 CurrentAnimationTotalFrames;
-	UPROPERTY()
 		bool bAnimationActionCompleteHasEnded;
 	UPROPERTY()
 		TArray<FActionAnimationsFlagsStruct> ActionsAnimationsFlags;
@@ -117,6 +117,8 @@ public:
 		int32 nCurrentActionAnimation = 0;
 	UPROPERTY()
 		float nCurrentAnimationInterpolationSpeed = 0.f;
+	UPROPERTY()
+		FActionAnimationStruct CurrentAction;
 
 	// Collision System
 	UPROPERTY()
@@ -141,11 +143,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UPaperFlipbookComponent* CurrentFlipbook;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		UPaperFlipbookComponent* DamageFlipbook;
+		UPaperSpriteComponent* DamageSprite;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		UPaperFlipbookComponent* HitFlipbook;
+		UPaperSpriteComponent* HitSprite;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		UPaperFlipbookComponent* WorldSpaceFlipbook;
+		UPaperSpriteComponent* WorldSpaceSprite;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UPaperFlipbookComponent* Effect1Flipbook;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -299,9 +301,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		virtual void DrainStamina();
 
-	UFUNCTION()
-		virtual void ApplyHitCollide(FActionAnimationStruct CurrentAction);
-
 	// Utils
 	UFUNCTION()
 		void ControlCharacterRotation();
@@ -323,4 +322,7 @@ public:
 
 	UFUNCTION()
 		virtual TArray<AActor*> GetActorsWithOtherTag(FName Tag);
+
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

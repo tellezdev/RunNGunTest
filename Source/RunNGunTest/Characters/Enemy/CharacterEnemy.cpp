@@ -17,6 +17,7 @@ ACharacterEnemy::ACharacterEnemy()
 	VisibilityArea->InitSphereRadius(300.f);
 	VisibilityArea->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
+	// DEPRECATED
 	HitArea = CreateDefaultSubobject<USphereComponent>(TEXT("EnemyHitCollision"));
 	HitArea->InitSphereRadius(45.f);
 	HitArea->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -63,21 +64,24 @@ void ACharacterEnemy::Tick(float DeltaTime)
 		// Depending on distance from player, attack, follow him or wait
 		float DistanceBetweenActors = GetActorLocation().Distance(GetActorLocation(), Player->GetActorLocation());
 
-		if (DistanceBetweenActors > 60.f)
+		if (bCanAttack)
 		{
-			FacePlayer();
-			AddMovementInput(GetPlayerPosition(), 1.f);
-			ControlCharacterAnimations(1.f);
-		}
-		else
-		{
-			ControlCharacterAnimations(0.f);
-		}
+			if (DistanceBetweenActors > 60.f)
+			{
+				FacePlayer();
+				AddMovementInput(GetPlayerPosition(), 1.f);
+				ControlCharacterAnimations(1.f);
+			}
+			else
+			{
+				ControlCharacterAnimations(0.f);
+			}
 
-		if (HitArea->IsOverlappingActor(Player))
-		{
-			FacePlayer();
-			AttackStart();
+			if (HitArea->IsOverlappingActor(Player))
+			{
+				FacePlayer();
+				AttackStart();
+			}
 		}
 	}
 	else

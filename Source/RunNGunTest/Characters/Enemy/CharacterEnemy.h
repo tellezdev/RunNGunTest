@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Times")
 		float TimeBetweenAttacks = 2.f;
 
+	UPROPERTY()
+		bool bCanAttack = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Collision Areas")
 		USphereComponent* VisibilityArea;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Collision Areas")

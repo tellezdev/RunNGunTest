@@ -86,11 +86,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* Animation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* AnimationDamage;
+		UPaperSprite* SpriteDamage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* AnimationHit;
+		UPaperSprite* SpriteHit;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* AnimationWorldSpace;
+		UPaperSprite* SpriteWorldSpace;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* AnimationEffect1;

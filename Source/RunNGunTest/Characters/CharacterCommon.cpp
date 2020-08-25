@@ -20,6 +20,7 @@ ACharacterCommon::ACharacterCommon()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	CollisionSystem = CreateDefaultSubobject<UCollisionSystem>("CollisionSystem");
 
 	// Character flipbook
 	CurrentFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("CurrentFlipbook");
@@ -27,12 +28,17 @@ ACharacterCommon::ACharacterCommon()
 	CurrentFlipbook->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	// Collision flipbooks
-	DamageFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("DamageFlipbook");
-	DamageFlipbook->SetupAttachment(CurrentFlipbook);
-	HitFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("HitFlipbook");
-	HitFlipbook->SetupAttachment(CurrentFlipbook);
-	WorldSpaceFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("WorldSpaceFlipbook");
-	WorldSpaceFlipbook->SetupAttachment(CurrentFlipbook);
+	DamageSprite = CreateDefaultSubobject<UPaperSpriteComponent>("DamageSprite");
+	DamageSprite->SetGenerateOverlapEvents(true);
+	DamageSprite->SetupAttachment(CurrentFlipbook);
+
+	HitSprite = CreateDefaultSubobject<UPaperSpriteComponent>("HitSprite");
+	HitSprite->SetGenerateOverlapEvents(true);
+	HitSprite->SetupAttachment(CurrentFlipbook);
+	HitSprite->OnComponentBeginOverlap.AddDynamic(this, &ACharacterCommon::OnOverlapBegin);
+
+	WorldSpaceSprite = CreateDefaultSubobject<UPaperSpriteComponent>("WorldSpaceSprite");
+	WorldSpaceSprite->SetupAttachment(CurrentFlipbook);
 
 	// Effects flipbooks
 	Effect1Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect1Flipbook");
@@ -43,6 +49,7 @@ ACharacterCommon::ACharacterCommon()
 
 	Effect3Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect3Flipbook");
 	Effect3Flipbook->SetupAttachment(CurrentFlipbook);
+
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +66,15 @@ void ACharacterCommon::BeginPlay()
 	ResetActionAnimationFlags();
 	SetCanMove(true);
 
+	DamageSprite->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	DamageSprite->ComponentTags.Add("DamageSprite");
+
+	HitSprite->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	HitSprite->ComponentTags.Add("HitSprite");
+
+	WorldSpaceSprite->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	WorldSpaceSprite->SetGenerateOverlapEvents(false);
+	WorldSpaceSprite->ComponentTags.Add("WorldSpaceSprite");
 
 	ActorsToIgnore.Append(GetActorsWithOtherTag("Scenario"));
 }
@@ -242,15 +258,12 @@ void ACharacterCommon::ResetAttackCombo()
 	nCurrentAction = 0;
 	SetLastActionTime(0.f);
 	bIsFirstAttack = true;
-	CurrentAttackHasHitObjective = false;
 	ResetActionAnimationFlags();
 }
 
 void ACharacterCommon::ResetAttack()
 {
 	bIsAttackFinished = true;
-	nCurrentAnimationTotalFrames = -1;
-	CurrentAttackHasHitObjective = false;
 	SetCanMove(true);
 }
 
@@ -261,8 +274,6 @@ void ACharacterCommon::ResetSpecialMove()
 	nCurrentActionHitAnimation = 0;
 	ActionsAnimationsFlags.Empty();
 	bIsExecutingSpecialMove = false;
-	nCurrentAnimationTotalFrames = -1;
-	CurrentAttackHasHitObjective = false;
 	SetCanMove(true);
 	ActionFinalLocation = FVector::ZeroVector;
 }
@@ -273,14 +284,12 @@ void ACharacterCommon::ResetChargingUp()
 	nCurrentActionAnimation = 0;
 	nCurrentActionHitAnimation = 0;
 	ActionsAnimationsFlags.Empty();
-	nCurrentAnimationTotalFrames = -1;
 	SetCanMove(true);
 }
 
 void ACharacterCommon::ResetDamage()
 {
 	nCurrentAction = 0;
-	nCurrentAnimationTotalFrames = -1;
 	SetCanMove(true);
 	ActionFinalLocation = FVector::ZeroVector;
 }
@@ -486,7 +495,7 @@ void ACharacterCommon::SetDamage(float Value)
 	ControlAnimation();
 
 	Life -= Value;
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, FString::Printf(TEXT("Life: %f"), Life));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, FString::Printf(TEXT("Life: %f"), Life));
 }
 
 void ACharacterCommon::HealLife(float Value)
@@ -510,45 +519,6 @@ void ACharacterCommon::DrainLife()
 
 void ACharacterCommon::DrainStamina()
 {
-}
-
-void ACharacterCommon::ApplyHitCollide(FActionAnimationStruct CurrentAction)
-{// A POR ESTO
-	FVector Hitbox = FaceElement(CurrentAction.HitBoxPosition);
-	// Hit box will grow to detect collision
-	CurrentTraceHit = FVector(GetActorLocation().X + Hitbox.X, GetActorLocation().Y + Hitbox.Y, GetActorLocation().Z + Hitbox.Z);
-
-	// Tracing collision
-	TArray<FHitResult>* HitResults = new TArray<FHitResult>();
-	if (UKismetSystemLibrary::BoxTraceMulti(GetWorld(), CurrentTraceHit, CurrentTraceHit, CurrentAction.HitBoxSize, GetActorRotation(), ETraceTypeQuery::TraceTypeQuery2, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, *HitResults, true, FLinearColor::Red, FLinearColor::Green, 0.5f))
-	{
-		for (const FHitResult& Result : *HitResults)
-		{
-			if (Result.Actor != nullptr && Result.Actor->ActorHasTag("Damageable") && !CurrentAttackHasHitObjective)
-			{
-				ACharacterCommon* ActorReceiver = Cast<ACharacterCommon>(Result.Actor);
-				if (CurrentAction.ImpulseToReceiver != FVector::ZeroVector)
-				{
-					EMovementMode ModeToReceiver;
-					if (Actions[nCurrentAction].HitMode == EMovementMode::MOVE_Flying)
-					{
-						ModeToReceiver = MOVE_Falling;
-					}
-					else
-					{
-						ModeToReceiver = Actions[nCurrentAction].HitMode;
-					}
-					ActorReceiver->GetCharacterMovement()->SetMovementMode(ModeToReceiver);
-					ActorReceiver->GetCharacterMovement()->Velocity.Z = FMath::Max(0.f, CurrentAction.ImpulseToReceiver.Z * 100.f);
-					ActorReceiver->GetCharacterMovement()->Velocity.X = GetFacingWhenHit(CurrentAction.ImpulseToReceiver.X, GetActorLocation(), ActorReceiver->GetActorLocation());
-				}
-				ActorReceiver->SetDamage(CurrentAction.DamageValue);
-				CurrentAttackHasHitObjective = true;
-				++ComboCount;
-			}
-		}
-		CurrentAttackHasHitObjective = false;
-	}
 }
 
 void ACharacterCommon::ControlAnimation()
@@ -586,27 +556,27 @@ void ACharacterCommon::PrepareAnimation()
 			{
 				CurrentAnimationState = ECurrentAnimationState::CurrentAnimationStart;
 				SetActionAnimationIsFinished(false);
-				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Start"));
+				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Start"));
 			}
 			else if (AnimationsFlags[nCurrentActionAnimation].bIsCompleted && !AnimationsFlags[nCurrentActionAnimation].bIsActionEnd)
 			{
 				CurrentAnimationState = ECurrentAnimationState::CurrentAnimationEnd;
-				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("End"));
+				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("End"));
 			}
 			else if (!AnimationsFlags[nCurrentActionAnimation].bIsActionCharge && Action.CanBeCharged)
 			{
 				CurrentAnimationState = ECurrentAnimationState::CurrentAnimationCharging;
-				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Charging"));
+				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Charging"));
 			}
 			else if (AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() > 0 &&
 					 !AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation])
 			{
 				CurrentAnimationState = ECurrentAnimationState::CurrentAnimationHit;
-				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Hit"));
+				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Hit"));
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, FString::Printf(TEXT("Total Frames: %i"), AnimationActionLastFrame));
+				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, FString::Printf(TEXT("Total Frames: %i"), AnimationActionLastFrame));
 				AnimationActionCurrentFrame = 0;
 				AnimationActionLastFrame = 0;
 				SetActionAnimationIsFinished(true);
@@ -647,7 +617,6 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 		break;
 
 	case ECurrentAnimationState::CurrentAnimationHit:
-		RemoveEffectsAnimation();
 		RemoveEffectsAnimation();
 		ApplyEffectsAnimation(CompleteAction.AnimationHits[nCurrentActionHitAnimation]);
 		SetAnimationBehaviour(CompleteAction.AnimationHits[nCurrentActionHitAnimation]);
@@ -722,33 +691,23 @@ void ACharacterCommon::RemoveEffectsAnimation()
 void ACharacterCommon::SetFlipbooks(FAnimationStruct AnimationStruct)
 {
 	CurrentFlipbook->SetFlipbook(AnimationStruct.Animation);
-	if (AnimationStruct.AnimationDamage != nullptr)
+
+	DamageSprite->SetSprite(AnimationStruct.SpriteDamage);
+	HitSprite->SetSprite(AnimationStruct.SpriteHit);
+
+	// Always will be the same worldspace
+	if (AnimationStruct.SpriteWorldSpace != nullptr)
 	{
-		DamageFlipbook->SetFlipbook(AnimationStruct.AnimationDamage);
-	}
-	if (AnimationStruct.AnimationHit != nullptr)
-	{
-		HitFlipbook->SetFlipbook(AnimationStruct.AnimationHit);
-	}
-	if (AnimationStruct.AnimationWorldSpace != nullptr)
-	{
-		WorldSpaceFlipbook->SetFlipbook(AnimationStruct.AnimationWorldSpace);
+		WorldSpaceSprite->SetSprite(AnimationStruct.SpriteWorldSpace);
 	}
 }
 
 void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct ActionAnimationStruct)
 {
 	SetCanMove(ActionAnimationStruct.CanMove);
-	CurrentFlipbook->SetFlipbook(ActionAnimationStruct.Animation.Animation);
 	SetFlipbooks(ActionAnimationStruct.Animation);
 	CurrentFlipbook->SetLooping(false);
 	CurrentFlipbook->Play();
-	DamageFlipbook->SetLooping(false);
-	DamageFlipbook->Play();
-	HitFlipbook->SetLooping(false);
-	HitFlipbook->Play();
-	WorldSpaceFlipbook->SetLooping(false);
-	WorldSpaceFlipbook->Play();
 
 	AnimationActionLastFrame += CurrentFlipbook->GetFlipbookLengthInFrames();
 
@@ -759,7 +718,8 @@ void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct ActionAnimat
 		GetCharacterMovement()->Velocity.Z = FMath::Max(0.f, ActionAnimationStruct.ImpulseToOwner.Z * 100.f);
 		GetCharacterMovement()->Velocity.X = GetFacingX(ActionAnimationStruct.ImpulseToOwner.X);
 	}
-	ApplyHitCollide(ActionAnimationStruct);
+	CurrentAction = ActionAnimationStruct;
+	//ApplyHitCollide(ActionAnimationStruct);
 }
 
 void ACharacterCommon::SetActionAnimationIsFinished(bool IsFinished)
@@ -855,3 +815,29 @@ TArray<AActor*> ACharacterCommon::GetActorsWithOtherTag(FName Tag)
 	return Out;
 }
 
+void ACharacterCommon::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Filtering to get only hits to the other characters
+	if (this->GetName() != Other->GetName() && OtherComp->GetName() == DamageSprite->GetName())
+	{
+		ACharacterCommon* ActorReceiver = Cast<ACharacterCommon>(Other);
+		if (CurrentAction.ImpulseToReceiver != FVector::ZeroVector)
+		{
+			EMovementMode ModeToReceiver;
+			if (Actions[nCurrentAction].HitMode == EMovementMode::MOVE_Flying)
+			{
+				ModeToReceiver = MOVE_Falling;
+			}
+			else
+			{
+				ModeToReceiver = Actions[nCurrentAction].HitMode;
+			}
+			ActorReceiver->GetCharacterMovement()->SetMovementMode(ModeToReceiver);
+			ActorReceiver->GetCharacterMovement()->Velocity.Z = FMath::Max(0.f, CurrentAction.ImpulseToReceiver.Z * 100.f);
+			ActorReceiver->GetCharacterMovement()->Velocity.X = GetFacingWhenHit(CurrentAction.ImpulseToReceiver.X, GetActorLocation(), ActorReceiver->GetActorLocation());
+		}
+		ActorReceiver->SetDamage(CurrentAction.DamageValue);
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Damage: %f"), CurrentAction.DamageValue));
+		++ComboCount;
+	}
+}

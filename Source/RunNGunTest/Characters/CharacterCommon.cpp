@@ -49,7 +49,6 @@ ACharacterCommon::ACharacterCommon()
 
 	Effect3Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect3Flipbook");
 	Effect3Flipbook->SetupAttachment(CurrentFlipbook);
-
 }
 
 // Called when the game starts or when spawned
@@ -77,6 +76,10 @@ void ACharacterCommon::BeginPlay()
 	WorldSpaceSprite->ComponentTags.Add("WorldSpaceSprite");
 
 	ActorsToIgnore.Append(GetActorsWithOtherTag("Scenario"));
+
+	Effect1Flipbook->OnFinishedPlaying.AddDynamic(this, &ACharacterCommon::OnEffects1FlipbookFinishPlaying);
+	Effect2Flipbook->OnFinishedPlaying.AddDynamic(this, &ACharacterCommon::OnEffects2FlipbookFinishPlaying);
+	Effect3Flipbook->OnFinishedPlaying.AddDynamic(this, &ACharacterCommon::OnEffects3FlipbookFinishPlaying);
 }
 
 void ACharacterCommon::Tick(float DeltaTime)
@@ -85,13 +88,14 @@ void ACharacterCommon::Tick(float DeltaTime)
 
 	ControlCharacterRotation();
 
-	if (!GetActionAnimationIsFinished())
+	if (!IsActionAnimationFinished())
 	{
 		ControlAnimation();
 		SetLastActionTime(GetCurrentTime());
 	}
 	else
 	{
+		GetCharacterMovement()->GravityScale = 1.f;
 		switch (ActionState)
 		{
 		case EActionState::ActionIdle:
@@ -130,8 +134,7 @@ void ACharacterCommon::SetCanMove(bool State)
 {
 	bCanMove = State;
 }
-
-bool ACharacterCommon::GetCanMove()
+bool ACharacterCommon::CanMove()
 {
 	return bCanMove;
 }
@@ -140,7 +143,6 @@ void ACharacterCommon::SetLastActionTime(float Time)
 {
 	nLastActionTime = Time;
 }
-
 float ACharacterCommon::GetLastActionTime()
 {
 	return nLastActionTime;
@@ -150,7 +152,7 @@ void ACharacterCommon::ControlCharacterRotation()
 {
 	// Sets where the sprite has to face
 	float yaw = 0.0f;
-	if (!bIsMovingRight)
+	if (!IsFacingRight())
 	{
 		yaw = 180.0f;
 	}
@@ -164,19 +166,16 @@ void ACharacterCommon::BindDataHUD()
 
 void ACharacterCommon::HandleAttack()
 {
-	if (GetActionAnimationIsFinished())
+	if (IsActionAnimationFinished())
 	{
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
-			Actions = AttackMoves;
-			//SetCanMove(false);
+			Actions = GroundCombo;
 		}
 		else
 		{
-			Actions = JumpAttackMoves;
-			ResetAttackCombo();
+			Actions = AirCombo;
 			SetCanMove(true);
-			//InputBuffer.ClearBuffer();
 		}
 		SetActionAnimationFlags();
 
@@ -189,32 +188,27 @@ void ACharacterCommon::HandleAttack()
 
 void ACharacterCommon::HandleSpecialMoves()
 {
-	if (!bIsExecutingSpecialMove)
+	if (!IsExecutingSpecialMove())
 	{
-		bIsExecutingSpecialMove = true;
+		SetIsExecutingSpecialMove(true);
 		SetCanMove(false);
 		// Checking if there are enough stamina
-		int bIsEnoughStamina = SpecialMoves[nCurrentAction].StaminaCost <= Stamina;
-		if (bIsEnoughStamina)
+		SetHasStamina(SpecialMoves[nCurrentAction].StaminaCost <= Stamina);
+
+		if ((SpecialMoves[nCurrentAction].IsGroundAttack && GetCharacterMovement()->IsMovingOnGround())
+			|| (SpecialMoves[nCurrentAction].IsAirAttack && !GetCharacterMovement()->IsMovingOnGround()))
 		{
-			if ((SpecialMoves[nCurrentAction].CanBeDoneInGround && GetCharacterMovement()->IsMovingOnGround())
-				|| (SpecialMoves[nCurrentAction].CanBeDoneInAir && !GetCharacterMovement()->IsMovingOnGround()))
+			if (HasStamina())
 			{
 				ConsumeStamina(SpecialMoves[nCurrentAction].StaminaCost);
-				Actions = SpecialMoves;
-				SetActionAnimationFlags();
-				ControlAnimation();
 			}
-			else
-			{
-				//InputBuffer.ClearBuffer();
-			}
+			Actions = SpecialMoves;
+			SetActionAnimationFlags();
+			ControlAnimation();
 		}
 		else
 		{
-			Actions = NoStaminaMoves;
-			SetActionAnimationFlags();
-			ControlAnimation();
+			//InputBuffer.ClearBuffer();
 		}
 	}
 }
@@ -242,7 +236,7 @@ void ACharacterCommon::PrepareProjectile(FActionAnimationStruct CurrentAnimation
 		//Binding the function with specific variables
 		FVector ProjectilePosition = GetActorLocation() + FaceElement(CurrentAnimation.ProjectileStartPosition);
 		TimerDelegate.BindUFunction(this, FName("HandleProjectile"), CurrentAnimation.GenericProjectile, ProjectilePosition);
-		//Calling MyUsefulFunction after 5 seconds without looping
+		//Calling MyUsefulFunction after 0.1 seconds without looping
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.1f, false);
 	}
 }
@@ -273,7 +267,7 @@ void ACharacterCommon::ResetSpecialMove()
 	nCurrentActionAnimation = 0;
 	nCurrentActionHitAnimation = 0;
 	ActionsAnimationsFlags.Empty();
-	bIsExecutingSpecialMove = false;
+	SetIsExecutingSpecialMove(false);
 	SetCanMove(true);
 	ActionFinalLocation = FVector::ZeroVector;
 }
@@ -294,30 +288,66 @@ void ACharacterCommon::ResetDamage()
 	ActionFinalLocation = FVector::ZeroVector;
 }
 
+void ACharacterCommon::OnEffects1FlipbookFinishPlaying()
+{
+	Effect1Flipbook->SetVisibility(false);
+}
+void ACharacterCommon::OnEffects2FlipbookFinishPlaying()
+{
+	Effect2Flipbook->SetVisibility(false);
+}
+void ACharacterCommon::OnEffects3FlipbookFinishPlaying()
+{
+	Effect2Flipbook->SetVisibility(false);
+}
+
 void ACharacterCommon::DoAttack()
 {
 	SetActionState(EActionState::ActionAttacking);
-	if (bIsAttackFinished && GetActionAnimationIsFinished())
+	if (bIsAttackFinished && IsActionAnimationFinished())
 	{
 		bIsAttackFinished = false;
-		if (nCurrentAction < AttackMoves.Num() - 1)
+		if (GetCharacterMovement()->IsMovingOnGround())
 		{
-			if (!bIsFirstAttack)
+			if (nCurrentAction < GroundCombo.Num() - 1)
 			{
-				++nCurrentAction;
+				if (!bIsFirstAttack)
+				{
+					++nCurrentAction;
+				}
+				else
+				{
+					nCurrentAction = 0;
+				}
+				nCurrentActionAnimation = 0;
 			}
 			else
 			{
-				nCurrentAction = 0;
+				ResetAttackCombo();
 			}
-			nCurrentActionAnimation = 0;
 		}
 		else
 		{
-			ResetAttackCombo();
+			GetCharacterMovement()->Velocity.Set(0.f, 0.f, 0.f);
+			GetCharacterMovement()->GravityScale = 0.f;
+			if (nCurrentAction < AirCombo.Num() - 1)
+			{
+				if (!bIsFirstAttack)
+				{
+					++nCurrentAction;
+				}
+				else
+				{
+					nCurrentAction = 0;
+				}
+				nCurrentActionAnimation = 0;
+			}
+			else
+			{
+				ResetAttackCombo();
+			}
 		}
 		HandleAttack();
-		/*++ComboCount;*/
 	}
 }
 
@@ -438,14 +468,20 @@ void ACharacterCommon::SetActionAnimationFlags()
 	{
 		for (int i = 0; i != Actions.Num(); ++i)
 		{
+			TArray<FActionCompleteAnimationStruct> CompleteAnimation = Actions[i].ActionAnimation;
+			if (!HasStamina() && IsExecutingSpecialMove())
+			{
+				CompleteAnimation = Actions[i].NoStaminaAnimation;
+			}
+
 			FActionAnimationsFlagsStruct Action;
-			for (int j = 0; j != Actions[i].ActionAnimation.Num(); ++j)
+			for (int j = 0; j != CompleteAnimation.Num(); ++j)
 			{
 				FActionAnimationFlagsStruct Animations;
 				Animations.bIsCompleted = false;
 				Animations.bIsActionStart = false;
 				Animations.bIsActionEnd = false;
-				for (int k = 0; k != Actions[i].ActionAnimation[j].AnimationHits.Num(); ++k)
+				for (int k = 0; k != CompleteAnimation[j].AnimationHits.Num(); ++k)
 				{
 					Animations.bIsActionHits.Add(false);
 				}
@@ -463,7 +499,6 @@ void ACharacterCommon::ResetActionAnimationFlags()
 	AnimationActionCurrentFrame = 0;
 	AnimationActionCompleteFramesNumber = 0;
 	AnimationActionLastFrame = 0;
-	RemoveEffectsAnimation();
 	SetActionAnimationFlags();
 }
 
@@ -495,7 +530,6 @@ void ACharacterCommon::SetDamage(float Value)
 	ControlAnimation();
 
 	Life -= Value;
-	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, FString::Printf(TEXT("Life: %f"), Life));
 }
 
 void ACharacterCommon::HealLife(float Value)
@@ -536,12 +570,13 @@ void ACharacterCommon::PrepareAnimation()
 	if (Actions.Num() > 0 && Actions.Num() >= nCurrentAction + 1)
 	{
 		FActionStruct Action = Actions[nCurrentAction];
+
 		if (ActionsAnimationsFlags.Num() > 0)
 		{
 			TArray<FActionAnimationFlagsStruct>& AnimationsFlags = ActionsAnimationsFlags[nCurrentAction].Animations;
 
 			// Initial verifications
-			if (!Action.CanBeCharged || !bIsChargingup)
+			if (!Action.CanBeCharged || !IsChargingup())
 			{
 				AnimationsFlags[nCurrentActionAnimation].bIsActionCharge = true;
 			}
@@ -589,25 +624,28 @@ void ACharacterCommon::PrepareAnimation()
 
 void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActionAnimationFlagsStruct>& AnimationsFlags)
 {
-	FActionCompleteAnimationStruct& CompleteAction = Action.ActionAnimation[nCurrentActionAnimation];
+	FActionCompleteAnimationStruct& CompleteAnimation = Action.ActionAnimation[nCurrentActionAnimation];
+	if (!HasStamina() && IsExecutingSpecialMove())
+	{
+		CompleteAnimation = Action.NoStaminaAnimation[nCurrentActionAnimation];
+	}
+
 	switch (CurrentAnimationState)
 	{
 	case ECurrentAnimationState::CurrentAnimationStart:
-		SetAnimationBehaviour(CompleteAction.AnimationStart);
-		ApplyEffectsAnimation(CompleteAction.AnimationStart);
-		PrepareProjectile(CompleteAction.AnimationStart);
+		SetAnimationBehaviour(CompleteAnimation.AnimationStart);
+		ApplyEffectsAnimation(CompleteAnimation.AnimationStart);
+		PrepareProjectile(CompleteAnimation.AnimationStart);
 		AnimationsFlags[nCurrentActionAnimation].bIsActionStart = true;
 
 		break;
 
 	case ECurrentAnimationState::CurrentAnimationCharging:
-		if (bIsChargingup)
+		if (IsChargingup())
 		{
-			AnimationActionLastFrame += Action.ActionAnimation[nCurrentActionAnimation].AnimationCharge.Animation.Animation->GetNumFrames();
-			RemoveEffectsAnimation();
-			ApplyEffectsAnimation(CompleteAction.AnimationCharge);
-
-			SetAnimationBehaviour(CompleteAction.AnimationCharge);
+			AnimationActionLastFrame += CompleteAnimation.AnimationCharge.Animation.Animation->GetNumFrames();
+			ApplyEffectsAnimation(CompleteAnimation.AnimationCharge);
+			SetAnimationBehaviour(CompleteAnimation.AnimationCharge);
 			CurrentFlipbook->SetLooping(true);
 		}
 		else
@@ -617,37 +655,26 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 		break;
 
 	case ECurrentAnimationState::CurrentAnimationHit:
-		RemoveEffectsAnimation();
-		ApplyEffectsAnimation(CompleteAction.AnimationHits[nCurrentActionHitAnimation]);
-		SetAnimationBehaviour(CompleteAction.AnimationHits[nCurrentActionHitAnimation]);
+		ApplyEffectsAnimation(CompleteAnimation.AnimationHits[nCurrentActionHitAnimation]);
+		SetAnimationBehaviour(CompleteAnimation.AnimationHits[nCurrentActionHitAnimation]);
 
-		// If character is falling damaged, animation will remain until touches the ground.
-		if (ActionState == EActionState::ActionDamaged && !GetCharacterMovement()->IsMovingOnGround())
+		AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation] = true;
+		PrepareProjectile(CompleteAnimation.AnimationHits[nCurrentActionHitAnimation]);
+
+		if (nCurrentActionHitAnimation < AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() - 1)
 		{
-			//AnimationActionCompleteTimeStop += CurrentFlipbook->GetFlipbookLength();
+			++nCurrentActionHitAnimation;
 		}
 		else
 		{
-			AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation] = true;
-			PrepareProjectile(CompleteAction.AnimationHits[nCurrentActionHitAnimation]);
-
-			if (nCurrentActionHitAnimation < AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() - 1)
-			{
-				++nCurrentActionHitAnimation;
-			}
-			else
-			{
-				AnimationsFlags[nCurrentActionAnimation].bIsCompleted = true;
-			}
+			AnimationsFlags[nCurrentActionAnimation].bIsCompleted = true;
 		}
 		break;
 
 	case ECurrentAnimationState::CurrentAnimationEnd:
-		RemoveEffectsAnimation();
-		ApplyEffectsAnimation(CompleteAction.AnimationEnd);
-		SetAnimationBehaviour(CompleteAction.AnimationEnd);
-
-		PrepareProjectile(CompleteAction.AnimationEnd);
+		ApplyEffectsAnimation(CompleteAnimation.AnimationEnd);
+		SetAnimationBehaviour(CompleteAnimation.AnimationEnd);
+		PrepareProjectile(CompleteAnimation.AnimationEnd);
 		AnimationsFlags[nCurrentActionAnimation].bIsActionEnd = true;
 
 		if (nCurrentActionAnimation < AnimationsFlags.Num() - 1)
@@ -665,27 +692,26 @@ void ACharacterCommon::ApplyEffectsAnimation(FActionAnimationStruct Action)
 	{
 		Effect1Flipbook->SetFlipbook(Action.Animation.AnimationEffect1);
 		Effect1Flipbook->SetRelativeLocation(Action.Animation.Effect1Position);
+		Effect1Flipbook->SetLooping(false);
 		Effect1Flipbook->SetVisibility(true);
+		Effect1Flipbook->PlayFromStart();
 	}
 	if (Action.Animation.AnimationEffect2 != nullptr)
 	{
 		Effect2Flipbook->SetFlipbook(Action.Animation.AnimationEffect2);
 		Effect2Flipbook->SetRelativeLocation(Action.Animation.Effect2Position);
+		Effect2Flipbook->SetLooping(false);
 		Effect2Flipbook->SetVisibility(true);
+		Effect2Flipbook->PlayFromStart();
 	}
 	if (Action.Animation.AnimationEffect3 != nullptr)
 	{
 		Effect3Flipbook->SetFlipbook(Action.Animation.AnimationEffect3);
 		Effect3Flipbook->SetRelativeLocation(Action.Animation.Effect3Position);
+		Effect3Flipbook->SetLooping(false);
 		Effect3Flipbook->SetVisibility(true);
+		Effect3Flipbook->PlayFromStart();
 	}
-}
-
-void ACharacterCommon::RemoveEffectsAnimation()
-{
-	Effect1Flipbook->SetVisibility(false);
-	Effect2Flipbook->SetVisibility(false);
-	Effect3Flipbook->SetVisibility(false);
 }
 
 void ACharacterCommon::SetFlipbooks(FAnimationStruct AnimationStruct)
@@ -711,7 +737,6 @@ void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct ActionAnimat
 
 	AnimationActionLastFrame += CurrentFlipbook->GetFlipbookLengthInFrames();
 
-	nCurrentAnimationInterpolationSpeed = ActionAnimationStruct.InterpolationSpeed;
 	if (ActionAnimationStruct.ImpulseToOwner != FVector::ZeroVector)
 	{
 		GetCharacterMovement()->SetMovementMode(Actions[nCurrentAction].HitMode);
@@ -726,8 +751,7 @@ void ACharacterCommon::SetActionAnimationIsFinished(bool IsFinished)
 {
 	bActionAnimationIsFinished = IsFinished;
 }
-
-bool ACharacterCommon::GetActionAnimationIsFinished()
+bool ACharacterCommon::IsActionAnimationFinished()
 {
 	return bActionAnimationIsFinished;
 }
@@ -771,6 +795,95 @@ void ACharacterCommon::SetActionState(EActionState State)
 	}
 
 	ActionState = State;
+}
+
+bool ACharacterCommon::IsFacingRight()
+{
+	return bIsMovingRight;
+}
+void ACharacterCommon::SetFacingDirectionRight(bool IsRight)
+{
+	bIsMovingRight = IsRight;
+}
+
+bool ACharacterCommon::IsLeft()
+{
+	return bIsLeft;
+}
+void ACharacterCommon::SetLeftPressed(bool State)
+{
+	bIsLeft = State;
+}
+
+bool ACharacterCommon::IsRight()
+{
+	return bIsRight;
+}
+void ACharacterCommon::SetRightPressed(bool State)
+{
+	bIsRight = State;
+}
+
+bool ACharacterCommon::IsUp()
+{
+	return bIsUp;
+}
+void ACharacterCommon::SetUpPressed(bool State)
+{
+	bIsUp = State;
+}
+
+bool ACharacterCommon::IsDown()
+{
+	return bIsDown;
+}
+void ACharacterCommon::SetDownPressed(bool State)
+{
+	bIsDown = State;
+}
+
+bool ACharacterCommon::IsChargingup()
+{
+	return bIsChargingup;
+}
+void ACharacterCommon::SetChargingup(bool State)
+{
+	bIsChargingup = State;
+}
+
+bool ACharacterCommon::IsFirstAttack()
+{
+	return bIsFirstAttack;
+}
+
+bool ACharacterCommon::IsDoingCombo()
+{
+	return bIsDoingCombo;
+}
+
+void ACharacterCommon::SetIsCombo(bool State)
+{
+	bIsDoingCombo = State;
+}
+
+bool ACharacterCommon::HasStamina()
+{
+	return bIsEnoughStamina;
+}
+
+void ACharacterCommon::SetHasStamina(bool State)
+{
+	bIsEnoughStamina = State;
+}
+
+bool ACharacterCommon::IsExecutingSpecialMove()
+{
+	return bIsExecutingSpecialMove;
+}
+
+void ACharacterCommon::SetIsExecutingSpecialMove(bool State)
+{
+	bIsExecutingSpecialMove = State;
 }
 
 float ACharacterCommon::GetFacingX(float Impulse)

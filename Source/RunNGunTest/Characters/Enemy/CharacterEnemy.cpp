@@ -58,7 +58,7 @@ void ACharacterEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (ActionState != EActionState::ActionDamaged && ActionState != EActionState::ActionAttacking && GetCanMove() && VisibilityArea->IsOverlappingActor(Player) && GetLastActionTime() + TimeBetweenAttacks < GetCurrentTime())
+	if (ActionState != EActionState::ActionDamaged && ActionState != EActionState::ActionAttacking && CanMove() && VisibilityArea->IsOverlappingActor(Player) && GetLastActionTime() + TimeBetweenAttacks < GetCurrentTime())
 	{
 		SetCanMove(true);
 		// Depending on distance from player, attack, follow him or wait
@@ -95,12 +95,12 @@ void ACharacterEnemy::FacePlayer()
 	float yaw = 0.0f;
 	if (Player->GetActorLocation().X < GetActorLocation().X)
 	{
-		bIsMovingRight = false;
+		SetFacingDirectionRight(false);
 		yaw = 180.0f;
 	}
 	else
 	{
-		bIsMovingRight = true;
+		SetFacingDirectionRight(true);
 	}
 
 	FRotator* rotation = new FRotator(0.0f, yaw, 1.0f);
@@ -109,7 +109,7 @@ void ACharacterEnemy::FacePlayer()
 
 void ACharacterEnemy::AttackStart()
 {
-	if (GetCanMove())
+	if (CanMove())
 	{
 		Super::DoAttack();
 	}

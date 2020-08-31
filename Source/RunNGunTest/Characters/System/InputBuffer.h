@@ -20,9 +20,11 @@ public:
 
 	void InsertInputBuffer(int32 key, bool bIsDirectionPressed);
 
-	bool IsMatchingDirections(TArray<int32> Directions);
+	bool IsMatchingDirections(TArray<int32> Directions, bool IsFacingRight);
 
 	TArray<int32> GetBufferedInput();
 
 	void ClearBuffer();
+
+	int32 CheckDirections(int32 Directions, bool IsFacingRight);
 };

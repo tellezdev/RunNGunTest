@@ -7,7 +7,7 @@ AInputBuffer::AInputBuffer()
 {
 }
 
-bool AInputBuffer::IsMatchingDirections(TArray<int32> Directions)
+bool AInputBuffer::IsMatchingDirections(TArray<int32> Directions, bool IsFacingRight)
 {
 	bool isOK = false;
 	bool DirectionsMatch = false;
@@ -20,7 +20,7 @@ bool AInputBuffer::IsMatchingDirections(TArray<int32> Directions)
 		BufferPosition = BufferedInput.Num() - 1;
 		for (int j = Directions.Num() - 1; j >= 0; --j)
 		{
-			if (BufferedInput[BufferPosition] == Directions[j])
+			if (BufferedInput[BufferPosition] == CheckDirections(Directions[j], IsFacingRight))
 			{
 				DirectionsMatch = true;
 			}
@@ -56,6 +56,31 @@ TArray<int32> AInputBuffer::GetBufferedInput()
 void AInputBuffer::ClearBuffer()
 {
 	BufferedInput.Empty();
+}
+
+int32 AInputBuffer::CheckDirections(int32 Direction, bool IsFacingRight)
+{
+	if (!IsFacingRight)
+	{
+		switch (Direction)
+		{
+		case 1:
+			return 3;
+		case 3:
+			return 1;
+		case 4:
+			return 6;
+		case 6:
+			return 4;
+		case 7:
+			return 9;
+		case 9:
+			return 7;
+		default:
+			return Direction;
+		}
+	}
+	return Direction;
 }
 
 AInputBuffer::~AInputBuffer()

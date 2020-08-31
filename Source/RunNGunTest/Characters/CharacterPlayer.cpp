@@ -31,7 +31,6 @@ ACharacterPlayer::ACharacterPlayer()
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
-
 	SpecialKeyPressedTimeStart = -1.f;
 }
 
@@ -48,7 +47,7 @@ void ACharacterPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// If special button is pressed, stamina grows up
-	bCanCharge = bActionAnimationIsFinished || ActionState == EActionState::ActionChargingup;
+	bCanCharge = IsActionAnimationFinished() || ActionState == EActionState::ActionChargingup;
 	if (bCanCharge && SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime())
 	{
 		ControlStamina();
@@ -91,56 +90,56 @@ void ACharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void ACharacterPlayer::HandleDirections()
 {
 	float MovementSpeed = 0.f;
-	if (GetCanMove())
+	if (CanMove())
 	{
-		if (bIsLeft && bIsDown)
+		if (IsLeft() && IsDown())
 		{
 			HandleBuffer(KeyInput::DownLeft);
 			bIsDirectionPressed = true;
 			MovementSpeed = CrouchingSpeed;
 			MoveCharacter(CrouchingSpeed * -1.f, false);
 		}
-		else if (bIsRight && bIsDown)
+		else if (IsRight() && IsDown())
 		{
 			HandleBuffer(KeyInput::DownRight);
 			bIsDirectionPressed = true;
 			MovementSpeed = CrouchingSpeed;
 			MoveCharacter(CrouchingSpeed, true);
 		}
-		else if (bIsLeft && bIsUp)
+		else if (IsLeft() && IsUp())
 		{
 			HandleBuffer(KeyInput::UpLeft);
 			bIsDirectionPressed = true;
 			MovementSpeed = WalkingSpeed;
 			MoveCharacter(WalkingSpeed * -1.f, false);
 		}
-		else if (bIsRight && bIsUp)
+		else if (IsRight() && IsUp())
 		{
 			HandleBuffer(KeyInput::UpRight);
 			bIsDirectionPressed = true;
 			MovementSpeed = WalkingSpeed;
 			MoveCharacter(WalkingSpeed, true);
 		}
-		else if (bIsDown && !bIsUp)
+		else if (IsDown() && !IsUp())
 		{
 			HandleBuffer(KeyInput::Down);
 			bIsDirectionPressed = true;
 		}
-		else if (bIsLeft && !bIsRight)
+		else if (IsLeft() && !IsRight())
 		{
 			HandleBuffer(KeyInput::Left);
 			bIsDirectionPressed = true;
 			MovementSpeed = WalkingSpeed;
 			MoveCharacter(WalkingSpeed * -1.f, false);
 		}
-		else if (bIsRight && !bIsLeft)
+		else if (IsRight() && !IsLeft())
 		{
 			HandleBuffer(KeyInput::Right);
 			bIsDirectionPressed = true;
 			MovementSpeed = WalkingSpeed;
 			MoveCharacter(WalkingSpeed, true);
 		}
-		else if (bIsUp && !bIsDown)
+		else if (IsUp() && !IsDown())
 		{
 			HandleBuffer(KeyInput::Up);
 			bIsDirectionPressed = true;
@@ -155,37 +154,37 @@ void ACharacterPlayer::HandleDirections()
 
 void ACharacterPlayer::MoveCharacter(float MovementSpeed, bool IsFacingRight)
 {
-	bIsMovingRight = IsFacingRight;
+	SetFacingDirectionRight(IsFacingRight);
 	FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
 	AddMovementInput(*Direction, MovementSpeed);
 }
 
 void ACharacterPlayer::LeftDirectionStart()
 {
-	bIsLeft = true;
+	SetLeftPressed(true);
 }
 
 void ACharacterPlayer::LeftDirectionStop()
 {
-	bIsLeft = false;
+	SetLeftPressed(false);
 	bIsDirectionPressed = false;
 }
 
 void ACharacterPlayer::RightDirectionStart()
 {
-	bIsRight = true;
+	SetRightPressed(true);
 }
 
 void ACharacterPlayer::RightDirectionStop()
 {
-	bIsRight = false;
+	SetRightPressed(false);
 	bIsDirectionPressed = false;
 }
 
 void ACharacterPlayer::DownDirectionStart()
 {
-	bIsDown = true;
-	if (GetCanMove())
+	SetDownPressed(true);
+	if (CanMove())
 	{
 		SetActionState(EActionState::ActionDucking);
 	}
@@ -193,29 +192,29 @@ void ACharacterPlayer::DownDirectionStart()
 
 void ACharacterPlayer::DownDirectionStop()
 {
-	if (GetCanMove())
+	if (CanMove())
 	{
 		SetActionState(EActionState::ActionIdle);
 	}
-	bIsDown = false;
+	SetDownPressed(false);
 	bIsDirectionPressed = false;
 }
 
 void ACharacterPlayer::UpDirectionStart()
 {
-	bIsUp = true;
+	SetUpPressed(true);
 }
 
 void ACharacterPlayer::UpDirectionStop()
 {
-	bIsUp = false;
+	SetUpPressed(false);
 	bIsDirectionPressed = false;
 }
 
 // Triggers
 void ACharacterPlayer::JumpStart()
 {
-	if (GetCanMove())
+	if (CanMove())
 	{
 		bPressedJump = true;
 		SetActionState(EActionState::ActionIdle);
@@ -231,15 +230,15 @@ void ACharacterPlayer::JumpStop()
 
 void ACharacterPlayer::AttackStart()
 {
-	if (GetCanMove())
+	if (CanMove())
 	{
 		HandleBuffer(KeyInput::Attack);
 		AttackKeyPressedTimeStart = GetCurrentTime();
-		bIsChargingup = true;
+		SetChargingup(true);
 		TArray<int32> MatchingActions;
 		for (int i = 0; i < SpecialMoves.Num(); ++i)
 		{
-			if (InputBuffer.IsMatchingDirections(SpecialMoves[i].Directions))
+			if (InputBuffer.IsMatchingDirections(SpecialMoves[i].Directions, IsFacingRight()))
 			{
 				MatchingActions.Add(i);
 			}
@@ -261,20 +260,20 @@ void ACharacterPlayer::AttackStart()
 void ACharacterPlayer::AttackStop()
 {
 	AttackKeyPressedTimeStop = GetCurrentTime();
-	bIsChargingup = false;
+	SetChargingup(false);
 }
 
 void ACharacterPlayer::SpecialStart()
 {
 	SpecialKeyPressedTimeStart = GetCurrentTime() + DelayTimeUntilChargingUp;
-	bIsChargingup = true;
+	SetChargingup(true);
 	HandleBuffer(KeyInput::Special);
-	if (bActionAnimationIsFinished)
+	if (IsActionAnimationFinished())
 	{
 		TArray<int32> MatchingActions;
 		for (int i = 0; i < SpecialMoves.Num(); ++i)
 		{
-			if (InputBuffer.IsMatchingDirections(SpecialMoves[i].Directions))
+			if (InputBuffer.IsMatchingDirections(SpecialMoves[i].Directions, IsFacingRight()))
 			{
 				MatchingActions.Add(i);
 			}
@@ -402,5 +401,5 @@ void ACharacterPlayer::StopHandleStaminaCharge()
 {
 	SpecialKeyPressedTimeStart = -1;
 	SpecialKeyPressedTimeStop = -1;
-	bIsChargingup = false;
+	SetChargingup(false);
 }

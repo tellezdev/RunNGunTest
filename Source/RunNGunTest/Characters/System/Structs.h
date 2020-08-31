@@ -117,15 +117,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DamageValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector HitBoxPosition = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector HitBoxSize = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector ImpulseToOwner = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector ImpulseToReceiver = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float InterpolationSpeed = 5.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool IsProjectile;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -169,23 +163,24 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 StaminaCost;
 
+	// Special Moves only
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool CanBeDoneInGround;
-
+		bool IsGroundAttack;
+	// Special Moves only
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool CanBeDoneInAir;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float WindowFrameTimeToContinue = 0.5f;
+		bool IsAirAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool CanBeCharged;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TEnumAsByte<EMovementMode> HitMode;
+		TEnumAsByte<EMovementMode> HitMode = EMovementMode::MOVE_Walking;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FActionCompleteAnimationStruct> ActionAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FActionCompleteAnimationStruct> NoStaminaAnimation;
 };
 
 /**

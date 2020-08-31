@@ -21,14 +21,24 @@ class RUNNGUNTEST_API ARNGTGameModeBase : public AGameModeBase
 		virtual void StartPlay() override;
 
 public:
-	void BindDataHUD();
+	UFUNCTION()
+		void BindDataHUD();
+
+	UFUNCTION()
+		void SetLevelDirectionRight(bool IsRight);
+
+	UFUNCTION()
+		bool IsLevelDirectionRight();
 
 private:
 
 	UPROPERTY()
 		ACharacterCommon* Player;
-
 	// HUD
 	UPROPERTY()
 		AGameHUD* GameHUD;
+
+	/* Basic game rules */
+	UPROPERTY()
+		bool bIsLevelDirectionRight = true;
 };

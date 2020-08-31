@@ -72,14 +72,13 @@ public:
 	UPROPERTY()
 		float nCurrentHitImpulseZ = 0.f;
 	UPROPERTY()
-		bool bIsExecutingSpecialMove;
-	UPROPERTY()
 		int8 nCurrentAction = 0;
 	UPROPERTY()
 		int8 nCurrentActionHitAnimation = 0;
 	UPROPERTY()
 		int32 ComboCount = 0;
 
+private:
 	// Character Movement
 	UPROPERTY()
 		bool bIsMovingRight;
@@ -100,8 +99,15 @@ public:
 	UPROPERTY()
 		bool bIsFirstAttack = true;
 	UPROPERTY()
-		FVector ActionFinalLocation;
+		bool bIsDoingCombo = false;
+	UPROPERTY()
+		bool bIsEnoughStamina = false;
+	UPROPERTY()
+		bool bIsExecutingSpecialMove;
 
+public:
+	UPROPERTY()
+		FVector ActionFinalLocation;
 	// Animation System
 	UPROPERTY()
 		int32 AnimationActionCurrentFrame;
@@ -115,8 +121,6 @@ public:
 		TArray<FActionAnimationsFlagsStruct> ActionsAnimationsFlags;
 	UPROPERTY()
 		int32 nCurrentActionAnimation = 0;
-	UPROPERTY()
-		float nCurrentAnimationInterpolationSpeed = 0.f;
 	UPROPERTY()
 		FActionAnimationStruct CurrentAction;
 
@@ -171,13 +175,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<AActor*> ActorsToIgnore;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
-		TArray<FActionStruct> AttackMoves;
+		TArray<FActionStruct> GroundCombo;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
-		TArray<FActionStruct> JumpAttackMoves;
+		TArray<FActionStruct> AirCombo;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> SpecialMoves;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
-		TArray<FActionStruct> NoStaminaMoves;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> ChargingStaminaAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
@@ -190,13 +192,11 @@ public:
 	// Getters / Setters
 	UFUNCTION()
 		virtual void SetCanMove(bool State);
-
 	UFUNCTION()
-		virtual bool GetCanMove();
+		virtual bool CanMove();
 
 	UFUNCTION()
 		virtual void SetLastActionTime(float Time);
-
 	UFUNCTION()
 		virtual float GetLastActionTime();
 
@@ -211,12 +211,54 @@ public:
 
 	UFUNCTION()
 		virtual void SetActionAnimationIsFinished(bool IsFinished);
-
 	UFUNCTION()
-		virtual bool GetActionAnimationIsFinished();
+		virtual bool IsActionAnimationFinished();
 
 	UFUNCTION()
 		virtual void SetActionState(EActionState State);
+
+	UFUNCTION()
+		virtual bool IsFacingRight();
+	UFUNCTION()
+		virtual void SetFacingDirectionRight(bool IsRight);
+
+	UFUNCTION()
+		virtual bool IsLeft();
+	UFUNCTION()
+		virtual void SetLeftPressed(bool State);
+	UFUNCTION()
+		virtual bool IsRight();
+	UFUNCTION()
+		virtual void SetRightPressed(bool State);
+	UFUNCTION()
+		virtual bool IsUp();
+	UFUNCTION()
+		virtual void SetUpPressed(bool State);
+	UFUNCTION()
+		virtual bool IsDown();
+	UFUNCTION()
+		virtual void SetDownPressed(bool State);
+	UFUNCTION()
+		virtual bool IsChargingup();
+	UFUNCTION()
+		virtual void SetChargingup(bool State);
+	UFUNCTION()
+		virtual bool IsFirstAttack();
+
+	UFUNCTION()
+		virtual bool IsDoingCombo();
+	UFUNCTION()
+		virtual void SetIsCombo(bool State);
+
+	UFUNCTION()
+		virtual bool HasStamina();
+	UFUNCTION()
+		virtual void SetHasStamina(bool State);
+
+	UFUNCTION()
+		virtual bool IsExecutingSpecialMove();
+	UFUNCTION()
+		virtual void SetIsExecutingSpecialMove(bool State);
 
 
 	// Handling
@@ -251,6 +293,14 @@ public:
 	UFUNCTION()
 		virtual void ResetDamage();
 
+	// Animation Events
+	UFUNCTION()
+		virtual void OnEffects1FlipbookFinishPlaying();
+	UFUNCTION()
+		virtual void OnEffects2FlipbookFinishPlaying();
+	UFUNCTION()
+		virtual void OnEffects3FlipbookFinishPlaying();
+
 	// Animations Methods
 	UFUNCTION()
 		virtual void UpdateAnimations();
@@ -275,9 +325,6 @@ public:
 
 	UFUNCTION()
 		virtual void ApplyEffectsAnimation(FActionAnimationStruct Action);
-
-	UFUNCTION()
-		virtual void RemoveEffectsAnimation();
 
 	UFUNCTION()
 		virtual void SetFlipbooks(FAnimationStruct AnimationStruct);

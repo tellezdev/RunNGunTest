@@ -54,7 +54,7 @@ void AGenericProjectile::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		if (OtherActor->ActorHasTag("Enemy"))
 		{
 			Enemy = Cast<ACharacterEnemy>(OtherActor);
-			if (!bHasHit && Enemy->GetCapsuleComponent()->IsOverlappingComponent(OverlappedComponent))
+			if (!bHasHit && Enemy->DamageSprite->IsOverlappingComponent(OverlappedComponent))
 			{
 				Enemy->SetDamage(Damage);
 				DestroyProjectile();

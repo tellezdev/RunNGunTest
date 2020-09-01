@@ -77,6 +77,8 @@ public:
 		int8 nCurrentActionHitAnimation = 0;
 	UPROPERTY()
 		int32 ComboCount = 0;
+	UPROPERTY()
+		float nTotalDamage = 0.f;
 
 private:
 	// Character Movement
@@ -93,7 +95,7 @@ private:
 	UPROPERTY()
 		bool bIsDown;
 	UPROPERTY()
-		bool bIsChargingup;
+		bool bIsChargingup = false;
 	UPROPERTY()
 		bool bActionAnimationIsFinished;
 	UPROPERTY()
@@ -216,6 +218,8 @@ public:
 
 	UFUNCTION()
 		virtual void SetActionState(EActionState State);
+	UFUNCTION()
+		virtual FString GetActionState();
 
 	UFUNCTION()
 		virtual bool IsFacingRight();
@@ -260,6 +264,13 @@ public:
 	UFUNCTION()
 		virtual void SetIsExecutingSpecialMove(bool State);
 
+	UFUNCTION()
+		virtual void AddToTotalDamage(float value);
+	UFUNCTION()
+		virtual void SetTotalDamage(float value);
+	UFUNCTION()
+		virtual float GetTotalDamage();
+
 
 	// Handling
 	UFUNCTION()
@@ -292,6 +303,9 @@ public:
 
 	UFUNCTION()
 		virtual void ResetDamage();
+
+	UFUNCTION()
+		virtual void ResetTotalDamage();
 
 	// Animation Events
 	UFUNCTION()
@@ -372,4 +386,7 @@ public:
 
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void ControlChargingDamage(float limitDamage);
 };

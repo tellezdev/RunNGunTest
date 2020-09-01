@@ -139,6 +139,10 @@ bool ACharacterCommon::CanMove()
 	return bCanMove;
 }
 
+/// <summary>
+/// Used to know when was the last button pressed
+/// </summary>
+/// <param name="Time"></param>
 void ACharacterCommon::SetLastActionTime(float Time)
 {
 	nLastActionTime = Time;
@@ -148,6 +152,9 @@ float ACharacterCommon::GetLastActionTime()
 	return nLastActionTime;
 }
 
+/// <summary>
+/// Faces the character to the right side
+/// </summary>
 void ACharacterCommon::ControlCharacterRotation()
 {
 	// Sets where the sprite has to face
@@ -164,6 +171,9 @@ void ACharacterCommon::BindDataHUD()
 {
 }
 
+/// <summary>
+/// Do the attack
+/// </summary>
 void ACharacterCommon::HandleAttack()
 {
 	if (IsActionAnimationFinished())
@@ -186,6 +196,9 @@ void ACharacterCommon::HandleAttack()
 	}
 }
 
+/// <summary>
+/// Do the special move
+/// </summary>
 void ACharacterCommon::HandleSpecialMoves()
 {
 	if (!IsExecutingSpecialMove())
@@ -213,6 +226,11 @@ void ACharacterCommon::HandleSpecialMoves()
 	}
 }
 
+/// <summary>
+/// Spawns a projectile
+/// </summary>
+/// <param name="Projectile"></param>
+/// <param name="ProjectilePosition"></param>
 void ACharacterCommon::HandleProjectile(UObject* Projectile, FVector ProjectilePosition)
 {
 	UBlueprint* GeneratedBP = Cast<UBlueprint>(Projectile);
@@ -226,6 +244,10 @@ void ACharacterCommon::HandleProjectile(UObject* Projectile, FVector ProjectileP
 	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, CharacterArrowComponent->GetComponentLocation().ToString());
 }
 
+/// <summary>
+/// Sets up the projectile and generates the event to launch it
+/// </summary>
+/// <param name="CurrentAnimation"></param>
 void ACharacterCommon::PrepareProjectile(FActionAnimationStruct CurrentAnimation)
 {
 	if (CurrentAnimation.IsProjectile)
@@ -301,6 +323,9 @@ void ACharacterCommon::OnEffects3FlipbookFinishPlaying()
 	Effect2Flipbook->SetVisibility(false);
 }
 
+/// <summary>
+/// Sets up the character to execute an attack
+/// </summary>
 void ACharacterCommon::DoAttack()
 {
 	SetActionState(EActionState::ActionAttacking);
@@ -351,6 +376,9 @@ void ACharacterCommon::DoAttack()
 	}
 }
 
+/// <summary>
+/// Sets the right flipbook in current animation
+/// </summary>
 void ACharacterCommon::UpdateAnimations()
 {
 	switch (AnimationState)
@@ -391,6 +419,10 @@ void ACharacterCommon::UpdateAnimations()
 	}
 }
 
+/// <summary>
+/// Sets the character's animation state basing on the action state
+/// </summary>
+/// <param name="characterMovementSpeed"></param>
 void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 {
 	switch (ActionState)
@@ -461,6 +493,10 @@ void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 	UpdateAnimations();
 }
 
+/// <summary>
+/// Sets the action animation flags, flags controls the complete character animation
+/// (start, charging, hits and end animations) in order to do the right transition
+/// </summary>
 void ACharacterCommon::SetActionAnimationFlags()
 {
 	ActionsAnimationsFlags.Empty();
@@ -512,6 +548,10 @@ float ACharacterCommon::GetCurrentTime()
 	return GetWorld()->GetRealTimeSeconds();
 }
 
+/// <summary>
+/// Set damage to the character and executes the damage animation
+/// </summary>
+/// <param name="Value"></param>
 void ACharacterCommon::SetDamage(float Value)
 {
 	SetActionState(EActionState::ActionDamaged);
@@ -532,6 +572,10 @@ void ACharacterCommon::SetDamage(float Value)
 	Life -= Value;
 }
 
+/// <summary>
+/// Heals the character and notify the HUD
+/// </summary>
+/// <param name="Value"></param>
 void ACharacterCommon::HealLife(float Value)
 {
 	if (Life < MaxLife)
@@ -545,6 +589,9 @@ void ACharacterCommon::HealStamina(float Value)
 {
 }
 
+/// <summary>
+/// Removes life to the character
+/// </summary>
 void ACharacterCommon::DrainLife()
 {
 	Life = 0.1f;
@@ -555,6 +602,9 @@ void ACharacterCommon::DrainStamina()
 {
 }
 
+/// <summary>
+/// Controls the animation and current frame
+/// </summary>
 void ACharacterCommon::ControlAnimation()
 {
 	// First time
@@ -565,6 +615,10 @@ void ACharacterCommon::ControlAnimation()
 	++AnimationActionCurrentFrame;
 }
 
+/// <summary>
+/// Basing on current action and current animation flag, 
+/// sets the next animation to play
+/// </summary>
 void ACharacterCommon::PrepareAnimation()
 {
 	if (Actions.Num() > 0 && Actions.Num() >= nCurrentAction + 1)
@@ -600,12 +654,15 @@ void ACharacterCommon::PrepareAnimation()
 			}
 			else if (!AnimationsFlags[nCurrentActionAnimation].bIsActionCharge && Action.CanBeCharged)
 			{
+				ControlChargingDamage(Action.ActionAnimation[nCurrentActionAnimation].AnimationCharge.DamageValue);
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Green, FString::Printf(TEXT("Total: %f"), GetTotalDamage()));
 				CurrentAnimationState = ECurrentAnimationState::CurrentAnimationCharging;
 				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Charging"));
 			}
 			else if (AnimationsFlags[nCurrentActionAnimation].bIsActionHits.Num() > 0 &&
 					 !AnimationsFlags[nCurrentActionAnimation].bIsActionHits[nCurrentActionHitAnimation])
 			{
+				SetChargingup(false);
 				CurrentAnimationState = ECurrentAnimationState::CurrentAnimationHit;
 				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Hit"));
 			}
@@ -622,6 +679,11 @@ void ACharacterCommon::PrepareAnimation()
 	}
 }
 
+/// <summary>
+/// Executes the current assigned animation and effects/projectile
+/// </summary>
+/// <param name="Action"></param>
+/// <param name="AnimationsFlags"></param>
 void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActionAnimationFlagsStruct>& AnimationsFlags)
 {
 	FActionCompleteAnimationStruct& CompleteAnimation = Action.ActionAnimation[nCurrentActionAnimation];
@@ -686,6 +748,10 @@ void ACharacterCommon::ApplyCurrentAnimation(FActionStruct Action, TArray<FActio
 	}
 }
 
+/// <summary>
+/// Plays the effects assigned on the animation
+/// </summary>
+/// <param name="Action"></param>
 void ACharacterCommon::ApplyEffectsAnimation(FActionAnimationStruct Action)
 {
 	if (Action.Animation.AnimationEffect1 != nullptr)
@@ -714,6 +780,10 @@ void ACharacterCommon::ApplyEffectsAnimation(FActionAnimationStruct Action)
 	}
 }
 
+/// <summary>
+/// Sets the current animation flipbook, damage, hit and world space sprites to play
+/// </summary>
+/// <param name="AnimationStruct"></param>
 void ACharacterCommon::SetFlipbooks(FAnimationStruct AnimationStruct)
 {
 	CurrentFlipbook->SetFlipbook(AnimationStruct.Animation);
@@ -728,6 +798,10 @@ void ACharacterCommon::SetFlipbooks(FAnimationStruct AnimationStruct)
 	}
 }
 
+/// <summary>
+/// Sets animation params
+/// </summary>
+/// <param name="ActionAnimationStruct"></param>
 void ACharacterCommon::SetAnimationBehaviour(FActionAnimationStruct ActionAnimationStruct)
 {
 	SetCanMove(ActionAnimationStruct.CanMove);
@@ -760,6 +834,10 @@ void ACharacterCommon::NotifyComboToHUD()
 {
 }
 
+/// <summary>
+/// Sets a new action state and finishes the old one
+/// </summary>
+/// <param name="State"></param>
 void ACharacterCommon::SetActionState(EActionState State)
 {
 	switch (ActionState)
@@ -795,6 +873,33 @@ void ACharacterCommon::SetActionState(EActionState State)
 	}
 
 	ActionState = State;
+}
+
+/// <summary>
+/// Returns the current action state in string format
+/// </summary>
+/// <returns></returns>
+FString ACharacterCommon::GetActionState()
+{
+	switch (ActionState)
+	{
+	case EActionState::ActionAttacking:
+		return "Attacking";
+	case EActionState::ActionChargingup:
+		return "Charging";
+	case EActionState::ActionDamaged:
+		return "Damaged";
+	case EActionState::ActionDucking:
+		return "Crouching";
+	case EActionState::ActionGettingUp:
+		return "Getting up";
+	case EActionState::ActionIdle:
+		return "Idle";
+	case EActionState::ActionSpecialMove:
+		return "SpecialMove";
+	default:
+		return "undefined";
+	}
 }
 
 bool ACharacterCommon::IsFacingRight()
@@ -886,6 +991,26 @@ void ACharacterCommon::SetIsExecutingSpecialMove(bool State)
 	bIsExecutingSpecialMove = State;
 }
 
+void ACharacterCommon::AddToTotalDamage(float value)
+{
+	nTotalDamage += value;
+}
+
+void ACharacterCommon::SetTotalDamage(float value)
+{
+	nTotalDamage = value;
+}
+
+float ACharacterCommon::GetTotalDamage()
+{
+	return nTotalDamage;
+}
+
+void ACharacterCommon::ResetTotalDamage()
+{
+	nTotalDamage = 0.f;
+}
+
 float ACharacterCommon::GetFacingX(float Impulse)
 {
 	if (!bIsMovingRight)
@@ -949,8 +1074,23 @@ void ACharacterCommon::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 			ActorReceiver->GetCharacterMovement()->Velocity.Z = FMath::Max(0.f, CurrentAction.ImpulseToReceiver.Z * 100.f);
 			ActorReceiver->GetCharacterMovement()->Velocity.X = GetFacingWhenHit(CurrentAction.ImpulseToReceiver.X, GetActorLocation(), ActorReceiver->GetActorLocation());
 		}
-		ActorReceiver->SetDamage(CurrentAction.DamageValue);
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Damage: %f"), CurrentAction.DamageValue));
+		AddToTotalDamage(CurrentAction.DamageValue);
+		ActorReceiver->SetDamage(GetTotalDamage());
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Damage: %f"), GetTotalDamage()));
+		ResetTotalDamage();
+
 		++ComboCount;
+	}
+}
+
+/// <summary>
+/// Increases total damage in 1 until reaching limitDamage
+/// </summary>
+/// <param name="limitDamage"></param>
+void ACharacterCommon::ControlChargingDamage(float limitDamage)
+{
+	if (GetTotalDamage() < limitDamage)
+	{
+		AddToTotalDamage(1);
 	}
 }

@@ -58,16 +58,6 @@ public:
 	UPROPERTY()
 		bool bCanCharge;
 
-	// Key Pressing Times
-	UPROPERTY()
-		float AttackKeyPressedTimeStart;
-	UPROPERTY()
-		float AttackKeyPressedTimeStop;
-	UPROPERTY()
-		float SpecialKeyPressedTimeStart;
-	UPROPERTY()
-		float SpecialKeyPressedTimeStop;
-
 	// Timers
 	UPROPERTY()
 		FTimerHandle TimerLagProjectile;
@@ -121,10 +111,16 @@ public:
 		void AttackStop();
 
 	UFUNCTION()
+		void AttackPressed();
+
+	UFUNCTION()
 		void SpecialStart();
 
 	UFUNCTION()
 		void SpecialStop();
+
+	UFUNCTION()
+		void SpecialPressed();
 
 	void HandleAttack();
 

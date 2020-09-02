@@ -30,8 +30,6 @@ ACharacterPlayer::ACharacterPlayer()
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-
-	SpecialKeyPressedTimeStart = -1.f;
 }
 
 // Called when the game starts or when spawned
@@ -45,13 +43,6 @@ void ACharacterPlayer::BeginPlay()
 void ACharacterPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// If special button is pressed, stamina grows up
-	bCanCharge = IsActionAnimationFinished() || ActionState == EActionState::ActionChargingup;
-	if (bCanCharge && SpecialKeyPressedTimeStart != -1 && SpecialKeyPressedTimeStart <= GetCurrentTime())
-	{
-		ControlStamina();
-	}
 
 	// User stops doing combo
 	if (GetLastActionTime() > 0.f &&
@@ -82,8 +73,10 @@ void ACharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacterPlayer::JumpStop);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACharacterPlayer::AttackStart);
 	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ACharacterPlayer::AttackStop);
+	PlayerInputComponent->BindAction("Attack", IE_Repeat, this, &ACharacterPlayer::AttackPressed);
 	PlayerInputComponent->BindAction("Special", IE_Pressed, this, &ACharacterPlayer::SpecialStart);
 	PlayerInputComponent->BindAction("Special", IE_Released, this, &ACharacterPlayer::SpecialStop);
+	PlayerInputComponent->BindAction("Special", IE_Repeat, this, &ACharacterPlayer::SpecialPressed);
 }
 
 // Basic moving
@@ -233,8 +226,6 @@ void ACharacterPlayer::AttackStart()
 	if (CanMove())
 	{
 		HandleBuffer(KeyInput::Attack);
-		AttackKeyPressedTimeStart = GetCurrentTime();
-		SetChargingup(true);
 		TArray<int32> MatchingActions;
 		for (int i = 0; i < SpecialMoves.Num(); ++i)
 		{
@@ -259,14 +250,16 @@ void ACharacterPlayer::AttackStart()
 
 void ACharacterPlayer::AttackStop()
 {
-	AttackKeyPressedTimeStop = GetCurrentTime();
 	SetChargingup(false);
+}
+
+void ACharacterPlayer::AttackPressed()
+{
+	SetChargingup(true);
 }
 
 void ACharacterPlayer::SpecialStart()
 {
-	SpecialKeyPressedTimeStart = GetCurrentTime() + DelayTimeUntilChargingUp;
-	SetChargingup(true);
 	HandleBuffer(KeyInput::Special);
 	if (IsActionAnimationFinished())
 	{
@@ -292,6 +285,18 @@ void ACharacterPlayer::SpecialStop()
 	StopHandleStaminaCharge();
 }
 
+void ACharacterPlayer::SpecialPressed()
+{
+	// If special button is pressed, stamina grows up
+	bCanCharge = IsActionAnimationFinished() || ActionState == EActionState::ActionChargingup;
+
+	if (bCanCharge)
+	{
+		SetChargingup(true);
+		ControlStamina();
+	}
+}
+
 // Handling actions
 void ACharacterPlayer::HandleAttack()
 {
@@ -301,11 +306,10 @@ void ACharacterPlayer::HandleAttack()
 
 void ACharacterPlayer::HandleStaminaCharge()
 {
-	if (ActionState == EActionState::ActionChargingup && SpecialKeyPressedTimeStart + StaminaVelocityChargingInSeconds < GetCurrentTime())
+	if (ActionState == EActionState::ActionChargingup)
 	{
 		Stamina += StaminaChargingUnit;
 		GameHUD->SetStamina(Stamina);
-		SpecialKeyPressedTimeStart = GetCurrentTime();
 	}
 }
 
@@ -374,6 +378,7 @@ void ACharacterPlayer::ControlStamina()
 	{
 		if (ActionState != EActionState::ActionChargingup)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Starting charge"));
 			Actions = ChargingStaminaAnimation;
 			SetActionAnimationFlags();
 			SetCanMove(false);
@@ -399,7 +404,5 @@ void ACharacterPlayer::HandleBuffer(KeyInput Direction)
 // Resetting states
 void ACharacterPlayer::StopHandleStaminaCharge()
 {
-	SpecialKeyPressedTimeStart = -1;
-	SpecialKeyPressedTimeStop = -1;
 	SetChargingup(false);
 }

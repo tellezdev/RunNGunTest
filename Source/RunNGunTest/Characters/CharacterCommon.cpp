@@ -526,6 +526,7 @@ void ACharacterCommon::SetActionAnimationFlags()
 			ActionsAnimationsFlags.Add(Action);
 		}
 	}
+
 }
 
 void ACharacterCommon::ResetActionAnimationFlags()
@@ -624,6 +625,7 @@ void ACharacterCommon::PrepareAnimation()
 	if (Actions.Num() > 0 && Actions.Num() >= nCurrentAction + 1)
 	{
 		FActionStruct Action = Actions[nCurrentAction];
+
 
 		if (ActionsAnimationsFlags.Num() > 0)
 		{

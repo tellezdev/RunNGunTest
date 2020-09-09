@@ -16,6 +16,7 @@ enum class EActionState : uint8
 	ActionSpecialMove,
 	ActionChargingup,
 	ActionDucking,
+	ActionDuckingAttacking,
 	ActionDamaged,
 	ActionGettingUp
 };
@@ -29,6 +30,7 @@ enum class EAnimationState : uint8
 	AnimJumpingForward,
 	AnimWalking,
 	AnimDucking,
+	AnimDuckingAttacking,
 	AnimAttacking,
 	AnimSpecialMove,
 	AnimChargingUp,

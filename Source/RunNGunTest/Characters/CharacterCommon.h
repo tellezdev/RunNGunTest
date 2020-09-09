@@ -106,6 +106,17 @@ private:
 		bool bIsEnoughStamina = false;
 	UPROPERTY()
 		bool bIsExecutingSpecialMove;
+	UPROPERTY()
+		bool bIsCrouching;
+
+	// Auto actions
+	UPROPERTY()
+		bool bIsAutoActionAttack = false;
+	UPROPERTY()
+		bool bIsAutoActionCrouch = false;
+	UPROPERTY()
+		bool bIsAutoActionWalkForward = false;
+
 
 public:
 	UPROPERTY()
@@ -186,6 +197,8 @@ public:
 		TArray<FActionStruct> ChargingStaminaAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
 		TArray<FActionStruct> DamageAnimations;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation System")
+		TArray<FActionStruct> CrouchedAttack;
 
 	UPROPERTY()
 		TArray<FActionStruct> Actions;
@@ -271,6 +284,16 @@ public:
 	UFUNCTION()
 		virtual float GetTotalDamage();
 
+	UFUNCTION()
+		virtual bool IsCrouched();
+	UFUNCTION()
+		virtual void SetIsCrouched(bool State);
+
+	UFUNCTION()
+		virtual void SetAutoAttack(bool Value);
+	UFUNCTION()
+		virtual void SetAutoWalkForward(bool Value);
+
 
 	// Handling
 	UFUNCTION()
@@ -287,6 +310,9 @@ public:
 
 	UFUNCTION()
 		virtual void PrepareProjectile(FActionAnimationStruct CurrentAnimation);
+
+	UFUNCTION()
+		virtual void HandleAutoActions();
 
 	// Resetters
 	UFUNCTION()

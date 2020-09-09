@@ -16,7 +16,6 @@ ACharacterPlayer::ACharacterPlayer()
 	this->Tags.Add("Player");
 
 	CharacterArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("CharacterArrowComponent"));
-	//CharacterArrowComponent->SetupAttachment(GetArrowComponent());
 
 	// Setting default character movement's params
 	GetCharacterMovement()->MaxAcceleration = 5000;
@@ -28,8 +27,6 @@ ACharacterPlayer::ACharacterPlayer()
 	GetCharacterMovement()->AirControl = 0.8;
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
-
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
 // Called when the game starts or when spawned
@@ -179,7 +176,12 @@ void ACharacterPlayer::DownDirectionStart()
 	SetDownPressed(true);
 	if (CanMove())
 	{
-		SetActionState(EActionState::ActionDucking);
+
+		if (GetCharacterMovement()->IsMovingOnGround())
+		{
+			SetActionState(EActionState::ActionDucking);
+			SetIsCrouched(true);
+		}
 	}
 }
 
@@ -187,11 +189,13 @@ void ACharacterPlayer::DownDirectionStop()
 {
 	if (CanMove())
 	{
+		SetIsCrouched(false);
 		SetActionState(EActionState::ActionIdle);
 	}
 	SetDownPressed(false);
 	bIsDirectionPressed = false;
 }
+
 
 void ACharacterPlayer::UpDirectionStart()
 {
@@ -225,6 +229,7 @@ void ACharacterPlayer::AttackStart()
 {
 	if (CanMove())
 	{
+		SetChargingup(true);
 		HandleBuffer(KeyInput::Attack);
 		TArray<int32> MatchingActions;
 		for (int i = 0; i < SpecialMoves.Num(); ++i)

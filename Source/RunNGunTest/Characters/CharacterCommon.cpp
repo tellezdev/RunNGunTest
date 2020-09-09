@@ -49,6 +49,22 @@ ACharacterCommon::ACharacterCommon()
 
 	Effect3Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect3Flipbook");
 	Effect3Flipbook->SetupAttachment(CurrentFlipbook);
+
+	/* Initial settings */
+	GetCapsuleComponent()->SetCollisionObjectType(ECC_Pawn);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
+
+	DamageSprite->SetCollisionResponseToAllChannels(ECR_Ignore);
+	DamageSprite->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+	DamageSprite->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+	HitSprite->SetCollisionResponseToAllChannels(ECR_Ignore);
+	HitSprite->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+	HitSprite->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+	WorldSpaceSprite->SetCollisionResponseToAllChannels(ECR_Ignore);
+	WorldSpaceSprite->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+	WorldSpaceSprite->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 }
 
 // Called when the game starts or when spawned
@@ -86,6 +102,8 @@ void ACharacterCommon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	HandleAutoActions();
+
 	ControlCharacterRotation();
 
 	if (!IsActionAnimationFinished())
@@ -101,6 +119,10 @@ void ACharacterCommon::Tick(float DeltaTime)
 		case EActionState::ActionIdle:
 			break;
 		case EActionState::ActionDucking:
+			break;
+		case EActionState::ActionDuckingAttacking:
+			SetActionState(EActionState::ActionDucking);
+			ResetActionAnimationFlags();
 			break;
 		case EActionState::ActionDamaged:
 			if (GetCharacterMovement()->IsFlying())
@@ -180,7 +202,15 @@ void ACharacterCommon::HandleAttack()
 	{
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
-			Actions = GroundCombo;
+			if (IsCrouched())
+			{
+				Actions = CrouchedAttack;
+			}
+			else
+			{
+				Actions = GroundCombo;
+			}
+
 		}
 		else
 		{
@@ -263,6 +293,35 @@ void ACharacterCommon::PrepareProjectile(FActionAnimationStruct CurrentAnimation
 	}
 }
 
+void ACharacterCommon::HandleAutoActions()
+{
+	if (GetCharacterMovement()->IsMovingOnGround())
+	{
+		// Auto attack
+		if (bIsAutoActionAttack)
+		{
+			DoAttack();
+		}
+
+		// Auto walk to right
+		if (bIsAutoActionWalkForward)
+		{
+			SetFacingDirectionRight(true);
+			FVector* Direction = new FVector(1.0f, 0.0f, 0.0f);
+			SetRightPressed(true);
+			SetAnimationState(EAnimationState::AnimWalking);
+			AddMovementInput(*Direction, 1.0f);
+
+			// Auto walk to left
+			/*SetFacingDirectionRight(false);
+			FVector* Direction = new FVector(-1.0f, 0.0f, 0.0f);
+			SetLeftPressed(true);
+			SetAnimationState(EAnimationState::AnimWalking);
+			AddMovementInput(*Direction, 1.0f);*/
+		}
+	}
+}
+
 void ACharacterCommon::ConsumeStamina(float Value)
 {
 	Stamina = Stamina - Value;
@@ -334,21 +393,28 @@ void ACharacterCommon::DoAttack()
 		bIsAttackFinished = false;
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
-			if (nCurrentAction < GroundCombo.Num() - 1)
+			if (IsCrouched())
 			{
-				if (!bIsFirstAttack)
-				{
-					++nCurrentAction;
-				}
-				else
-				{
-					nCurrentAction = 0;
-				}
-				nCurrentActionAnimation = 0;
+				ResetAttackCombo();
 			}
 			else
 			{
-				ResetAttackCombo();
+				if (nCurrentAction < GroundCombo.Num() - 1)
+				{
+					if (!bIsFirstAttack)
+					{
+						++nCurrentAction;
+					}
+					else
+					{
+						nCurrentAction = 0;
+					}
+					nCurrentActionAnimation = 0;
+				}
+				else
+				{
+					ResetAttackCombo();
+				}
 			}
 		}
 		else
@@ -451,6 +517,9 @@ void ACharacterCommon::ControlCharacterAnimations(float characterMovementSpeed)
 		break;
 	case EActionState::ActionDucking:
 		SetAnimationState(EAnimationState::AnimDucking);
+		break;
+	case EActionState::ActionDuckingAttacking:
+		SetAnimationState(EAnimationState::AnimDuckingAttacking);
 		break;
 	case EActionState::ActionIdle:
 		if (!GetCharacterMovement()->IsMovingOnGround())
@@ -863,7 +932,9 @@ void ACharacterCommon::SetActionState(EActionState State)
 		ResetDamage();
 		break;
 	case EActionState::ActionDucking:
-
+		break;
+	case EActionState::ActionDuckingAttacking:
+		ResetAttack();
 		break;
 	case EActionState::ActionIdle:
 		break;
@@ -893,6 +964,8 @@ FString ACharacterCommon::GetActionState()
 		return "Damaged";
 	case EActionState::ActionDucking:
 		return "Crouching";
+	case EActionState::ActionDuckingAttacking:
+		return "CrouchingAttack";
 	case EActionState::ActionGettingUp:
 		return "Getting up";
 	case EActionState::ActionIdle:
@@ -1006,6 +1079,26 @@ void ACharacterCommon::SetTotalDamage(float value)
 float ACharacterCommon::GetTotalDamage()
 {
 	return nTotalDamage;
+}
+
+bool ACharacterCommon::IsCrouched()
+{
+	return bIsCrouching;
+}
+
+void ACharacterCommon::SetIsCrouched(bool State)
+{
+	bIsCrouching = State;
+}
+
+void ACharacterCommon::SetAutoAttack(bool Value)
+{
+	bIsAutoActionAttack = Value;
+}
+
+void ACharacterCommon::SetAutoWalkForward(bool Value)
+{
+	bIsAutoActionWalkForward = Value;
 }
 
 void ACharacterCommon::ResetTotalDamage()

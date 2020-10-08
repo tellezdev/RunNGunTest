@@ -85,6 +85,9 @@ public:
 		void DownDirectionStop();
 
 	UFUNCTION()
+		void DownDirectionPressed();
+
+	UFUNCTION()
 		void UpDirectionStart();
 
 	UFUNCTION()

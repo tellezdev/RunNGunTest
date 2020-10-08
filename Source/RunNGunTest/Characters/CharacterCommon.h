@@ -152,6 +152,8 @@ public:
 	UPROPERTY()
 		ECurrentAnimationState CurrentAnimationState = ECurrentAnimationState::CurrentAnimationStart;
 	UPROPERTY()
+		EMovementState MovementState = EMovementState::MovementIdle;
+	UPROPERTY()
 		EActionState ActionState = EActionState::ActionIdle;
 
 	// Inherited Components
@@ -229,6 +231,8 @@ public:
 	UFUNCTION()
 		virtual bool IsActionAnimationFinished();
 
+	UFUNCTION()
+		virtual void SetMovementState(EMovementState State);
 	UFUNCTION()
 		virtual void SetActionState(EActionState State);
 	UFUNCTION()

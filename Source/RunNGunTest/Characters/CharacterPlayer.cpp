@@ -64,6 +64,7 @@ void ACharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("RightDirection", IE_Released, this, &ACharacterPlayer::RightDirectionStop);
 	PlayerInputComponent->BindAction("DownDirection", IE_Pressed, this, &ACharacterPlayer::DownDirectionStart);
 	PlayerInputComponent->BindAction("DownDirection", IE_Released, this, &ACharacterPlayer::DownDirectionStop);
+	PlayerInputComponent->BindAction("DownDirection", IE_Repeat, this, &ACharacterPlayer::DownDirectionPressed);
 	PlayerInputComponent->BindAction("UpDirection", IE_Pressed, this, &ACharacterPlayer::UpDirectionStart);
 	PlayerInputComponent->BindAction("UpDirection", IE_Released, this, &ACharacterPlayer::UpDirectionStop);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacterPlayer::JumpStart);
@@ -179,7 +180,7 @@ void ACharacterPlayer::DownDirectionStart()
 
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
-			SetActionState(EActionState::ActionDucking);
+			SetMovementState(EMovementState::MovementCrouch);
 			SetIsCrouched(true);
 		}
 	}
@@ -190,12 +191,24 @@ void ACharacterPlayer::DownDirectionStop()
 	if (CanMove())
 	{
 		SetIsCrouched(false);
-		SetActionState(EActionState::ActionIdle);
+		SetMovementState(EMovementState::MovementIdle);
 	}
 	SetDownPressed(false);
 	bIsDirectionPressed = false;
 }
 
+void ACharacterPlayer::DownDirectionPressed()
+{
+	SetDownPressed(true);
+	if (CanMove())
+	{
+		if (GetCharacterMovement()->IsMovingOnGround())
+		{
+			SetMovementState(EMovementState::MovementCrouch);
+			SetIsCrouched(true);
+		}
+	}
+}
 
 void ACharacterPlayer::UpDirectionStart()
 {
@@ -214,6 +227,7 @@ void ACharacterPlayer::JumpStart()
 	if (CanMove())
 	{
 		bPressedJump = true;
+		SetMovementState(EMovementState::MovementJump);
 		SetActionState(EActionState::ActionIdle);
 		ResetAttackCombo();
 		SetAnimationState(EAnimationState::AnimJumping);

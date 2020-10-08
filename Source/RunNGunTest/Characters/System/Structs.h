@@ -9,6 +9,14 @@
 #include "Structs.generated.h"
 
 UENUM(BlueprintType)
+enum class EMovementState : uint8
+{
+	MovementIdle,
+	MovementCrouch,
+	MovementJump
+};
+
+UENUM(BlueprintType)
 enum class EActionState : uint8
 {
 	ActionIdle,

@@ -121,7 +121,14 @@ void ACharacterCommon::Tick(float DeltaTime)
 		case EActionState::ActionDucking:
 			break;
 		case EActionState::ActionDuckingAttacking:
-			SetActionState(EActionState::ActionDucking);
+			if (MovementState == EMovementState::MovementCrouch)
+			{
+				SetActionState(EActionState::ActionDucking);
+			}
+			else
+			{
+				SetActionState(EActionState::ActionIdle);
+			}
 			ResetActionAnimationFlags();
 			break;
 		case EActionState::ActionDamaged:
@@ -387,7 +394,7 @@ void ACharacterCommon::OnEffects3FlipbookFinishPlaying()
 /// </summary>
 void ACharacterCommon::DoAttack()
 {
-	SetActionState(EActionState::ActionAttacking);
+	//SetActionState(EActionState::ActionAttacking);
 	if (bIsAttackFinished && IsActionAnimationFinished())
 	{
 		bIsAttackFinished = false;
@@ -395,30 +402,35 @@ void ACharacterCommon::DoAttack()
 		{
 			if (IsCrouched())
 			{
+				SetActionState(EActionState::ActionDuckingAttacking);
 				ResetAttackCombo();
 			}
 			else
 			{
-				if (nCurrentAction < GroundCombo.Num() - 1)
+				SetActionState(EActionState::ActionAttacking);
+			}
+			if (nCurrentAction < GroundCombo.Num() - 1)
+			{
+				if (!bIsFirstAttack)
 				{
-					if (!bIsFirstAttack)
-					{
-						++nCurrentAction;
-					}
-					else
-					{
-						nCurrentAction = 0;
-					}
-					nCurrentActionAnimation = 0;
+					++nCurrentAction;
 				}
 				else
 				{
-					ResetAttackCombo();
+					nCurrentAction = 0;
 				}
+				nCurrentActionAnimation = 0;
 			}
+			else
+			{
+				ResetAttackCombo();
+			}
+
 		}
 		else
 		{
+			SetActionState(EActionState::ActionAttacking);
+
 			GetCharacterMovement()->Velocity.Set(0.f, 0.f, 0.f);
 			GetCharacterMovement()->GravityScale = 0.f;
 			if (nCurrentAction < AirCombo.Num() - 1)
@@ -467,6 +479,8 @@ void ACharacterCommon::UpdateAnimations()
 	case EAnimationState::AnimSpecialMove:
 		break;
 	case EAnimationState::AnimAttacking:
+		break;
+	case EAnimationState::AnimDuckingAttacking:
 		break;
 	case EAnimationState::AnimChargingUp:
 		break;
@@ -905,6 +919,23 @@ void ACharacterCommon::NotifyComboToHUD()
 {
 }
 
+void ACharacterCommon::SetMovementState(EMovementState State)
+{
+	switch (MovementState)
+	{
+	case EMovementState::MovementIdle:
+		SetActionState(EActionState::ActionIdle);
+		break;
+	case EMovementState::MovementCrouch:
+		SetActionState(EActionState::ActionDucking);
+		break;
+	case EMovementState::MovementJump:
+		break;
+	}
+
+	MovementState = State;
+}
+
 /// <summary>
 /// Sets a new action state and finishes the old one
 /// </summary>
@@ -934,7 +965,10 @@ void ACharacterCommon::SetActionState(EActionState State)
 	case EActionState::ActionDucking:
 		break;
 	case EActionState::ActionDuckingAttacking:
-		ResetAttack();
+		if (State != EActionState::ActionDuckingAttacking)
+		{
+			ResetAttack();
+		}
 		break;
 	case EActionState::ActionIdle:
 		break;

@@ -58,7 +58,8 @@ void ACharacterEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (ActionState != EActionState::ActionDamaged && ActionState != EActionState::ActionAttacking && CanMove() && VisibilityArea->IsOverlappingActor(Player) && GetLastActionTime() + TimeBetweenAttacks < GetCurrentTime())
+	// [TODO] VisibilityArea->IsOverlappingActor(Player)
+	if (ActionState != EActionState::ActionDamaged && ActionState != EActionState::ActionAttacking && CanMove() && GetLastActionTime() + TimeBetweenAttacks < GetCurrentTime())
 	{
 		SetCanMove(true);
 		// Depending on distance from player, attack, follow him or wait
@@ -77,11 +78,12 @@ void ACharacterEnemy::Tick(float DeltaTime)
 				ControlCharacterAnimations(0.f);
 			}
 
-			if (HitArea->IsOverlappingActor(Player))
+			// [TODO]
+			/*if (HitArea->IsOverlappingActor(Player))
 			{
 				FacePlayer();
 				AttackStart();
-			}
+			}*/
 		}
 	}
 	else
